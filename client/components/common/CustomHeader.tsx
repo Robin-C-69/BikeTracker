@@ -6,16 +6,34 @@ import {theme} from "@/client/constants/theme";
 import Logo from "@/client/assets/images/logo.png";
 import {useRouter} from "expo-router";
 
-export default function CustomHeader() {
+interface CustomHeaderProps {
+  actionButton?: () => void,
+  showBackButton?: boolean
+  onBackButtonClick?: () => void,
+}
+
+export default function CustomHeader({actionButton, showBackButton = true, onBackButtonClick}: CustomHeaderProps) {
   const router = useRouter();
-  const navigateToAddBike = () => {
-    router.navigate({pathname: "/bike/create"})
-  }
+
+  const navigateBack = () => {
+    if (onBackButtonClick) {
+      onBackButtonClick();
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <View style={styles.header}>
-      {/* Logo */}
       <View style={styles.logoContainer}>
+        {showBackButton && (
+          <TouchableOpacity
+            onPress={navigateBack}
+            accessibilityLabel="Go Back"
+          >
+            <Ionicons name={"chevron-back"} size={24} style={styles.backButton}/>
+          </TouchableOpacity>
+        )}
         <Image
           source={Logo}
           alt="BikeTracker Logo"
@@ -23,15 +41,13 @@ export default function CustomHeader() {
           contentFit="contain"
         />
       </View>
-
-      {/* Add Bike Button */}
-      <TouchableOpacity
-        onPress={navigateToAddBike}
-        style={styles.button}
-        accessibilityLabel="Add Bike"
+      {actionButton && <TouchableOpacity
+          onPress={actionButton}
+          style={styles.actionButton}
+          accessibilityLabel="Add Bike"
       >
-        <Ionicons name="add"/>
-      </TouchableOpacity>
+          <Ionicons name="add"/>
+      </TouchableOpacity>}
     </View>
   );
 };
@@ -59,7 +75,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-  button: {
+  actionButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#1976d2",
@@ -67,11 +83,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  icon: {
-    marginRight: 6,
+  backButton: {
+    marginRight: 8,
+    color: "white",
   },
 });

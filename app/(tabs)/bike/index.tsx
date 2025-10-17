@@ -1,5 +1,4 @@
 import BikeCard from "@/client/components/bike/BikeCard";
-import CustomHeader from "@/client/components/common/CustomHeader";
 import {Dimensions, ScrollView, StyleSheet, View} from "react-native";
 import {useBike} from "@/client/hooks/useBike";
 import {theme} from "@/client/constants/theme";
@@ -26,7 +25,6 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <CustomHeader/>
       <View style={styles.listContainer}>
         <ScrollView
           horizontal={true}

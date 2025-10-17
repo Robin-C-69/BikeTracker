@@ -1,19 +1,25 @@
 import {Ionicons} from "@expo/vector-icons";
-import {Tabs} from "expo-router";
+import {Tabs, useRouter} from "expo-router";
 import {Platform, StatusBar} from "react-native";
 import {useEffect} from "react";
 import * as NavigationBar from 'expo-navigation-bar';
+import CustomHeader from "@/client/components/common/CustomHeader";
 
 export default function TabLayout() {
+  const router = useRouter();
+
+  const navigateToAddBike = () => {
+    router.navigate({pathname: "/bike/create"});
+  };
 
   useEffect(() => {
     const setupFullScreen = async () => {
       if (Platform.OS === "android") {
         await NavigationBar.setVisibilityAsync("hidden");
       }
-    }
+    };
     setupFullScreen();
-  }, [])
+  }, []);
 
   return (
     <>
@@ -25,7 +31,7 @@ export default function TabLayout() {
           tabBarStyle: {
             backgroundColor: "#25292e",
             borderTopWidth: 0,
-            height: "6%",
+            height: "8%",
           },
         }}
       >
@@ -40,6 +46,8 @@ export default function TabLayout() {
                 size={24}
               />
             ),
+            headerShown: true,
+            header: () => <CustomHeader actionButton={navigateToAddBike} showBackButton={false}/>,
           }}
         />
         <Tabs.Screen
