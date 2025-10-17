@@ -1,58 +1,63 @@
-import { useDatabase } from "@/context/DatabaseContext";
-import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
-import { Text } from "react-native";
+import {Ionicons} from "@expo/vector-icons";
+import {Tabs} from "expo-router";
+import {Platform, StatusBar} from "react-native";
+import {useEffect} from "react";
+import * as NavigationBar from 'expo-navigation-bar';
 
 export default function TabLayout() {
-  const { isReady } = useDatabase();
 
-  if (!isReady) {
-    return <Text>Loading...</Text>;
-  }
+  useEffect(() => {
+    const setupFullScreen = async () => {
+      if (Platform.OS === "android") {
+        await NavigationBar.setVisibilityAsync("hidden");
+      }
+    }
+    setupFullScreen();
+  }, [])
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: "#ffd33d",
-        headerStyle: {
-          backgroundColor: "#25292e",
-        },
-        headerShadowVisible: false,
-        headerTintColor: "#fff",
-        tabBarStyle: {
-          backgroundColor: "#25292e",
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="bikeSelection"
-        options={{
-          title: "Garage",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "home-sharp" : "home-outline"}
-              color={color}
-              size={24}
-            />
-          ),
+    <>
+      <StatusBar hidden={true}/>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: "#ffd33d",
+          tabBarStyle: {
+            backgroundColor: "#25292e",
+            borderTopWidth: 0,
+            height: "6%",
+          },
         }}
-      />
-      <Tabs.Screen
-        name="about"
-        options={{
-          title: "Techs",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={
-                focused ? "information-circle" : "information-circle-outline"
-              }
-              color={color}
-              size={24}
-            />
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="bike"
+          options={{
+            title: "Garage",
+            tabBarIcon: ({color, focused}) => (
+              <Ionicons
+                name={focused ? "home-sharp" : "home-outline"}
+                color={color}
+                size={24}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="techs"
+          options={{
+            title: "Techs",
+            tabBarIcon: ({color, focused}) => (
+              <Ionicons
+                name={
+                  focused ? "information-circle" : "information-circle-outline"
+                }
+                color={color}
+                size={24}
+              />
+            ),
+          }}
+        />
+      </Tabs>
+    </>
   );
 }

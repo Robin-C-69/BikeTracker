@@ -1,13 +1,14 @@
 import {Stack} from 'expo-router';
-import {DatabaseProvider} from "@/context/DatabaseContext";
+import {DatabaseProvider} from "@/client/context/DatabaseContext";
 
 export default function RootLayout() {
-    return (
-        <DatabaseProvider>
-            <Stack>
-                <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-                <Stack.Screen name="+not-found"/>
-            </Stack>
-        </DatabaseProvider>
-    );
+  return (
+    <DatabaseProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+        <Stack.Screen name="bike" options={{headerShown: false}}/>
+        <Stack.Screen name="+not-found" options={{headerShown: false}}/>
+      </Stack>
+    </DatabaseProvider>
+  );
 }
