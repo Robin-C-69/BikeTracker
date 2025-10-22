@@ -1,18 +1,22 @@
 import React from "react";
-import {View, TouchableOpacity, StyleSheet} from "react-native";
-import {Image} from "expo-image";
-import {Ionicons} from "@expo/vector-icons";
-import {theme} from "@/client/constants/theme";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { Image } from "expo-image";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "@/client/constants/theme";
 import Logo from "@/client/assets/images/logo.png";
-import {useRouter} from "expo-router";
+import { useRouter } from "expo-router";
 
 interface CustomHeaderProps {
-  actionButton?: () => void,
-  showBackButton?: boolean
-  onBackButtonClick?: () => void,
+  actionButton?: () => void;
+  showBackButton?: boolean;
+  onBackButtonClick?: () => void;
 }
 
-export default function CustomHeader({actionButton, showBackButton = true, onBackButtonClick}: CustomHeaderProps) {
+export default function CustomHeader({
+  actionButton,
+  showBackButton = true,
+  onBackButtonClick,
+}: CustomHeaderProps) {
   const router = useRouter();
 
   const navigateBack = () => {
@@ -27,11 +31,12 @@ export default function CustomHeader({actionButton, showBackButton = true, onBac
     <View style={styles.header}>
       <View style={styles.logoContainer}>
         {showBackButton && (
-          <TouchableOpacity
-            onPress={navigateBack}
-            accessibilityLabel="Go Back"
-          >
-            <Ionicons name={"chevron-back"} size={24} style={styles.backButton}/>
+          <TouchableOpacity onPress={navigateBack} accessibilityLabel="Go Back">
+            <Ionicons
+              name={"chevron-back"}
+              size={24}
+              style={styles.backButton}
+            />
           </TouchableOpacity>
         )}
         <Image
@@ -41,16 +46,18 @@ export default function CustomHeader({actionButton, showBackButton = true, onBac
           contentFit="contain"
         />
       </View>
-      {actionButton && <TouchableOpacity
+      {actionButton && (
+        <TouchableOpacity
           onPress={actionButton}
           style={styles.actionButton}
           accessibilityLabel="Add Bike"
-      >
-          <Ionicons name="add"/>
-      </TouchableOpacity>}
+        >
+          <Ionicons name="add" />
+        </TouchableOpacity>
+      )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   header: {

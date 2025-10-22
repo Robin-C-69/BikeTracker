@@ -1,4 +1,4 @@
-import {SQLiteDatabase} from "expo-sqlite";
+import { SQLiteDatabase } from "expo-sqlite";
 
 interface IBaseRepository<T> {
   findAll(limit?: number, offset?: number): Promise<T[]>;
@@ -9,7 +9,7 @@ interface IBaseRepository<T> {
 
   count(): Promise<number>;
 
-  create(data: Omit<T, 'id'>): Promise<T>;
+  create(data: Omit<T, "id">): Promise<T>;
 
   update(id: number, data: Partial<T>): Promise<T | null>;
 }
@@ -41,19 +41,24 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
 
       const results = await this.db.getAllAsync(query, params);
       return results as T[];
-
     } catch (error) {
-      console.error(`Error fetching all records from ${this.tableName}:`, error);
+      console.error(
+        `Error fetching all records from ${this.tableName}:`,
+        error,
+      );
       throw error;
     }
   }
 
   async findById(id: number): Promise<T | null> {
     try {
-      const result = await this.db.getFirstAsync(`SELECT *
+      const result = await this.db.getFirstAsync(
+        `SELECT *
                                                   FROM ${this.tableName}
-                                                  WHERE id = ?`, id);
-      return result as T || null;
+                                                  WHERE id = ?`,
+        id,
+      );
+      return (result as T) || null;
     } catch (error) {
       console.error(`Error fetching ${this.tableName} with id ${id}`);
       throw error;
@@ -62,9 +67,12 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
 
   async deleteById(id: number): Promise<boolean> {
     try {
-      const result = await this.db.getFirstAsync(`DELETE
+      const result = await this.db.getFirstAsync(
+        `DELETE
                                                   FROM ${this.tableName}
-                                                  WHERE id = ?`, id);
+                                                  WHERE id = ?`,
+        id,
+      );
       return (result as { changes: number }).changes > 0;
     } catch (error) {
       console.error(`Error deleting ${this.tableName} with id ${id}`);
@@ -74,10 +82,10 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
 
   async count(): Promise<number> {
     try {
-      const result = await this.db.getFirstAsync(
+      const result = (await this.db.getFirstAsync(
         `SELECT COUNT(*) as count
-         FROM ${this.tableName}`
-      ) as { count: number };
+         FROM ${this.tableName}`,
+      )) as { count: number };
       return result.count;
     } catch (error) {
       console.error(`Error counting ${this.tableName}:`, error);
@@ -86,7 +94,7 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   }
 
   // Abstract methods to be implemented by child classes
-  abstract create(data: Omit<T, 'id'>): Promise<T>;
+  abstract create(data: Omit<T, "id">): Promise<T>;
 
   abstract update(id: number, data: Partial<T>): Promise<T | null>;
 }

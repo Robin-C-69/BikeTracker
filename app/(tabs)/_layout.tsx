@@ -1,15 +1,15 @@
-import {Ionicons} from "@expo/vector-icons";
-import {Tabs, useRouter} from "expo-router";
-import {Platform, StatusBar} from "react-native";
-import {useEffect} from "react";
-import * as NavigationBar from 'expo-navigation-bar';
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs, useRouter } from "expo-router";
+import { Platform, StatusBar } from "react-native";
+import { useEffect } from "react";
+import * as NavigationBar from "expo-navigation-bar";
 import CustomHeader from "@/client/components/common/CustomHeader";
 
 export default function TabLayout() {
   const router = useRouter();
 
   const navigateToAddBike = () => {
-    router.navigate({pathname: "/bike/create"});
+    router.navigate({ pathname: "/bike/create" });
   };
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function TabLayout() {
 
   return (
     <>
-      <StatusBar hidden={true}/>
+      <StatusBar hidden={true} />
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -39,7 +39,7 @@ export default function TabLayout() {
           name="bike"
           options={{
             title: "Garage",
-            tabBarIcon: ({color, focused}) => (
+            tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "home-sharp" : "home-outline"}
                 color={color}
@@ -47,14 +47,19 @@ export default function TabLayout() {
               />
             ),
             headerShown: true,
-            header: () => <CustomHeader actionButton={navigateToAddBike} showBackButton={false}/>,
+            header: () => (
+              <CustomHeader
+                actionButton={navigateToAddBike}
+                showBackButton={false}
+              />
+            ),
           }}
         />
         <Tabs.Screen
           name="techs"
           options={{
             title: "Techs",
-            tabBarIcon: ({color, focused}) => (
+            tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={
                   focused ? "information-circle" : "information-circle-outline"

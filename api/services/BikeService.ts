@@ -1,6 +1,11 @@
-import {BikeRepository} from "@/api/repositories/BikeRepository";
-import {SQLiteDatabase} from "expo-sqlite";
-import {BikeModel, IBike, ICreateBikeRequest, IUpdateBikeRequest} from "@/api/models/BikeModel";
+import { BikeRepository } from "@/api/repositories/BikeRepository";
+import { SQLiteDatabase } from "expo-sqlite";
+import {
+  BikeModel,
+  IBike,
+  ICreateBikeRequest,
+  IUpdateBikeRequest,
+} from "@/api/models/BikeModel";
 
 export class BikeService {
   private bikeRepository: BikeRepository;
@@ -9,7 +14,10 @@ export class BikeService {
     this.bikeRepository = new BikeRepository(db);
   }
 
-  async getAllBikes(page: number = 1, limit: number = 10): Promise<{
+  async getAllBikes(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
     bikes: IBike[];
     hasMore: boolean;
   }> {
@@ -20,7 +28,7 @@ export class BikeService {
       const hasMore = bikes.length > limit;
       if (hasMore) bikes.pop(); //Remove the extra bike if exists
 
-      return {bikes, hasMore};
+      return { bikes, hasMore };
     } catch (error) {
       throw error;
     }
@@ -34,34 +42,39 @@ export class BikeService {
     }
   }
 
-  async createBike(bike: ICreateBikeRequest): Promise<{ bike?: IBike, errors?: string[] }> {
+  async createBike(
+    bike: ICreateBikeRequest,
+  ): Promise<{ bike?: IBike; errors?: string[] }> {
     try {
       // Validate input
       const errors = BikeModel.validate(bike);
       if (errors.length > 0) {
-        return {errors};
+        return { errors };
       }
 
       const newBike = await this.bikeRepository.create(bike);
-      return {bike: newBike};
+      return { bike: newBike };
     } catch (error) {
       throw error;
     }
   }
 
-  async updateBike(id: number, bike: Partial<IUpdateBikeRequest>): Promise<{ bike?: IBike, errors: string[] }> {
+  async updateBike(
+    id: number,
+    bike: Partial<IUpdateBikeRequest>,
+  ): Promise<{ bike?: IBike; errors: string[] }> {
     try {
       // Check if bike already exists
       const existingBike = await this.bikeRepository.findById(id);
       if (!existingBike) {
-        return {errors: [`Bike with id ${id} not found.`]};
+        return { errors: [`Bike with id ${id} not found.`] };
       }
 
       const updatedBike = await this.bikeRepository.update(id, bike);
       if (!updatedBike) {
-        return {errors: [`Failed to update bike with id ${id}.`]};
+        return { errors: [`Failed to update bike with id ${id}.`] };
       }
-      return {bike: updatedBike, errors: []};
+      return { bike: updatedBike, errors: [] };
     } catch (error) {
       throw error;
     }
@@ -70,7 +83,6 @@ export class BikeService {
   async deleteBike(id: number): Promise<boolean> {
     try {
       return await this.bikeRepository.deleteById(id);
-
     } catch (error) {
       throw error;
     }

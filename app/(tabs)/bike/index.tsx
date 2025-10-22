@@ -1,39 +1,70 @@
 import BikeCard from "@/client/components/bike/BikeCard";
-import {Dimensions, ScrollView, StyleSheet, View} from "react-native";
-import {useBike} from "@/client/hooks/useBike";
-import {theme} from "@/client/constants/theme";
+import {
+  ActivityIndicator,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useBike } from "@/client/hooks/useBike";
+import { theme } from "@/client/constants/theme";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
-const {width: SCREEN_WIDTH} = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const LEFT_INSET = 20; // Valeur de paddingHorizontal dans scrollContent
 const RIGHT_INSET = 20; // Valeur de paddingHorizontal dans scrollContent
 
 export default function Index() {
-  const {bikes, loading, error} = useBike()
+  const router = useRouter();
+  const { bikes, loading, error } = useBike();
 
-  const tempData = [
-    {label: "bike1"},
-    {label: "bike2"},
-    {label: "bike3"},
-    {label: "bike4"},
-    {label: "bike5"},
-    {label: "bike6"},
-    {label: "bike7"},
-    {label: "bike8"},
-    {label: "bike9"},
-    {label: "bike10"},
-  ];
+  const navigateToBikeDetails = (bikeId: number) => {
+    router.navigate({ pathname: "/bike/[bikeId]", params: { bikeId } });
+  };
+
+  const navigateToCreateBike = () => {
+    router.navigate("/bike/create");
+  };
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>Error while loading bikes: {error}</Text>
+      </View>
+    );
+  }
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loading]}>
+        <ActivityIndicator size={"large"} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.listContainer}>
         <ScrollView
           horizontal={true}
-          style={styles.scrollview}
+          style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsHorizontalScrollIndicator={false}
         >
-          {tempData.map((bike) => <BikeCard key={bike.label} name={bike.label}/>)}
-          <BikeCard name={"ADD BIKE"}/>
+          {bikes.map((bike) => (
+            <BikeCard
+              key={bike.id}
+              name={bike.name}
+              onPress={() => navigateToBikeDetails(bike.id)}
+            />
+          ))}
+          <BikeCard
+            name={"Add bike"}
+            image={<Ionicons name={"add-outline"} />}
+            onPress={navigateToCreateBike}
+          />
         </ScrollView>
       </View>
     </View>
@@ -48,11 +79,19 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
-  scrollview: {
+  scrollView: {
     flex: 1,
   },
   scrollContent: {
     alignItems: "center",
     paddingHorizontal: 20,
-  }
+  },
+  loading: {
+    justifyContent: "center",
+  },
+  error: {
+    color: theme.colors.error,
+    textAlign: "center",
+    marginTop: 20,
+  },
 });
