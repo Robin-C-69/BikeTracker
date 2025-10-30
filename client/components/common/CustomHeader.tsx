@@ -1,21 +1,46 @@
 import React from "react";
-import {View, TouchableOpacity, StyleSheet} from "react-native";
-import {Image} from "expo-image";
-import {Ionicons} from "@expo/vector-icons";
-import {theme} from "@/client/constants/theme";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { Image } from "expo-image";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "@/client/constants/theme";
 import Logo from "@/client/assets/images/logo.png";
-import {useRouter} from "expo-router";
+import { useRouter } from "expo-router";
 
-export default function CustomHeader() {
+interface CustomHeaderProps {
+  actionButton?: () => void;
+  actionButtonName?: keyof typeof Ionicons.glyphMap;
+  showBackButton?: boolean;
+  onBackButtonClick?: () => void;
+}
+
+export default function CustomHeader({
+  actionButton,
+  actionButtonName,
+  showBackButton = true,
+  onBackButtonClick,
+}: CustomHeaderProps) {
   const router = useRouter();
-  const navigateToAddBike = () => {
-    router.navigate({pathname: "/bike/create"})
-  }
+
+  const navigateBack = () => {
+    if (onBackButtonClick) {
+      onBackButtonClick();
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <View style={styles.header}>
-      {/* Logo */}
       <View style={styles.logoContainer}>
+        {showBackButton && (
+          <TouchableOpacity onPress={navigateBack} accessibilityLabel="Go Back">
+            <Ionicons
+              name={"chevron-back"}
+              size={24}
+              style={styles.backButton}
+            />
+          </TouchableOpacity>
+        )}
         <Image
           source={Logo}
           alt="BikeTracker Logo"
@@ -23,18 +48,18 @@ export default function CustomHeader() {
           contentFit="contain"
         />
       </View>
-
-      {/* Add Bike Button */}
-      <TouchableOpacity
-        onPress={navigateToAddBike}
-        style={styles.button}
-        accessibilityLabel="Add Bike"
-      >
-        <Ionicons name="add"/>
-      </TouchableOpacity>
+      {actionButton && (
+        <TouchableOpacity
+          onPress={actionButton}
+          style={styles.actionButton}
+          accessibilityLabel="Action Button"
+        >
+          <Ionicons name={actionButtonName} style={styles.actionIcon} />
+        </TouchableOpacity>
+      )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   header: {
@@ -59,19 +84,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-  button: {
+  actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1976d2",
-    borderRadius: 4,
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
+  actionIcon: {
+    color: theme.colors.primary,
+    fontSize: theme.typography.sizes.xl,
   },
-  icon: {
-    marginRight: 6,
+  backButton: {
+    marginRight: 8,
+    color: "white",
   },
 });

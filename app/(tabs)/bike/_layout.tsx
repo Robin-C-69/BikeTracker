@@ -1,4 +1,4 @@
-import {Stack} from 'expo-router';
+import { Stack } from "expo-router";
 
 export default function BikeLayout() {
   return (
@@ -7,7 +7,7 @@ export default function BikeLayout() {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="index"/>
+      <Stack.Screen name="index" />
     </Stack>
   );
 }

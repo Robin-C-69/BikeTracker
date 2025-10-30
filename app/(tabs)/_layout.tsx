@@ -1,23 +1,29 @@
-import {Ionicons} from "@expo/vector-icons";
-import {Tabs} from "expo-router";
-import {Platform, StatusBar} from "react-native";
-import {useEffect} from "react";
-import * as NavigationBar from 'expo-navigation-bar';
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs, useRouter } from "expo-router";
+import { Platform, StatusBar } from "react-native";
+import { useEffect } from "react";
+import * as NavigationBar from "expo-navigation-bar";
+import CustomHeader from "@/client/components/common/CustomHeader";
 
 export default function TabLayout() {
+  const router = useRouter();
+
+  const navigateToAddBike = () => {
+    router.navigate({ pathname: "/bike/create" });
+  };
 
   useEffect(() => {
     const setupFullScreen = async () => {
       if (Platform.OS === "android") {
         await NavigationBar.setVisibilityAsync("hidden");
       }
-    }
+    };
     setupFullScreen();
-  }, [])
+  }, []);
 
   return (
     <>
-      <StatusBar hidden={true}/>
+      <StatusBar hidden={true} />
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -25,7 +31,7 @@ export default function TabLayout() {
           tabBarStyle: {
             backgroundColor: "#25292e",
             borderTopWidth: 0,
-            height: "6%",
+            height: "8%",
           },
         }}
       >
@@ -33,11 +39,19 @@ export default function TabLayout() {
           name="bike"
           options={{
             title: "Garage",
-            tabBarIcon: ({color, focused}) => (
+            tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "home-sharp" : "home-outline"}
                 color={color}
                 size={24}
+              />
+            ),
+            headerShown: true,
+            header: () => (
+              <CustomHeader
+                actionButton={navigateToAddBike}
+                actionButtonName={"add"}
+                showBackButton={false}
               />
             ),
           }}
@@ -46,7 +60,7 @@ export default function TabLayout() {
           name="techs"
           options={{
             title: "Techs",
-            tabBarIcon: ({color, focused}) => (
+            tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={
                   focused ? "information-circle" : "information-circle-outline"

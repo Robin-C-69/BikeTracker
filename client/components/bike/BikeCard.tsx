@@ -1,29 +1,38 @@
 import ImageViewer from "@/client/components/common/ImageViewer";
-import {StyleSheet, Text, View, Dimensions, ImageSourcePropType} from "react-native";
-import {useRouter} from "expo-router";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  ImageSourcePropType,
+  GestureResponderEvent,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { ComponentType, ReactNode } from "react";
 
 const PlaceholderImage = require("@/client/assets/images/bike_icon.png");
 
-const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 interface BikeCardProps {
   name: string;
-  image?: ImageSourcePropType;
+  image?: ImageSourcePropType | ReactNode;
+  onPress?: () => void;
 }
 
-export default function BikeCard({name, image}: BikeCardProps) {
-  const router = useRouter();
-
-  const showBikeDetails = () => {
-    router.navigate({pathname: "/bike/[bikeId]", params: {bikeId: name}});
-  };
+export default function BikeCard({ name, image, onPress }: BikeCardProps) {
+  const isReactElement = image && typeof image === "object" && "type" in image;
 
   return (
-    <View style={styles.card} onTouchEnd={showBikeDetails}>
-      <ImageViewer
-        imgSource={image ?? PlaceholderImage}
-        style={styles.image}
-      />
+    <View style={styles.card} onTouchEnd={onPress}>
+      {isReactElement ? (
+        <View style={styles.image}>{image}</View>
+      ) : (
+        <ImageViewer
+          imgSource={(image as ImageSourcePropType) ?? PlaceholderImage}
+          style={styles.image}
+        />
+      )}
       <Text style={styles.nameBanner}>{name}</Text>
     </View>
   );
