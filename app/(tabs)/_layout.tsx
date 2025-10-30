@@ -50,6 +50,7 @@ export default function TabLayout() {
             header: () => (
               <CustomHeader
                 actionButton={navigateToAddBike}
+                actionButtonName={"add"}
                 showBackButton={false}
               />
             ),

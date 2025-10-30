@@ -1,13 +1,10 @@
 import {
-  Alert,
-  Button,
   KeyboardAvoidingView,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  View,
 } from "react-native";
 import { theme } from "@/client/constants/theme";
 import { Controller, useForm } from "react-hook-form";
@@ -32,7 +29,6 @@ export default function CreateBikePage() {
 
   const onSubmit = async (data: ICreateBikeRequest) => {
     const { errors } = await createBike(data);
-    // Alert.alert("data:", JSON.stringify(data));
     if (errors) {
       console.error(errors);
     }
@@ -117,5 +113,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: theme.spacing(1),
   },
-  buttonText: { color: "#fff", fontWeight: "600" },
+  buttonText: { color: "#000", fontWeight: "600" },
 });

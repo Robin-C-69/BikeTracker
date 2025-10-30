@@ -67,11 +67,9 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
 
   async deleteById(id: number): Promise<boolean> {
     try {
-      const result = await this.db.getFirstAsync(
-        `DELETE
-                                                  FROM ${this.tableName}
-                                                  WHERE id = ?`,
-        id,
+      const result = await this.db.runAsync(
+        `DELETE FROM ${this.tableName} WHERE id = ?`,
+        [id],
       );
       return (result as { changes: number }).changes > 0;
     } catch (error) {

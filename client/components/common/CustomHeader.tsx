@@ -8,12 +8,14 @@ import { useRouter } from "expo-router";
 
 interface CustomHeaderProps {
   actionButton?: () => void;
+  actionButtonName?: keyof typeof Ionicons.glyphMap;
   showBackButton?: boolean;
   onBackButtonClick?: () => void;
 }
 
 export default function CustomHeader({
   actionButton,
+  actionButtonName,
   showBackButton = true,
   onBackButtonClick,
 }: CustomHeaderProps) {
@@ -50,9 +52,9 @@ export default function CustomHeader({
         <TouchableOpacity
           onPress={actionButton}
           style={styles.actionButton}
-          accessibilityLabel="Add Bike"
+          accessibilityLabel="Action Button"
         >
-          <Ionicons name="add" />
+          <Ionicons name={actionButtonName} style={styles.actionIcon} />
         </TouchableOpacity>
       )}
     </View>
@@ -85,10 +87,12 @@ const styles = StyleSheet.create({
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1976d2",
-    borderRadius: 4,
     paddingVertical: 8,
     paddingHorizontal: 16,
+  },
+  actionIcon: {
+    color: theme.colors.primary,
+    fontSize: theme.typography.sizes.xl,
   },
   backButton: {
     marginRight: 8,
