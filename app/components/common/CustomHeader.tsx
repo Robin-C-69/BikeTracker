@@ -2,8 +2,8 @@ import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { theme } from "@/client/constants/theme";
-import Logo from "@/client/assets/images/logo.png";
+import { theme } from "@/app/constants/theme";
+import Logo from "@/app/assets/images/logo.png";
 import { useRouter } from "expo-router";
 
 interface CustomHeaderProps {

@@ -6,9 +6,9 @@ import {
   Text,
   TextInput,
 } from "react-native";
-import { theme } from "@/client/constants/theme";
+import { theme } from "@/app/constants/theme";
 import { Controller, useForm } from "react-hook-form";
-import { useBike } from "@/client/hooks/useBike";
+import { useBike } from "@/app/hooks/useBike";
 import { ICreateBikeRequest } from "@/api/models/BikeModel";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";

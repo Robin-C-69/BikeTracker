@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
-import { theme } from "@/client/constants/theme";
+import { theme } from "@/app/constants/theme";
 import { useLocalSearchParams } from "expo-router";
-import { useBike } from "@/client/hooks/useBike";
+import { useBike } from "@/app/hooks/useBike";
 
 export default function BikeDetails() {
   const { bikeId } = useLocalSearchParams();

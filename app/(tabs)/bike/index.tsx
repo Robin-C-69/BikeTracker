@@ -1,4 +1,4 @@
-import BikeCard from "@/client/components/bike/BikeCard";
+import BikeCard from "@/app/components/bike/BikeCard";
 import {
   ActivityIndicator,
   Dimensions,
@@ -7,8 +7,8 @@ import {
   Text,
   View,
 } from "react-native";
-import { useBike } from "@/client/hooks/useBike";
-import { theme } from "@/client/constants/theme";
+import { useBike } from "@/app/hooks/useBike";
+import { theme } from "@/app/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 

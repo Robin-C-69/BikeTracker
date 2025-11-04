@@ -1,4 +1,4 @@
-import ImageViewer from "@/client/components/common/ImageViewer";
+import ImageViewer from "@/app/components/common/ImageViewer";
 import {
   StyleSheet,
   Text,
@@ -10,7 +10,7 @@ import {
 import { useRouter } from "expo-router";
 import { ComponentType, ReactNode } from "react";
 
-const PlaceholderImage = require("@/client/assets/images/bike_icon.png");
+const PlaceholderImage = require("@/app/assets/images/bike_icon.png");
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 

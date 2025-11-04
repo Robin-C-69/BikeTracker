@@ -3,7 +3,7 @@ import { Tabs, useRouter } from "expo-router";
 import { Platform, StatusBar } from "react-native";
 import { useEffect } from "react";
 import * as NavigationBar from "expo-navigation-bar";
-import CustomHeader from "@/client/components/common/CustomHeader";
+import CustomHeader from "@/app/components/common/CustomHeader";
 
 export default function TabLayout() {
   const router = useRouter();

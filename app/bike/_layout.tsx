@@ -1,5 +1,5 @@
 import { Stack, useRouter } from "expo-router";
-import CustomHeader from "@/client/components/common/CustomHeader";
+import CustomHeader from "@/app/components/common/CustomHeader";
 
 export default function BikeStackLayout() {
   const router = useRouter();

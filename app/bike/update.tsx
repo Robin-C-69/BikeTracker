@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
-import CustomHeader from "@/client/components/common/CustomHeader";
+import CustomHeader from "@/app/components/common/CustomHeader";
 import { useState } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { theme } from "@/client/constants/theme";
-import { DeleteBikeForm } from "@/client/components/bike/DeleteBikeForm";
+import { theme } from "@/app/constants/theme";
+import { DeleteBikeForm } from "@/app/components/bike/DeleteBikeForm";
 
 export default function UpdateBikePage() {
   const { bikeId } = useLocalSearchParams();

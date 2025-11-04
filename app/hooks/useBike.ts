@@ -3,7 +3,7 @@ import {
   ICreateBikeRequest,
   IUpdateBikeRequest,
 } from "@/api/models/BikeModel";
-import { useDatabase } from "@/client/context/DatabaseContext";
+import { useDatabase } from "@/app/context/DatabaseContext";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BikeService } from "@/api/services/BikeService";
 
