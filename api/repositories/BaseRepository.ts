@@ -5,13 +5,11 @@ interface IBaseRepository<T> {
 
   findById(id: number): Promise<T | null>;
 
-  deleteById(id: number): Promise<boolean>;
+  deleteById(id: number): Promise<void>;
 
-  count(): Promise<number>;
+  create(data: Omit<T, "id">): Promise<number>;
 
-  create(data: Omit<T, "id">): Promise<T>;
-
-  update(id: number, data: Partial<T>): Promise<T | null>;
+  update(id: number, data: Partial<T>): Promise<void>;
 }
 
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
@@ -24,75 +22,40 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   }
 
   async findAll(limit?: number, offset?: number): Promise<T[]> {
-    try {
-      let query = `SELECT *
+    let query = `SELECT *
                    FROM ${this.tableName}
                    ORDER BY id DESC`;
-      const params: any[] = [];
+    const params: any[] = [];
 
-      if (limit) {
-        query += ` LIMIT ?`;
-        params.push(limit);
-        if (offset) {
-          query += ` OFFSET ?`;
-          params.push(offset);
-        }
+    if (limit) {
+      query += ` LIMIT ?`;
+      params.push(limit);
+      if (offset) {
+        query += ` OFFSET ?`;
+        params.push(offset);
       }
-
-      const results = await this.db.getAllAsync(query, params);
-      return results as T[];
-    } catch (error) {
-      console.error(
-        `Error fetching all records from ${this.tableName}:`,
-        error,
-      );
-      throw error;
     }
+
+    const results = await this.db.getAllAsync(query, params);
+    return results as T[];
   }
 
   async findById(id: number): Promise<T | null> {
-    try {
-      const result = await this.db.getFirstAsync(
-        `SELECT *
-                                                  FROM ${this.tableName}
-                                                  WHERE id = ?`,
-        id,
-      );
-      return (result as T) || null;
-    } catch (error) {
-      console.error(`Error fetching ${this.tableName} with id ${id}`);
-      throw error;
-    }
+    const result = await this.db.getFirstAsync(
+      `SELECT *
+       FROM ${this.tableName}
+       WHERE id = ?`,
+      id,
+    );
+    return (result as T) || null;
   }
 
-  async deleteById(id: number): Promise<boolean> {
-    try {
-      const result = await this.db.runAsync(
-        `DELETE FROM ${this.tableName} WHERE id = ?`,
-        [id],
-      );
-      return (result as { changes: number }).changes > 0;
-    } catch (error) {
-      console.error(`Error deleting ${this.tableName} with id ${id}`);
-      throw error;
-    }
-  }
-
-  async count(): Promise<number> {
-    try {
-      const result = (await this.db.getFirstAsync(
-        `SELECT COUNT(*) as count
-         FROM ${this.tableName}`,
-      )) as { count: number };
-      return result.count;
-    } catch (error) {
-      console.error(`Error counting ${this.tableName}:`, error);
-      throw error;
-    }
+  async deleteById(id: number): Promise<void> {
+    await this.db.runAsync(`DELETE FROM ${this.tableName} WHERE id = ?`, [id]);
   }
 
   // Abstract methods to be implemented by child classes
-  abstract create(data: Omit<T, "id">): Promise<T>;
+  abstract create(data: Omit<T, "id">): Promise<number>;
 
-  abstract update(id: number, data: Partial<T>): Promise<T | null>;
+  abstract update(id: number, data: Partial<T>): Promise<void>;
 }

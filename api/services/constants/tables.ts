@@ -15,16 +15,19 @@ export const CREATE_BIKE_TABLE = `
 
 export const CREATE_PIECE_TABLE = `
     CREATE TABLE IF NOT EXISTS ${PIECES_TABLE_NAME} (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        type TEXT NOT NULL,
-        brand TEXT,
-        state TEXT CHECK (
-            state IN ('Neuf', 'Excellent', 'Bon', 'Moyen', 'Usé', 'HS')
-        ),
-        notes TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      id INTEGER PRIMARY KEY,
+      bike_id INTEGER NOT NULL,
+      category TEXT NOT NULL,
+      subcategory TEXT,
+      name TEXT,
+      brand TEXT,
+      model TEXT,
+      status TEXT,
+      attributes TEXT, -- JSON string to store additional attributes
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      
+      FOREIGN KEY (bike_id) REFERENCES ${BIKES_TABLE_NAME}(id) ON DELETE CASCADE
     );
 `;
 // @formatter:on

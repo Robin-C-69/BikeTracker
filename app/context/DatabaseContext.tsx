@@ -4,7 +4,6 @@ import { SQLiteDatabase } from "expo-sqlite";
 
 interface DatabaseContextType {
   db: SQLiteDatabase | undefined;
-  isReady: boolean;
 }
 
 interface DatabaseProviderProps {
@@ -27,17 +26,14 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
   children,
 }) => {
   const [db, setDb] = useState<SQLiteDatabase | undefined>(undefined);
-  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const setupDatabase = async () => {
       try {
         const initializedDb = await initializeDatabase();
         setDb(initializedDb);
-        setIsReady(true);
       } catch (error) {
         console.error("Failed to initialize database:", error);
-        setIsReady(false);
       }
     };
 
@@ -45,7 +41,7 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
   }, []);
 
   return (
-    <DatabaseContext.Provider value={{ db, isReady }}>
+    <DatabaseContext.Provider value={{ db }}>
       {children}
     </DatabaseContext.Provider>
   );

@@ -11,12 +11,6 @@ export interface ICreateBikeRequest {
   brand: string;
 }
 
-export interface IUpdateBikeRequest {
-  id: number;
-  name: string;
-  brand: string;
-}
-
 export class BikeModel {
   static validate(bike: ICreateBikeRequest): string[] {
     const errors: string[] = [];
