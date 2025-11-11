@@ -14,7 +14,7 @@ export const initializeDatabase = async () => {
 
     // Create tables
     await db.execAsync(CREATE_BIKE_TABLE);
-    // await db.execAsync(CREATE_PIECE_TABLE);
+    await db.execAsync(CREATE_PIECE_TABLE);
 
     console.log("Database initialized successfully");
     return db;

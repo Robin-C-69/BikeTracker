@@ -1,18 +1,57 @@
 import { BaseRepository } from "@/api/repositories/BaseRepository";
-import { IPiece } from "@/api/models/PieceModel";
+import { ICreatePieceRequest, IPiece } from "@/api/models/PieceModel";
 import { SQLiteDatabase } from "expo-sqlite";
 import { PIECES_TABLE_NAME } from "@/api/services/constants/tables";
 
-export class PieceRepository extends BaseRepository<IPiece> {
+interface IPieceRepository {
+  create(pieceData: ICreatePieceRequest): Promise<number>;
+
+  update(id: number, pieceData: ICreatePieceRequest): Promise<void>;
+}
+
+export class PieceRepository
+  extends BaseRepository<IPiece>
+  implements IPieceRepository
+{
   constructor(database: SQLiteDatabase) {
     super(database, PIECES_TABLE_NAME);
   }
 
-  async create(pieceData: Omit<IPiece, "id">): Promise<IPiece> {
-    return null as any;
+  async create(pieceData: ICreatePieceRequest): Promise<number> {
+    const result = await this.db.runAsync(
+      `INSERT INTO ${PIECES_TABLE_NAME} (bike_id, category, subcategory, name, brand, model, status, attributes,
+                                         created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+      [
+        pieceData.bikeId,
+        pieceData.category,
+        pieceData.subcategory,
+        pieceData.name,
+        pieceData.brand,
+        pieceData.model,
+        pieceData.status,
+        pieceData.attributes,
+      ],
+    );
+    return result.lastInsertRowId;
   }
 
-  async update(id: number, pieceData: Partial<IPiece>): Promise<IPiece | null> {
-    return null as any;
+  async update(id: number, pieceData: ICreatePieceRequest): Promise<void> {
+    await this.db.runAsync(
+      `UPDATE ${PIECES_TABLE_NAME}
+       SET bike_id = ?, category = ?, subcategory = ?, name = ?, brand = ?, model = ?, status = ?, attributes = ?, updated_at = datetime('now')
+       WHERE id = ?`,
+      [
+        pieceData.bikeId,
+        pieceData.category,
+        pieceData.subcategory,
+        pieceData.name,
+        pieceData.brand,
+        pieceData.model,
+        pieceData.status,
+        pieceData.attributes,
+        id,
+      ],
+    );
   }
 }

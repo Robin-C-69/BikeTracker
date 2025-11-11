@@ -105,8 +105,8 @@ export const useBike = (): UseBikeState & UseBikeActions => {
       setState((prev) => ({
         ...prev,
         bikes: prev.bikes.map((bike) => (bike.id === id ? updatedBike : bike)),
+        loading: false,
       }));
-      updateState({ loading: false });
       return updatedBike;
     },
     [bikeController, updateState],
@@ -124,8 +124,8 @@ export const useBike = (): UseBikeState & UseBikeActions => {
       setState((prev) => ({
         ...prev,
         bikes: prev.bikes.filter((bike) => bike.id !== id),
+        loading: false,
       }));
-      updateState({ loading: false });
     },
     [bikeController, updateState],
   );
@@ -145,11 +145,7 @@ export const useBike = (): UseBikeState & UseBikeActions => {
   }, [bikeController, db, getAllBikes]);
 
   return {
-    // State
-    bikes: state.bikes,
-    loading: state.loading,
-    error: state.error,
-    // Actions
+    ...state,
     createBike,
     updateBike,
     deleteBike,

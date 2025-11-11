@@ -9,8 +9,8 @@ export class BikeService {
     this.bikeRepository = new BikeRepository(db);
   }
 
-  async getAllBikes(page: number = 1, limit: number = 10): Promise<IBike[]> {
-    const offset = (page - 1) * limit;
+  async getAllBikes(page?: number, limit?: number): Promise<IBike[]> {
+    const offset = page && limit ? (page - 1) * limit : 0;
     return await this.bikeRepository.findAll(limit, offset);
   }
 
