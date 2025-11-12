@@ -1,12 +1,15 @@
 import { PieceRepository } from "@/api/repositories/PieceRepository";
 import { SQLiteDatabase } from "expo-sqlite";
 import { ICreatePieceRequest, PieceModel } from "@/api/models/PieceModel";
+import { BikeRepository } from "@/api/repositories/BikeRepository";
 
 export class PieceService {
   private pieceRepository: PieceRepository;
+  private bikeRepository: BikeRepository;
 
   constructor(db: SQLiteDatabase) {
     this.pieceRepository = new PieceRepository(db);
+    this.bikeRepository = new BikeRepository(db);
   }
 
   async getAllPieces(page?: number, limit?: number) {
@@ -16,6 +19,14 @@ export class PieceService {
 
   async getPieceById(id: number) {
     return await this.pieceRepository.findById(id);
+  }
+
+  async getPiecesByBikeId(bikeId: number) {
+    const bike = await this.bikeRepository.findById(bikeId);
+    if (!bike) {
+      throw new Error(`Bike with id ${bikeId} not found.`);
+    }
+    return await this.pieceRepository.findByBikeId(bikeId);
   }
 
   async createPiece(piece: ICreatePieceRequest) {

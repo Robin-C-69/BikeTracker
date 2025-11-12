@@ -16,6 +16,7 @@ interface UsePieceActions {
   deletePiece: (id: number) => Promise<void>;
   getAllPieces: (page?: number, limit?: number) => Promise<IPiece[]>;
   getPieceById: (id: number) => Promise<IPiece | null>;
+  getPieceByBikeId: (bikeId: number) => Promise<IPiece[]>;
   refreshPieces: () => Promise<void>;
   clearError: () => void;
 }
@@ -70,6 +71,29 @@ export const usePiece = (): UsePieceState & UsePieceActions => {
         ...prev,
         loading: false,
         pieces: [...prev.pieces, data!],
+      }));
+      return data;
+    },
+    [pieceController, state.pieces, updateState],
+  );
+
+  const getPieceByBikeId = useCallback(
+    async (bikeId: number) => {
+      const cachedPieces = state.pieces.filter(
+        (piece) => piece.bikeId === bikeId,
+      );
+      if (cachedPieces.length) return cachedPieces;
+
+      if (!pieceController) return;
+      updateState({ loading: true, error: null });
+      const { error, data } = await pieceController.getPiecesByBikeId(bikeId);
+
+      if (error) return null;
+
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+        pieces: [...prev.pieces, ...data],
       }));
       return data;
     },
@@ -156,6 +180,7 @@ export const usePiece = (): UsePieceState & UsePieceActions => {
     deletePiece,
     getAllPieces,
     getPieceById,
+    getPieceByBikeId,
     refreshPieces,
     clearError,
   };

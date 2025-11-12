@@ -31,6 +31,15 @@ export class PieceController {
     }
   }
 
+  async getPiecesByBikeId(bikeId: number) {
+    try {
+      const pieces = await this.pieceService.getPiecesByBikeId(bikeId);
+      return ResponseModel.createSuccess(pieces);
+    } catch (error) {
+      return ResponseModel.createError(error);
+    }
+  }
+
   async createPiece(pieceData: ICreatePieceRequest) {
     try {
       const pieceId = await this.pieceService.createPiece(pieceData);

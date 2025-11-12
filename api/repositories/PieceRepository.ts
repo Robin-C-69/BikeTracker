@@ -4,8 +4,8 @@ import { SQLiteDatabase } from "expo-sqlite";
 import { PIECES_TABLE_NAME } from "@/api/services/constants/tables";
 
 interface IPieceRepository {
+  findByBikeId(bikeId: number): Promise<IPiece[]>;
   create(pieceData: ICreatePieceRequest): Promise<number>;
-
   update(id: number, pieceData: ICreatePieceRequest): Promise<void>;
 }
 
@@ -15,6 +15,14 @@ export class PieceRepository
 {
   constructor(database: SQLiteDatabase) {
     super(database, PIECES_TABLE_NAME);
+  }
+
+  async findByBikeId(bikeId: number): Promise<IPiece[]> {
+    const rows = await this.db.getAllAsync<IPiece>(
+      `SELECT * FROM ${PIECES_TABLE_NAME} WHERE bike_id = ?`,
+      [bikeId],
+    );
+    return rows.map((row) => this.mapRowToModel(row));
   }
 
   async create(pieceData: ICreatePieceRequest): Promise<number> {
@@ -53,5 +61,12 @@ export class PieceRepository
         id,
       ],
     );
+  }
+
+  private mapRowToModel(row: IPiece): IPiece {
+    return {
+      ...row,
+      attributes: row.attributes ? JSON.parse(row.attributes as string) : {},
+    };
   }
 }
