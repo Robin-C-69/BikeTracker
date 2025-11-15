@@ -15,21 +15,19 @@ export function DeleteBikeForm({
   openDeleteDialog = false,
   setOpenDeleteDialog,
 }: DeleteBikeFormProps) {
-  const { deleteBike } = useBike();
+  const { error, deleteBike } = useBike();
 
   const onDelete = useCallback(
     async (bikeId: number) => {
-      const { errors } = await deleteBike(bikeId);
-
-      if (errors) {
-        console.error("Error deleting bike:", errors);
-        setOpenDeleteDialog(false);
+      await deleteBike(bikeId);
+      if (error) {
+        console.error("Error deleting bike:", error);
         return;
       }
-
+      setOpenDeleteDialog(false);
       router.navigate({ pathname: "/(tabs)/bike" });
     },
-    [deleteBike, setOpenDeleteDialog],
+    [deleteBike, error, setOpenDeleteDialog],
   );
 
   return (

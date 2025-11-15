@@ -4,7 +4,7 @@ import CustomHeader from "@/app/components/common/CustomHeader";
 import { useState } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "@/app/constants/theme";
-import { DeleteBikeForm } from "@/app/components/bike/DeleteBikeForm";
+import { DeleteBikeForm } from "@/app/components/forms/DeleteBikeForm";
 
 export default function UpdateBikePage() {
   const { bikeId } = useLocalSearchParams();

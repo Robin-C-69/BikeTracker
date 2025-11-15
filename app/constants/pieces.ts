@@ -369,11 +369,15 @@ export const getConditionalGroups = (category: string): ConditionalGroup[] => {
   return CATEGORY_SUBCATEGORY_MAP[category]?.conditionalGroups || [];
 };
 
-export const isSubcategoryInGroup = (
-  category: string,
-  subcategory: string,
-  group: string,
-): boolean => {
+export const isSubcategoryInGroup = ({
+  category,
+  subcategory,
+  group,
+}: {
+  category: string;
+  subcategory: string;
+  group: string;
+}): boolean => {
   const categoryConfig = CATEGORY_SUBCATEGORY_MAP[category];
   const subcategoryConfig = categoryConfig?.subcategories[subcategory];
   return subcategoryConfig?.group === group;

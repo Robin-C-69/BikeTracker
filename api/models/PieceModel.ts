@@ -20,7 +20,7 @@ export interface ICreatePieceRequest {
   brand: string;
   model: string;
   status: string;
-  attributes: string; // JSON string to store additional attributes
+  attributes: Record<string, any>; // JSON string to store additional attributes
 }
 
 export class PieceModel {
