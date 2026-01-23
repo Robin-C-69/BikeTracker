@@ -1,7 +1,6 @@
 import BikeCard from "@/app/components/bike/BikeCard";
 import {
   ActivityIndicator,
-  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,10 +10,6 @@ import { useBike } from "@/app/hooks/useBike";
 import { theme } from "@/app/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const LEFT_INSET = 20; // Valeur de paddingHorizontal dans scrollContent
-const RIGHT_INSET = 20; // Valeur de paddingHorizontal dans scrollContent
 
 export default function Index() {
   const router = useRouter();

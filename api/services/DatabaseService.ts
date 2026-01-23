@@ -1,8 +1,5 @@
 import * as SQLite from "expo-sqlite";
-import {
-  CREATE_BIKE_TABLE,
-  CREATE_PIECE_TABLE,
-} from "@/api/services/constants/tables";
+import { CREATE_BIKE_TABLE } from "@/api/services/constants/tables";
 
 export const initializeDatabase = async () => {
   try {
@@ -14,7 +11,6 @@ export const initializeDatabase = async () => {
 
     // Create tables
     await db.execAsync(CREATE_BIKE_TABLE);
-    await db.execAsync(CREATE_PIECE_TABLE);
 
     console.log("Database initialized successfully");
     return db;
