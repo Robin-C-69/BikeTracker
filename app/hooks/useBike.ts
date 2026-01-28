@@ -1,8 +1,7 @@
-import { IBike, ICreateBikeRequest } from "@/api/models/BikeModel";
+import { IBike, ICreateBikeRequest } from "@/database/models/BikeModel";
 import { useDatabase } from "@/app/context/DatabaseContext";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BikeService } from "@/api/services/BikeService";
-import { BikeController } from "@/api/controllers/BikeController";
+import { BikeService } from "@/database/services/BikeService";
 
 interface UseBikeState {
   bikes: IBike[];
@@ -28,10 +27,9 @@ export const useBike = (): UseBikeState & UseBikeActions => {
     error: null,
   });
 
-  const bikeController = useMemo(() => {
+  const bikeService = useMemo(() => {
     if (!db) return null;
-    const bikeService = new BikeService(db);
-    return new BikeController(bikeService);
+    return new BikeService(db);
   }, [db]);
 
   const updateState = useCallback((updates: Partial<UseBikeState>) => {
@@ -40,9 +38,9 @@ export const useBike = (): UseBikeState & UseBikeActions => {
 
   const getAllBikes = useCallback(
     async (page?: number, limit?: number) => {
-      if (!bikeController) return;
+      if (!bikeService) return;
       updateState({ loading: true, error: null });
-      const { error, data } = await bikeController.getAllBikes({ page, limit });
+      const { error, data } = await bikeService.getAllBikes({ page, limit });
       if (error) {
         updateState({ loading: false, error: error });
         return [];
@@ -50,7 +48,7 @@ export const useBike = (): UseBikeState & UseBikeActions => {
       updateState({ bikes: data, loading: false });
       return data;
     },
-    [bikeController, updateState],
+    [bikeService, updateState],
   );
 
   const getBikeById = useCallback(
@@ -58,9 +56,9 @@ export const useBike = (): UseBikeState & UseBikeActions => {
       const cachedBike = state.bikes.find((bike) => bike.id === id);
       if (cachedBike) return cachedBike;
 
-      if (!bikeController) return;
+      if (!bikeService) return;
       updateState({ loading: true, error: null });
-      const { error, data } = await bikeController.getBikeById(id);
+      const { error, data } = await bikeService.getBikeById(id);
 
       if (error) return null;
 
@@ -71,14 +69,14 @@ export const useBike = (): UseBikeState & UseBikeActions => {
       }));
       return data;
     },
-    [bikeController, state.bikes, updateState],
+    [bikeService, state.bikes, updateState],
   );
 
   const createBike = useCallback(
     async (bike: ICreateBikeRequest) => {
-      if (!bikeController) return;
+      if (!bikeService) return;
       updateState({ loading: true, error: null });
-      const { error, data: newBike } = await bikeController.createBike(bike);
+      const { error, data: newBike } = await bikeService.createBike(bike);
       if (error) {
         updateState({ loading: false, error: error });
         return null;
@@ -87,16 +85,16 @@ export const useBike = (): UseBikeState & UseBikeActions => {
       updateState({ loading: false });
       return newBike;
     },
-    [bikeController, getAllBikes, updateState],
+    [bikeService, getAllBikes, updateState],
   );
 
   const updateBike = useCallback(
     async (id: number, bike: ICreateBikeRequest) => {
-      if (!bikeController) return;
+      if (!bikeService) return;
       updateState({ loading: true, error: null });
-      const { error, data: updatedBike } = await bikeController.updateBike({
+      const { error, data: updatedBike } = await bikeService.updateBike({
         id,
-        bikeData: bike,
+        bike,
       });
       if (error) {
         updateState({ loading: false, error: error });
@@ -109,14 +107,14 @@ export const useBike = (): UseBikeState & UseBikeActions => {
       }));
       return updatedBike;
     },
-    [bikeController, updateState],
+    [bikeService, updateState],
   );
 
   const deleteBike = useCallback(
     async (id: number) => {
-      if (!bikeController) return;
+      if (!bikeService) return;
       updateState({ loading: true, error: null });
-      const { error } = await bikeController.deleteBike(id);
+      const { error } = await bikeService.deleteBike(id);
       if (error) {
         updateState({ loading: false, error: error });
         return;
@@ -127,7 +125,7 @@ export const useBike = (): UseBikeState & UseBikeActions => {
         loading: false,
       }));
     },
-    [bikeController, updateState],
+    [bikeService, updateState],
   );
 
   const refreshBikes = useCallback(async () => {
@@ -139,10 +137,10 @@ export const useBike = (): UseBikeState & UseBikeActions => {
   }, [updateState]);
 
   useEffect(() => {
-    if (db && bikeController) {
+    if (db && bikeService) {
       getAllBikes();
     }
-  }, [bikeController, db, getAllBikes]);
+  }, [bikeService, db, getAllBikes]);
 
   return {
     ...state,

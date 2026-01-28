@@ -9,7 +9,7 @@ interface IBaseRepository<T> {
 
   create(data: Omit<T, "id">): Promise<number>;
 
-  update(id: number, data: Partial<T>): Promise<void>;
+  update(id: number, data: Partial<T>): Promise<number>;
 }
 
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
@@ -57,5 +57,5 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   // Abstract methods to be implemented by child classes
   abstract create(data: Omit<T, "id">): Promise<number>;
 
-  abstract update(id: number, data: Partial<T>): Promise<void>;
+  abstract update(id: number, data: Partial<T>): Promise<number>;
 }

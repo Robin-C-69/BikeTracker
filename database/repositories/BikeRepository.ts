@@ -1,12 +1,12 @@
-import { BaseRepository } from "@/api/repositories/BaseRepository";
-import { IBike, ICreateBikeRequest } from "@/api/models/BikeModel";
+import { BaseRepository } from "@/database/repositories/BaseRepository";
+import { IBike, ICreateBikeRequest } from "@/database/models/BikeModel";
 import { SQLiteDatabase } from "expo-sqlite";
-import { BIKES_TABLE_NAME } from "@/api/services/constants/tables";
+import { BIKES_TABLE_NAME } from "@/database/services/constants/tables";
 
 interface IBikeRepository {
   create(bikeData: ICreateBikeRequest): Promise<number>;
 
-  update(id: number, bikeData: ICreateBikeRequest): Promise<void>;
+  update(id: number, bikeData: ICreateBikeRequest): Promise<number>;
 }
 
 export class BikeRepository
@@ -25,10 +25,11 @@ export class BikeRepository
     return result.lastInsertRowId;
   }
 
-  async update(id: number, bikeData: ICreateBikeRequest): Promise<void> {
-    await this.db.runAsync(
+  async update(id: number, bikeData: ICreateBikeRequest): Promise<number> {
+    const result = await this.db.runAsync(
       `UPDATE ${BIKES_TABLE_NAME} SET name = ?, brand = ?, updated_at = datetime('now') WHERE id = ?`,
       [bikeData.name, bikeData.brand, id],
     );
+    return result.lastInsertRowId;
   }
 }

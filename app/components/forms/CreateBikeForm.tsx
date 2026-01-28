@@ -9,7 +9,7 @@ import {
 import { theme } from "@/app/constants/theme";
 import { Controller, useForm } from "react-hook-form";
 import { useBike } from "@/app/hooks/useBike";
-import { ICreateBikeRequest } from "@/api/models/BikeModel";
+import { ICreateBikeRequest } from "@/database/models/BikeModel";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 

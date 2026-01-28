@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { initializeDatabase } from "@/api/services/DatabaseService";
+import { initializeDatabase } from "@/database/db";
 import { SQLiteDatabase } from "expo-sqlite";
 
 interface DatabaseContextType {
