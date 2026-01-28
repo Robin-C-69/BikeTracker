@@ -19,11 +19,6 @@
       "edgeToEdgeEnabled": true,
       "package": "com.anonymous.BikeTracker"
     },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./client/assets/images/favicon.png"
-    },
     "plugins": [
       "expo-router",
       [
