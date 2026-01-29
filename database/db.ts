@@ -1,22 +1,18 @@
 import * as SQLite from "expo-sqlite";
-import { CREATE_BIKE_TABLE } from "@/database/services/constants/tables";
 
-// export const db = await SQLite.openDatabaseAsync("biketracker.db");
+export const db = SQLite.openDatabaseSync("biketracker.db");
 
-export const initializeDatabase = async () => {
+export const setVersion = (version: number): void => {
+  db.execSync(`PRAGMA user_version = ${version};`);
+};
+
+export const getCurrentVersion = (): number => {
   try {
-    // Open/Create db
-    const db = await SQLite.openDatabaseAsync("biketracker.db");
-
-    // Enable foreign key constraints
-    await db.execAsync("PRAGMA foreign_keys = ON;");
-
-    db.execSync(CREATE_BIKE_TABLE);
-
-    console.log("Database initialized successfully");
-    return db;
-  } catch (error) {
-    console.error("Error initializing database:", error);
-    throw error;
+    const result = db.getFirstSync<{ user_version: number }>(
+      `PRAGMA user_version;`,
+    );
+    return result?.user_version || 0;
+  } catch {
+    return 0;
   }
 };

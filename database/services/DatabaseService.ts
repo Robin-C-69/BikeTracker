@@ -1,5 +1,5 @@
 import * as SQLite from "expo-sqlite";
-import { CREATE_BIKE_TABLE } from "@/database/services/constants/tables";
+import { CREATE_BIKE_TABLE } from "@/database/migrations/tables";
 
 // export const initializeDatabase = async () => {
 //   try {
