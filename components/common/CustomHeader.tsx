@@ -1,12 +1,13 @@
 import React from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { theme } from "@/app/constants/theme";
+import { theme } from "@/constants/theme";
 import Logo from "@/app/assets/images/logo.png";
 import { useRouter } from "expo-router";
 
 interface CustomHeaderProps {
+  title?: string;
   actionButton?: () => void;
   actionButtonName?: keyof typeof Ionicons.glyphMap;
   showBackButton?: boolean;
@@ -14,6 +15,7 @@ interface CustomHeaderProps {
 }
 
 export default function CustomHeader({
+  title,
   actionButton,
   actionButtonName,
   showBackButton = true,
@@ -47,6 +49,7 @@ export default function CustomHeader({
           style={styles.logo}
           contentFit="contain"
         />
+        <Text style={styles.title}>{title}</Text>
       </View>
       {actionButton && (
         <TouchableOpacity
@@ -81,8 +84,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   title: {
-    fontWeight: "bold",
-    fontSize: 20,
+    color: theme.colors.primary,
   },
   actionButton: {
     flexDirection: "row",

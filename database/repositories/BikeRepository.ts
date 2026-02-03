@@ -1,5 +1,5 @@
 import { BaseRepository } from "@/database/repositories/BaseRepository";
-import { IBike, ICreateBikeRequest } from "@/database/models/BikeModel";
+import { Bike, ICreateBikeRequest } from "@/database/models/BikeModel";
 import { SQLiteDatabase } from "expo-sqlite";
 import { BIKES_TABLE_NAME } from "@/database/migrations/tables";
 
@@ -10,7 +10,7 @@ interface IBikeRepository {
 }
 
 export class BikeRepository
-  extends BaseRepository<IBike>
+  extends BaseRepository<Bike>
   implements IBikeRepository
 {
   constructor(database: SQLiteDatabase) {

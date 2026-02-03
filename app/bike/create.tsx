@@ -1,10 +1,13 @@
 import { StyleSheet, View } from "react-native";
-import { theme } from "@/app/constants/theme";
-import CreateBikeForm from "@/app/components/forms/CreateBikeForm";
+import { theme } from "@/constants/theme";
+import CreateBikeForm from "@/components/forms/CreateBikeForm";
+import { useRouter } from "expo-router";
 
 export default function CreateBikePage() {
-  const onBikeCreated = (bikeId: number) => {
-    console.log("Bike created with ID:", bikeId);
+  const router = useRouter();
+
+  const onBikeCreated = () => {
+    router.navigate("/bike");
   };
 
   return (

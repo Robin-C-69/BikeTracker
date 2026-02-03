@@ -1,15 +1,16 @@
-export interface IBike {
+export type Bike = {
   id: number;
   name: string;
-  brand: string;
+  brand?: string;
+  model?: string;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface ICreateBikeRequest {
+export type ICreateBikeRequest = {
   name: string;
   brand: string;
-}
+};
 
 export class BikeModel {
   static validate(bike: ICreateBikeRequest): string[] {

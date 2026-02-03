@@ -1,8 +1,8 @@
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { theme } from "@/app/constants/theme";
+import { theme } from "@/constants/theme";
 import { useCallback } from "react";
 import { router } from "expo-router";
-import { useBike } from "@/app/hooks/useBike";
+import { useBike } from "@/hooks/useBike";
 
 interface DeleteBikeFormProps {
   bikeId: number;

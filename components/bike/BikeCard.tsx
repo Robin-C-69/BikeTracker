@@ -1,14 +1,12 @@
-import ImageViewer from "@/app/components/common/ImageViewer";
+import ImageViewer from "@/components/common/ImageViewer";
 import {
+  Dimensions,
+  ImageSourcePropType,
   StyleSheet,
   Text,
   View,
-  Dimensions,
-  ImageSourcePropType,
-  GestureResponderEvent,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { ComponentType, ReactNode } from "react";
+import { ReactNode } from "react";
 
 const PlaceholderImage = require("@/app/assets/images/bike_icon.png");
 

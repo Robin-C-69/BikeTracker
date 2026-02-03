@@ -1,20 +1,20 @@
-import { IBike, ICreateBikeRequest } from "@/database/models/BikeModel";
+import { Bike, ICreateBikeRequest } from "@/database/models/BikeModel";
 import { useDatabase } from "@/app/context/DatabaseContext";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BikeService } from "@/database/services/BikeService";
 
 interface UseBikeState {
-  bikes: IBike[];
+  bikes: Bike[];
   loading: boolean;
   error: string | null;
 }
 
 interface UseBikeActions {
-  createBike: (bike: ICreateBikeRequest) => Promise<IBike>;
-  updateBike: (id: number, bike: ICreateBikeRequest) => Promise<IBike>;
+  createBike: (bike: ICreateBikeRequest) => Promise<Bike>;
+  updateBike: (id: number, bike: ICreateBikeRequest) => Promise<Bike>;
   deleteBike: (id: number) => Promise<void>;
-  getAllBikes: (page?: number, limit?: number) => Promise<IBike[]>;
-  getBikeById: (id: number) => Promise<IBike | null>;
+  getAllBikes: (page?: number, limit?: number) => Promise<Bike[]>;
+  getBikeById: (id: number) => Promise<Bike | null>;
   refreshBikes: () => Promise<void>;
   clearError: () => void;
 }

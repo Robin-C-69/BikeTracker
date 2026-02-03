@@ -1,4 +1,4 @@
-import BikeCard from "@/app/components/bike/BikeCard";
+import BikeCard from "@/components/bike/BikeCard";
 import {
   ActivityIndicator,
   ScrollView,
@@ -6,10 +6,13 @@ import {
   Text,
   View,
 } from "react-native";
-import { useBike } from "@/app/hooks/useBike";
-import { theme } from "@/app/constants/theme";
+import { useBike } from "@/hooks/useBike";
+import { theme } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { Fab, FabIcon } from "@/components/ui/fab";
+
+export const AddIconComponent = () => <Ionicons name="add" />;
 
 export default function Index() {
   const router = useRouter();
@@ -61,6 +64,9 @@ export default function Index() {
             onPress={navigateToCreateBike}
           />
         </ScrollView>
+        <Fab size="lg" style={styles.fab} onPress={navigateToCreateBike}>
+          <FabIcon as={AddIconComponent} />
+        </Fab>
       </View>
     </View>
   );
@@ -88,5 +94,8 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     textAlign: "center",
     marginTop: 20,
+  },
+  fab: {
+    backgroundColor: theme.colors.primary,
   },
 });

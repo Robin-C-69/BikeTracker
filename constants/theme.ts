@@ -1,20 +1,26 @@
 export const colors = {
-  primary: "#ffffff",
-  secondary: "#fb8206",
+  primary: "#22b383",
+  primaryLight: "#69ebb8",
+  primaryDark: "#007d51",
+  secondary: "#69ebb8",
   background: "#1c1f23",
-  surface: "#f5f5f5",
-  text: "#ffffff",
-  textSecondary: "#666666",
-  border: "#ddd",
-  error: "#d32f2f",
-  success: "#388e3c",
-  warning: "#f57c00",
-
-  // Tab bar colors
-  tabBar: {
-    background: "#25292e",
-    active: "#ffd33d",
-    inactive: "#888888",
+  surface: "#25292e",
+  surfaceVariant: "#2d333a",
+  error: "#ff4444",
+  errorDark: "#cc0000",
+  warning: "#fbbf24",
+  warningDark: "#f59e0b",
+  success: "#22c55e",
+  text: {
+    primary: "#ffffff",
+    secondary: "#e0e0e0",
+    tertiary: "#888888",
+    disabled: "#666666",
+  },
+  border: {
+    default: "#2d333a",
+    focus: "#22b383",
+    hover: "#69ebb8",
   },
 };
 

@@ -6,19 +6,17 @@ import {
   Text,
   TextInput,
 } from "react-native";
-import { theme } from "@/app/constants/theme";
+import { theme } from "@/constants/theme";
 import { Controller, useForm } from "react-hook-form";
-import { useBike } from "@/app/hooks/useBike";
+import { useBike } from "@/hooks/useBike";
 import { ICreateBikeRequest } from "@/database/models/BikeModel";
-import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateBikeForm({
   onSuccess,
 }: {
-  onSuccess?: (bikeId: number) => void;
+  onSuccess?: () => void;
 }) {
-  const router = useRouter();
   const { error, loading, createBike } = useBike();
   const {
     control,
@@ -32,9 +30,9 @@ export default function CreateBikeForm({
   });
 
   const onSubmit = async (data: ICreateBikeRequest) => {
-    const { id } = await createBike(data);
+    await createBike(data);
     if (onSuccess) {
-      onSuccess(id);
+      onSuccess();
     }
   };
 
@@ -65,7 +63,7 @@ export default function CreateBikeForm({
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 placeholder={"Bike name"}
-                placeholderTextColor={theme.colors.text}
+                placeholderTextColor={theme.colors.text.primary}
                 inputMode={"text"}
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -83,7 +81,7 @@ export default function CreateBikeForm({
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 placeholder={"Brand name"}
-                placeholderTextColor={theme.colors.text}
+                placeholderTextColor={theme.colors.text.primary}
                 inputMode={"text"}
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -108,12 +106,12 @@ const styles = StyleSheet.create({
   },
   content: { padding: theme.spacing(2), flexGrow: 1 },
   header: {
-    color: theme.colors.text,
+    color: theme.colors.text.primary,
     fontSize: theme.typography.sizes.lg,
     marginBottom: theme.spacing(1.5),
   },
   textField: {
-    color: theme.colors.text,
+    color: theme.colors.text.primary,
     borderWidth: 1,
     borderColor: "#333",
     padding: 10,
