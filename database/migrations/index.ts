@@ -6,7 +6,9 @@ import {
   CREATE_MAINTENANCE_TYPE_TABLE,
   CREATE_PIECE_CATEGORY_TABLE,
   CREATE_PIECE_TABLE,
+  CREATE_PIECE_TYPE_TABLE,
 } from "@/database/migrations/tables";
+import { seedInitialData } from "@/database/seeds/initialSeed";
 
 interface Migration {
   version: number;
@@ -18,13 +20,25 @@ const migration_001: Migration = {
   version: 1,
   name: "initial_setup",
   up: () => {
-    db.execSync(CREATE_BIKE_TABLE);
-    db.execSync(CREATE_PIECE_CATEGORY_TABLE);
-    db.execSync(CREATE_MAINTENANCE_TYPE_TABLE);
-    db.execSync(CREATE_CATEGORY_MAINTENANCE_TYPE_TABLE);
-    db.execSync(CREATE_MAINTENANCE_HISTORY_TABLE);
-    db.execSync(CREATE_PIECE_TABLE);
+    db.execSync(`
+      -- Level 1: Independent tables
+      ${CREATE_BIKE_TABLE}
+      ${CREATE_PIECE_TYPE_TABLE}
+      ${CREATE_MAINTENANCE_TYPE_TABLE}
+      
+      -- Level 2: Depends on PieceType
+      ${CREATE_PIECE_CATEGORY_TABLE}
+      
+      -- Level 3: Junction and dependent tables
+      ${CREATE_CATEGORY_MAINTENANCE_TYPE_TABLE}
+      ${CREATE_PIECE_TABLE}
+      
+      -- Level 4: Final dependent table
+      ${CREATE_MAINTENANCE_HISTORY_TABLE}
+    `);
     console.log("✅ Migration 001 applied: initial_setup");
+
+    seedInitialData();
   },
 };
 

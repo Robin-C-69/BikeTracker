@@ -1,4 +1,5 @@
 export const BIKES_TABLE_NAME = "bikes";
+export const PIECE_TYPES_TABLE_NAME = "piece_types";
 export const PIECE_CATEGORIES_TABLE_NAME = "piece_categories";
 export const MAINTENANCE_TYPE_TABLE_NAME = "maintenance_types";
 export const CATEGORY_MAINTENANCE_TYPE_TABLE_NAME =
@@ -17,20 +18,31 @@ export const CREATE_BIKE_TABLE = `
     );
 `;
 
+export const CREATE_PIECE_TYPE_TABLE = `
+  CREATE TABLE IF NOT EXISTS ${PIECE_TYPES_TABLE_NAME} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT
+  );
+`;
+
 export const CREATE_PIECE_CATEGORY_TABLE = `
-CREATE TABLE IF NOT EXISTS ${PIECE_CATEGORIES_TABLE_NAME} (
-  id INTEGER PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT
-);`;
+  CREATE TABLE IF NOT EXISTS ${PIECE_CATEGORIES_TABLE_NAME} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    FOREIGN KEY (type_id) REFERENCES ${PIECE_TYPES_TABLE_NAME}(id)
+  );
+`;
 
 export const CREATE_MAINTENANCE_TYPE_TABLE = `
 CREATE TABLE IF NOT EXISTS ${MAINTENANCE_TYPE_TABLE_NAME} (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT,
-  recommanded_km INTEGER,
-  recommanded_days INTEGER
+  recommended_km INTEGER,
+  recommended_days INTEGER
 );`;
 
 export const CREATE_CATEGORY_MAINTENANCE_TYPE_TABLE = `
