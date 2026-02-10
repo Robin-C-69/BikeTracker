@@ -1,17 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs, useRouter } from "expo-router";
+import { Tabs } from "expo-router";
 import { Platform, StatusBar } from "react-native";
 import { useEffect } from "react";
 import * as NavigationBar from "expo-navigation-bar";
-import CustomHeader from "@/app/components/common/CustomHeader";
+import CustomHeader from "@/components/common/CustomHeader";
+import { theme } from "@/constants/theme";
+
+const APP_TITLE = "BikeTracker";
 
 export default function TabLayout() {
-  const router = useRouter();
-
-  const navigateToAddBike = () => {
-    router.navigate({ pathname: "/bike/create" });
-  };
-
   useEffect(() => {
     const setupFullScreen = async () => {
       if (Platform.OS === "android") {
@@ -27,9 +24,9 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: "#ffd33d",
+          tabBarActiveTintColor: theme.colors.primary,
           tabBarStyle: {
-            backgroundColor: "#25292e",
+            backgroundColor: theme.colors.surfaceVariant,
             borderTopWidth: 0,
             height: "8%",
           },
@@ -48,11 +45,7 @@ export default function TabLayout() {
             ),
             headerShown: true,
             header: () => (
-              <CustomHeader
-                actionButton={navigateToAddBike}
-                actionButtonName={"add"}
-                showBackButton={false}
-              />
+              <CustomHeader title={APP_TITLE} showBackButton={false} />
             ),
           }}
         />

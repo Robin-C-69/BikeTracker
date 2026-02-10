@@ -1,12 +1,7 @@
-import { Stack, useRouter } from "expo-router";
-import CustomHeader from "@/app/components/common/CustomHeader";
+import { Stack } from "expo-router";
+import CustomHeader from "@/components/common/CustomHeader";
 
 export default function BikeStackLayout() {
-  const router = useRouter();
-  const navigateToUpdate = (bikeId: number) => {
-    router.navigate({ pathname: "/bike/update", params: { bikeId } });
-  };
-
   return (
     <Stack>
       <Stack.Screen
@@ -16,14 +11,8 @@ export default function BikeStackLayout() {
       <Stack.Screen
         name="[bikeId]"
         options={{
-          header: ({ route }: any) => {
-            const bikeId = route.params.bikeId;
-            return (
-              <CustomHeader
-                actionButton={() => navigateToUpdate(bikeId)}
-                actionButtonName={"build-outline"}
-              />
-            );
+          header: () => {
+            return <CustomHeader />;
           },
         }}
       />

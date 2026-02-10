@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { initializeDatabase } from "@/api/services/DatabaseService";
 import { SQLiteDatabase } from "expo-sqlite";
+import { runMigrations } from "@/database/migrations";
+import { db } from "@/database/db";
 
 interface DatabaseContextType {
   db: SQLiteDatabase | undefined;
@@ -26,23 +27,25 @@ export const useDatabase = () => {
 export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
   children,
 }) => {
-  const [db, setDb] = useState<SQLiteDatabase | undefined>(undefined);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const setupDatabase = async () => {
+    const setupDatabase = () => {
       try {
-        const initializedDb = await initializeDatabase();
-        setDb(initializedDb);
+        runMigrations();
         setIsReady(true);
+        console.log("Database is ready");
       } catch (error) {
         console.error("Failed to initialize database:", error);
-        setIsReady(false);
       }
     };
 
     setupDatabase();
   }, []);
+
+  if (!isReady) {
+    return null;
+  }
 
   return (
     <DatabaseContext.Provider value={{ db, isReady }}>

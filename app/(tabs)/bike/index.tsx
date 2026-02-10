@@ -1,20 +1,18 @@
-import BikeCard from "@/app/components/bike/BikeCard";
+import BikeCard from "@/components/bike/BikeCard";
 import {
   ActivityIndicator,
-  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import { useBike } from "@/app/hooks/useBike";
-import { theme } from "@/app/constants/theme";
+import { useBike } from "@/hooks/useBike";
+import { theme } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { Fab, FabIcon } from "@/components/ui/fab";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const LEFT_INSET = 20; // Valeur de paddingHorizontal dans scrollContent
-const RIGHT_INSET = 20; // Valeur de paddingHorizontal dans scrollContent
+export const AddIconComponent = () => <Ionicons name="add" />;
 
 export default function Index() {
   const router = useRouter();
@@ -66,6 +64,9 @@ export default function Index() {
             onPress={navigateToCreateBike}
           />
         </ScrollView>
+        <Fab size="lg" style={styles.fab} onPress={navigateToCreateBike}>
+          <FabIcon as={AddIconComponent} />
+        </Fab>
       </View>
     </View>
   );
@@ -93,5 +94,8 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     textAlign: "center",
     marginTop: 20,
+  },
+  fab: {
+    backgroundColor: theme.colors.primary,
   },
 });

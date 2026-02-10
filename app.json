@@ -4,7 +4,7 @@
     "slug": "BikeTracker",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./client/assets/images/logo.png",
+    "icon": "./app/assets/images/logo.png",
     "scheme": "biketracker",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,16 +13,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./client/assets/images/adaptive-icon.png",
+        "foregroundImage": "./app/assets/images/logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.anonymous.BikeTracker"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./client/assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",

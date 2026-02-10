@@ -1,0 +1,83 @@
+export const BIKES_TABLE_NAME = "bikes";
+export const PIECE_TYPES_TABLE_NAME = "piece_types";
+export const PIECE_CATEGORIES_TABLE_NAME = "piece_categories";
+export const MAINTENANCE_TYPE_TABLE_NAME = "maintenance_types";
+export const CATEGORY_MAINTENANCE_TYPE_TABLE_NAME =
+  "category_maintenance_types";
+export const PIECES_TABLE_NAME = "pieces";
+export const MAINTENANCE_HISTORY_TABLE_NAME = "maintenance_history";
+
+export const CREATE_BIKE_TABLE = `
+    CREATE TABLE IF NOT EXISTS ${BIKES_TABLE_NAME} (
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      brand TEXT,
+      model TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+`;
+
+export const CREATE_PIECE_TYPE_TABLE = `
+  CREATE TABLE IF NOT EXISTS ${PIECE_TYPES_TABLE_NAME} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT
+  );
+`;
+
+export const CREATE_PIECE_CATEGORY_TABLE = `
+  CREATE TABLE IF NOT EXISTS ${PIECE_CATEGORIES_TABLE_NAME} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    FOREIGN KEY (type_id) REFERENCES ${PIECE_TYPES_TABLE_NAME}(id)
+  );
+`;
+
+export const CREATE_MAINTENANCE_TYPE_TABLE = `
+CREATE TABLE IF NOT EXISTS ${MAINTENANCE_TYPE_TABLE_NAME} (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  recommended_km INTEGER,
+  recommended_days INTEGER
+);`;
+
+export const CREATE_CATEGORY_MAINTENANCE_TYPE_TABLE = `
+CREATE TABLE IF NOT EXISTS ${CATEGORY_MAINTENANCE_TYPE_TABLE_NAME} (
+  category_id INTEGER NOT NULL,
+  maintenance_type_id INTEGER NOT NULL,
+  PRIMARY KEY (category_id, maintenance_type_id),
+  FOREIGN KEY (category_id) REFERENCES ${PIECE_CATEGORIES_TABLE_NAME}(id),
+  FOREIGN KEY (maintenance_type_id) REFERENCES ${MAINTENANCE_TYPE_TABLE_NAME}(id)
+);`;
+
+export const CREATE_PIECE_TABLE = `
+CREATE TABLE IF NOT EXISTS ${PIECES_TABLE_NAME} (
+  id INTEGER PRIMARY KEY,
+  bike_id INTEGER NOT NULL,
+  category_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  install_date DATETIME,
+  install_km INTEGER,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (bike_id) REFERENCES ${BIKES_TABLE_NAME}(id),
+  FOREIGN KEY (category_id) REFERENCES ${PIECE_CATEGORIES_TABLE_NAME}(id)
+);`;
+
+export const CREATE_MAINTENANCE_HISTORY_TABLE = `
+CREATE TABLE IF NOT EXISTS ${MAINTENANCE_HISTORY_TABLE_NAME} (
+  id INTEGER PRIMARY KEY,
+  piece_id INTEGER NOT NULL,
+  maintenance_type_id INTEGER NOT NULL,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  km_at_maintenance INTEGER,
+  notes TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (piece_id) REFERENCES ${PIECES_TABLE_NAME}(id),
+  FOREIGN KEY (maintenance_type_id) REFERENCES ${MAINTENANCE_TYPE_TABLE_NAME}(id)
+);`;
