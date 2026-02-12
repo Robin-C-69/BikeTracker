@@ -1,7 +1,7 @@
 export type Bike = {
   id: number;
   name: string;
-  brand?: string;
+  brand: string;
   model?: string;
   created_at: string;
   updated_at: string;

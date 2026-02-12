@@ -7,9 +7,9 @@ interface IBaseRepository<T> {
 
   deleteById(id: number): Promise<void>;
 
-  create(data: Omit<T, "id">): Promise<number>;
+  create?(data: Omit<T, "id">): Promise<number>;
 
-  update(id: number, data: Partial<T>): Promise<number>;
+  update?(id: number, data: Partial<T>): Promise<number>;
 }
 
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
@@ -53,9 +53,4 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   async deleteById(id: number): Promise<void> {
     await this.db.runAsync(`DELETE FROM ${this.tableName} WHERE id = ?`, [id]);
   }
-
-  // Abstract methods to be implemented by child classes
-  abstract create(data: Omit<T, "id">): Promise<number>;
-
-  abstract update(id: number, data: Partial<T>): Promise<number>;
 }
