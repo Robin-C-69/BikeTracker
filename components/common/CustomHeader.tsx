@@ -1,10 +1,10 @@
 import React from "react";
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "@/constants/theme";
-import Logo from "@/app/assets/images/logo.png";
-import { useRouter } from "expo-router";
+import Logo from "@/assets/images/logo.png";
+import { useNavigation } from "expo-router";
 
 interface CustomHeaderProps {
   title?: string;
@@ -21,13 +21,13 @@ export default function CustomHeader({
   showBackButton = true,
   onBackButtonClick,
 }: CustomHeaderProps) {
-  const router = useRouter();
+  const navigation = useNavigation();
 
   const navigateBack = () => {
     if (onBackButtonClick) {
       onBackButtonClick();
     } else {
-      router.back();
+      navigation.goBack();
     }
   };
 

@@ -1,4 +1,4 @@
-import { useDatabase } from "@/app/context/DatabaseContext";
+import { useDatabase } from "@/context/DatabaseContext";
 import { Piece } from "@/database/models/PieceModel";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PieceService } from "@/database/services/PieceService";

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { ReactNode } from "react";
 
-const PlaceholderImage = require("@/app/assets/images/bike_icon.png");
+const PlaceholderImage = require("@/assets/images/bike_icon.png");
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 

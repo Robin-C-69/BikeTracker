@@ -1,5 +1,5 @@
 import { Bike, ICreateBikeRequest } from "@/database/models/BikeModel";
-import { useDatabase } from "@/app/context/DatabaseContext";
+import { useDatabase } from "@/context/DatabaseContext";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BikeService } from "@/database/services/BikeService";
 

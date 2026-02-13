@@ -1,9 +1,9 @@
 import { Text, View } from "react-native";
 
-export const CreatePieceForm = () => {
+export default function Index() {
   return (
     <View>
-      <Text>Form to add a piece</Text>
+      <Text>This is the index</Text>
     </View>
   );
-};
+}
