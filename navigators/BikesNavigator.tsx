@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import BikeListView from "@/views/bike/BikeListView";
 import BikeDetailView from "@/views/bike/BikeDetailView";
 import CreateBikeView from "@/views/bike/CreateBikeView";
-// import CreatePieceScreen from "@/screens/bikes/CreatePieceScreen";
+import { CreatePieceView } from "@/views/piece/CreatePieceView";
 import { theme } from "@/constants/theme";
 import CustomHeader from "@/components/common/CustomHeader";
 
@@ -53,11 +53,16 @@ export default function BikesNavigator() {
           ),
         }}
       />
-      {/*<Stack.Screen*/}
-      {/*  name="CreatePiece"*/}
-      {/*  component={CreatePieceScreen}*/}
-      {/*  options={{ title: "Add New Piece" }}*/}
-      {/*/>*/}
+      <Stack.Screen
+        name="CreatePiece"
+        component={CreatePieceView}
+        options={{
+          headerShown: true,
+          header: () => (
+            <CustomHeader title="Add bike piece" showBackButton={true} />
+          ),
+        }}
+      />
     </Stack.Navigator>
   );
 }

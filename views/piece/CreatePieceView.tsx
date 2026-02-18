@@ -1,18 +1,37 @@
-import { Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { Box } from "@/components/ui/box";
+import { theme } from "@/constants/theme";
+import CreatePieceForm from "@/components/forms/CreatePieceForm";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { BikesStackParamList } from "@/navigators/BikesNavigator";
 
-export const CreatePieceView = () => {
+type Props = NativeStackScreenProps<BikesStackParamList, "CreatePiece">;
+
+export const CreatePieceView = ({ navigation, route }: Props) => {
+  const { bikeId } = route.params;
+
+  const onPieceCreated = () => {
+    navigation.navigate("BikeDetail", { bikeId, refresh: true } as any);
+  };
+
+  const onCancel = () => {
+    navigation.goBack();
+  };
+
   return (
-    <Box>
-      <Box style={styles.card}>
-        <Text>Here is the form</Text>
-      </Box>
+    <Box style={styles.container}>
+      <CreatePieceForm
+        bikeId={bikeId}
+        onSuccess={onPieceCreated}
+        onCancel={onCancel}
+      />
     </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "white",
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
   },
 });

@@ -1,6 +1,5 @@
-import { Stack, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import { DatabaseProvider } from "@/context/DatabaseContext";
-
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { Ionicons } from "@expo/vector-icons";
@@ -30,21 +29,13 @@ export default function RootLayout() {
           screenOptions={{
             headerShown: false,
             tabBarActiveTintColor: theme.colors.primary,
+            tabBarStyle: {
+              backgroundColor: theme.colors.surfaceVariant,
+              borderTopWidth: 0,
+              height: "8%",
+            },
           }}
         >
-          <Tabs.Screen
-            name="index"
-            options={{
-              title: "Home",
-              tabBarIcon: ({ color }) => (
-                <Ionicons name="home" size={24} color={color} />
-              ),
-              headerShown: true,
-              header: () => (
-                <CustomHeader title={APP_TITLE} showBackButton={false} />
-              ),
-            }}
-          />
           <Tabs.Screen
             name="bikes"
             options={{
@@ -53,6 +44,19 @@ export default function RootLayout() {
                 <Ionicons name="bicycle" size={24} color={color} />
               ),
               headerShown: false,
+            }}
+          />
+          <Tabs.Screen
+            name="index"
+            options={{
+              title: "Next",
+              tabBarIcon: ({ color }) => (
+                <Ionicons name="home" size={24} color={color} />
+              ),
+              headerShown: true,
+              header: () => (
+                <CustomHeader title={APP_TITLE} showBackButton={false} />
+              ),
             }}
           />
         </Tabs>
