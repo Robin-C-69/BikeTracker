@@ -3,14 +3,15 @@ import { StyleSheet, Text } from "react-native";
 import { Divider } from "@/components/common/Divider";
 import { Box } from "@/components/ui/box";
 import { theme } from "@/constants/theme";
+import { Piece } from "@/database/models/PieceModel";
 
-export const PieceCard = () => {
+export const PieceCard = ({ piece }: { piece: Piece }) => {
   return (
     <Box style={styles.card}>
       <Box style={styles.headerRow}>
         <Box>
-          <Text style={styles.name}>Chaine Shimano XT</Text>
-          <Text style={styles.category}>Transmission</Text>
+          <Text style={styles.name}>{piece.name}</Text>
+          <Text style={styles.category}>{piece.category_id}</Text>
         </Box>
         <Box>
           <Text style={styles.state}>Bon état</Text>
@@ -22,7 +23,9 @@ export const PieceCard = () => {
           <Box style={styles.column}>
             <Box style={styles.row}>
               <Text style={styles.infoLabel}>Installé le</Text>
-              <Text style={styles.infoValue}>1/2/3</Text>
+              <Text style={styles.infoValue}>
+                {piece.install_date?.toString().split("T")[0]}
+              </Text>
             </Box>
             <Box style={styles.row}>
               <Text style={styles.infoLabel}>Durrée de vie</Text>

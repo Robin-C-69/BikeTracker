@@ -82,7 +82,9 @@ export default function BikeDetailView({ navigation, route }: Props) {
           </Button>
         </Box>
       </Box>
-      <PieceCard />
+      {pieces.map((piece) => {
+        return <PieceCard key={piece.id} piece={piece} />;
+      })}
     </View>
   );
 }

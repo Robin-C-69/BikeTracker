@@ -201,9 +201,10 @@ export default function CreatePieceForm({
                           value === category.id ? undefined : category.id,
                         )
                       }
-                      activeOpacity={0.7}
+                      onBlur={onBlur}
+                      style={[styles.chip, isSelected && styles.chipSelected]}
                     >
-                      <Text>{category.name}</Text>
+                      <Text style={styles.chipText}>{category.name}</Text>
                     </TouchableOpacity>
                   );
                 })}
@@ -323,6 +324,20 @@ const styles = StyleSheet.create({
   },
   form: {
     margin: 25,
+  },
+  chip: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    backgroundColor: "#2d333a",
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  chipSelected: {
+    backgroundColor: "#22b383",
+  },
+  chipText: {
+    color: "white",
   },
   dateInputWrapper: {
     position: "relative",

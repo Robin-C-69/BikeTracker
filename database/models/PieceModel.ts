@@ -1,6 +1,5 @@
 import { MaintenanceHistoryWithType } from "@/database/models/MaintenanceHistoryModel";
-import { Category } from "@/database/models/PieceCategoryModel";
-import { PieceType } from "@/database/models/PieceTypeModel";
+import { PieceCategoryWithType } from "@/database/models/PieceCategoryModel";
 
 export type Piece = {
   id: number;
@@ -13,9 +12,6 @@ export type Piece = {
   created_at: string;
   updated_at: string;
 };
-export interface PieceCategoryWithType extends Category {
-  type: PieceType;
-}
 
 export interface PieceWithDetails extends Piece {
   category: PieceCategoryWithType;
