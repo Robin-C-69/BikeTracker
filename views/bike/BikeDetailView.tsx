@@ -1,13 +1,62 @@
 import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { StyleSheet, Text, View } from "react-native";
+import { Button, ButtonText } from "@/components/ui/button";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 import { theme } from "@/constants/theme";
-import { Bike } from "@/database/models/BikeModel";
 import { Divider } from "@/components/common/Divider";
-import { AddIconComponent } from "@/app/(tabs)/bike";
 import { PieceCard } from "@/components/piece/PieceCard";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { BikesStackParamList } from "@/navigators/BikesNavigator";
+import { useBike } from "@/hooks/useBike";
+import { usePiecesByBike } from "@/hooks/usePiecesByBike";
 
-export default function BikeView({ bike }: { bike: Bike }) {
+type Props = NativeStackScreenProps<BikesStackParamList, "BikeDetail">;
+
+export default function BikeDetailView({ navigation, route }: Props) {
+  const { bikeId } = route.params;
+  const { bikes, loading, error } = useBike();
+  const bike = bikes.find((b) => b.id === bikeId);
+  const { pieces } = usePiecesByBike(bikeId);
+
+  const handleAddPiece = () => {
+    navigation.navigate("CreatePiece", { bikeId });
+  };
+
+  const handleEditBike = () => {
+    Alert.alert("Edit", "Edit functionality coming soon!");
+  };
+
+  const handleDeleteBike = () => {
+    Alert.alert(
+      "Delete Bike",
+      `Are you sure you want to delete ${bike?.name}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+        },
+      ],
+    );
+  };
+
+  console.log("Pieces for bike", bikeId, pieces);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loading]}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (error || !bike) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>{error || "Bike not found"}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Box style={styles.headerContainer}>
@@ -28,12 +77,14 @@ export default function BikeView({ bike }: { bike: Bike }) {
       <Box>
         <Box style={styles.piecesHeader}>
           <Text style={styles.pieceText}>Pièces</Text>
-          <Button>
+          <Button onPress={handleAddPiece}>
             <ButtonText>Ajouter</ButtonText>
           </Button>
         </Box>
       </Box>
-      <PieceCard />
+      {pieces.map((piece) => {
+        return <PieceCard key={piece.id} piece={piece} />;
+      })}
     </View>
   );
 }
@@ -82,4 +133,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   pieceText: { color: theme.colors.text.primary },
+  loading: {
+    justifyContent: "center",
+  },
+  error: {
+    color: theme.colors.error,
+    textAlign: "center",
+    marginTop: 20,
+  },
 });
