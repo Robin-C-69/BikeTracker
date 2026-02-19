@@ -30,7 +30,7 @@ export default function RootLayout() {
             headerShown: false,
             tabBarActiveTintColor: theme.colors.primary,
             tabBarStyle: {
-              backgroundColor: theme.colors.surfaceVariant,
+              backgroundColor: theme.colors.surface,
               borderTopWidth: 0,
               height: "8%",
             },

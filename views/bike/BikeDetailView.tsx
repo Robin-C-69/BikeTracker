@@ -39,8 +39,6 @@ export default function BikeDetailView({ navigation, route }: Props) {
     );
   };
 
-  console.log("Pieces for bike", bikeId, pieces);
-
   if (loading) {
     return (
       <View style={[styles.container, styles.loading]}>

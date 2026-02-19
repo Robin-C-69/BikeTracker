@@ -4,8 +4,8 @@ export const colors = {
   primaryDark: "#007d51",
   secondary: "#69ebb8",
   background: "#1c1f23",
-  surface: "#25292e",
-  surfaceVariant: "#2d333a",
+  surface: "#22272e",
+  surfaceVariant: "#3b3f46",
   error: "#ff4444",
   errorDark: "#cc0000",
   warning: "#fbbf24",
@@ -15,6 +15,7 @@ export const colors = {
     primary: "#ffffff",
     secondary: "#e0e0e0",
     tertiary: "#888888",
+    lighting: "#69ebb8",
     disabled: "#666666",
   },
   border: {
