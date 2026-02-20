@@ -9,8 +9,17 @@ import {
 import { theme } from "@/constants/theme";
 import { Controller, useForm } from "react-hook-form";
 import { useBike } from "@/hooks/useBike";
-import { ICreateBikeRequest } from "@/database/models/BikeModel";
+import { CreateBikeRequest } from "@/database/models/BikeModel";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorText,
+  FormControlLabel,
+  FormControlLabelText,
+} from "@/components/ui/form-control";
+import { Input, InputField } from "@/components/ui/input";
+import FormField from "@/components/forms/fields/FormField";
 
 export default function CreateBikeForm({
   onSuccess,
@@ -22,14 +31,16 @@ export default function CreateBikeForm({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<ICreateBikeRequest>({
+  } = useForm<CreateBikeRequest>({
     defaultValues: {
       name: "",
       brand: "",
+      model: "",
+      totalKm: undefined,
     },
   });
 
-  const onSubmit = async (data: ICreateBikeRequest) => {
+  const onSubmit = async (data: CreateBikeRequest) => {
     await createBike(data);
     if (onSuccess) {
       onSuccess();
@@ -56,42 +67,34 @@ export default function CreateBikeForm({
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
-          <Controller
+          <FormField
             control={control}
             name={"name"}
-            rules={{ required: true }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                placeholder={"Bike name"}
-                placeholderTextColor={theme.colors.text.primary}
-                inputMode={"text"}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.textField}
-              />
-            )}
+            label={"Nom"}
+            placeholder={"Nom du vélo"}
+            isRequired={true}
           />
-          {errors.name && (
-            <Text style={styles.error}>This is a required field</Text>
-          )}
-          <Controller
+          <FormField
             control={control}
             name={"brand"}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                placeholder={"Brand name"}
-                placeholderTextColor={theme.colors.text.primary}
-                inputMode={"text"}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.textField}
-              />
-            )}
+            label={"Marque"}
+            placeholder={"Marque du vélo"}
+          />
+          <FormField
+            control={control}
+            name={"model"}
+            label={"Model"}
+            placeholder={"Modèle du vélo"}
+          />
+          <FormField
+            control={control}
+            name={"totalKm"}
+            label={"Total km"}
+            placeholder={"Kilométrage du vélo"}
+            type={"numeric"}
           />
           <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.buttonText}>Create</Text>
+            <Text style={styles.buttonText}>Créer</Text>
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>

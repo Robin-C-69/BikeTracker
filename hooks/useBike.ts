@@ -1,4 +1,4 @@
-import { Bike, ICreateBikeRequest } from "@/database/models/BikeModel";
+import { Bike, CreateBikeRequest } from "@/database/models/BikeModel";
 import { useDatabase } from "@/context/DatabaseContext";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BikeService } from "@/database/services/BikeService";
@@ -10,8 +10,8 @@ interface UseBikeState {
 }
 
 interface UseBikeActions {
-  createBike: (bike: ICreateBikeRequest) => Promise<Bike>;
-  updateBike: (id: number, bike: ICreateBikeRequest) => Promise<Bike>;
+  createBike: (bike: CreateBikeRequest) => Promise<Bike>;
+  updateBike: (id: number, bike: CreateBikeRequest) => Promise<Bike>;
   deleteBike: (id: number) => Promise<void>;
   getAllBikes: (page?: number, limit?: number) => Promise<Bike[]>;
   getBikeById: (id: number) => Promise<Bike | null>;
@@ -73,7 +73,7 @@ export const useBike = (): UseBikeState & UseBikeActions => {
   );
 
   const createBike = useCallback(
-    async (bike: ICreateBikeRequest) => {
+    async (bike: CreateBikeRequest) => {
       if (!bikeService) return;
       updateState({ loading: true, error: null });
       const { error, data: newBike } = await bikeService.createBike(bike);
@@ -89,7 +89,7 @@ export const useBike = (): UseBikeState & UseBikeActions => {
   );
 
   const updateBike = useCallback(
-    async (id: number, bike: ICreateBikeRequest) => {
+    async (id: number, bike: CreateBikeRequest) => {
       if (!bikeService) return;
       updateState({ loading: true, error: null });
       const { error, data: updatedBike } = await bikeService.updateBike({

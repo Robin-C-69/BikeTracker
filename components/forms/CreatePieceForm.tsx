@@ -29,6 +29,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { CreatePiece } from "@/database/models/PieceModel";
 import { PieceRepository } from "@/database/repositories/PieceRepository";
 import { Button, ButtonText } from "@/components/ui/button";
+import FormField from "@/components/forms/fields/FormField";
 
 type Props = {
   bikeId: number;
@@ -141,46 +142,19 @@ export default function CreatePieceForm({
   return (
     <Box style={styles.container}>
       <VStack space="md" style={styles.form}>
-        <FormControl isRequired={true}>
-          <FormControlLabel>
-            <FormControlLabelText>Nom</FormControlLabelText>
-          </FormControlLabel>
-          <Controller
-            control={control}
-            name={"name"}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input variant="outline" size="md">
-                <InputField
-                  type="text"
-                  placeholder="Nom"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              </Input>
-            )}
-          />
-        </FormControl>
-        <FormControl>
-          <FormControlLabel>
-            <FormControlLabelText>Description</FormControlLabelText>
-          </FormControlLabel>
-          <Controller
-            control={control}
-            name={"description"}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input variant="outline" size="md">
-                <InputField
-                  type="text"
-                  placeholder="Description"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              </Input>
-            )}
-          />
-        </FormControl>
+        <FormField
+          control={control}
+          name={"name"}
+          label={"Nom"}
+          isRequired={true}
+          placeholder={"Nom"}
+        />
+        <FormField
+          control={control}
+          name={"description"}
+          label={"Description"}
+          placeholder={"Description"}
+        />
         <FormControl isRequired={true}>
           <FormControlLabel>
             <FormControlLabelText>Categorie</FormControlLabelText>
@@ -219,91 +193,20 @@ export default function CreatePieceForm({
             </FormControlError>
           )}
         </FormControl>
-        <FormControl isRequired={true} isInvalid={!!errors.installDate}>
-          <FormControlLabel>
-            <FormControlLabelText>
-              Date d&apos;installation
-            </FormControlLabelText>
-          </FormControlLabel>
-          <Controller
-            control={control}
-            name="installDate"
-            render={({ field: { onChange, value } }) => (
-              <>
-                {/* Wrapper with position: relative */}
-                <View style={{ position: "relative" }}>
-                  <Input isReadOnly>
-                    <InputField
-                      value={formatDate(value ?? "")}
-                      editable={false}
-                      placeholder="Sélectionner une date"
-                    />
-                    <InputSlot>
-                      <InputIcon>
-                        <Ionicons name="calendar-outline" size={20} />
-                      </InputIcon>
-                    </InputSlot>
-                  </Input>
-
-                  {/* Transparent overlay on top — this captures ALL touches */}
-                  <TouchableOpacity
-                    style={StyleSheet.absoluteFillObject}
-                    onPress={() => setIsDatePickerOpen(true)}
-                    activeOpacity={1}
-                  />
-                </View>
-
-                {/* Use inline picker if modal crashes, or modal if you fix the ref issue */}
-                {isDatePickerOpen && (
-                  <DateTimePicker
-                    value={pickerDate}
-                    mode="date"
-                    display="default"
-                    onChange={(event, selectedDate) => {
-                      setIsDatePickerOpen(false);
-                      if (selectedDate) {
-                        setPickerDate(selectedDate);
-                        onChange(selectedDate.toISOString());
-                      }
-                    }}
-                  />
-                )}
-              </>
-            )}
-          />
-          <FormControlError>
-            <FormControlErrorText>
-              {errors.installDate?.message ?? "La date est obligatoire"}
-            </FormControlErrorText>
-          </FormControlError>
-        </FormControl>
-        <FormControl>
-          <FormControlLabel>
-            <FormControlLabelText>
-              Km du vélo l&apos;installation
-            </FormControlLabelText>
-          </FormControlLabel>
-          <Controller
-            control={control}
-            name={"installKm"}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input variant="outline" size="md">
-                <InputField
-                  type="text"
-                  keyboardType="number-pad"
-                  placeholder="1000"
-                  value={value?.toString() ?? ""}
-                  onChangeText={(text) => {
-                    // Convert string to number or null
-                    const cleaned = text.replace(/[^0-9]/g, "");
-                    onChange(cleaned === "" ? null : parseInt(cleaned, 10));
-                  }}
-                  onBlur={onBlur}
-                />
-              </Input>
-            )}
-          />
-        </FormControl>
+        <FormField
+          control={control}
+          name={"installDate"}
+          label={"Date d'installation"}
+          type={"date"}
+          isRequired={true}
+        />
+        <FormField
+          control={control}
+          name={"installKm"}
+          label={"Km du vélo à l'installation"}
+          placeholder={"1000"}
+          type={"numeric"}
+        />
         <View>
           <Button variant="outline" size="lg" onPress={onCancel}>
             <ButtonText>Cancel</ButtonText>
