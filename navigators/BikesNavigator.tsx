@@ -5,6 +5,7 @@ import CreateBikeView from "@/views/bike/CreateBikeView";
 import { CreatePieceView } from "@/views/piece/CreatePieceView";
 import { theme } from "@/constants/theme";
 import CustomHeader from "@/components/common/CustomHeader";
+import { useTranslation } from "react-i18next";
 
 export type BikesStackParamList = {
   BikeList: undefined;
@@ -16,6 +17,7 @@ export type BikesStackParamList = {
 const Stack = createNativeStackNavigator<BikesStackParamList>();
 
 export default function BikesNavigator() {
+  const { t } = useTranslation();
   return (
     <Stack.Navigator
       screenOptions={{
@@ -38,9 +40,7 @@ export default function BikesNavigator() {
         component={BikeDetailView}
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader title="Bike Details" showBackButton={true} />
-          ),
+          header: () => <CustomHeader />,
         }}
       />
       <Stack.Screen
@@ -49,7 +49,10 @@ export default function BikesNavigator() {
         options={{
           headerShown: true,
           header: () => (
-            <CustomHeader title="Add new bike" showBackButton={true} />
+            <CustomHeader
+              title={t("New bike")}
+              subtitle={t("Add your bike to BikeTracker")}
+            />
           ),
         }}
       />
@@ -58,9 +61,7 @@ export default function BikesNavigator() {
         component={CreatePieceView}
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader title="Add bike piece" showBackButton={true} />
-          ),
+          header: () => <CustomHeader title={t("New piece")} />,
         }}
       />
     </Stack.Navigator>

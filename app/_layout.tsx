@@ -1,3 +1,4 @@
+import "../i18n";
 import { Tabs } from "expo-router";
 import { DatabaseProvider } from "@/context/DatabaseContext";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
