@@ -1,5 +1,15 @@
 {
   "Add your bike to BikeTracker": "Ajoutez votre vélo à BikeTracker",
+  "An easy to remind name to identify your bike": "Un nom facile à retenir pour identifier votre vélo",
+  "Bike information": "Informations sur le vélo",
+  "Brand": "Marque",
+  "Create": "Créer",
+  "If you don't know the exact one, an estimation is enough": "Si vous ne connaissez pas le kilométrage exact, une estimation suffit",
+  "Mileage": "Kilométrage",
+  "mileage_hint": "Le kilométrage vous permet de suivre l'usure de vos pièces en fonction de la distance parcourue depuis leur installation.",
+  "Model": "Modèle",
+  "My super bike": "Mon super vélo",
+  "Name": "Nom",
   "New bike": "Nouveau vélo",
   "New piece": "Nouvelle pièce",
   "bike": "vélo"

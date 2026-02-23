@@ -4,28 +4,23 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
+  View,
 } from "react-native";
 import { theme } from "@/constants/theme";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useBike } from "@/hooks/useBike";
 import { CreateBikeRequest } from "@/database/models/BikeModel";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
-} from "@/components/ui/form-control";
-import { Input, InputField } from "@/components/ui/input";
 import FormField from "@/components/forms/fields/FormField";
+import { useTranslation } from "react-i18next";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function CreateBikeForm({
   onSuccess,
 }: {
   onSuccess?: () => void;
 }) {
+  const { t } = useTranslation();
   const { error, loading, createBike } = useBike();
   const {
     control,
@@ -70,31 +65,44 @@ export default function CreateBikeForm({
           <FormField
             control={control}
             name={"name"}
-            label={"Nom"}
-            placeholder={"Nom du vélo"}
+            label={"Name"}
+            placeholder={"My super bike"}
+            helperText={"An easy to remind name to identify your bike"}
             isRequired={true}
           />
           <FormField
             control={control}
             name={"brand"}
-            label={"Marque"}
-            placeholder={"Marque du vélo"}
+            label={"Brand"}
+            placeholder={"Eg: Trek, Specialized, Giant..."}
           />
           <FormField
             control={control}
             name={"model"}
             label={"Model"}
-            placeholder={"Modèle du vélo"}
+            placeholder={"Eg: Slash, Stumpjumper, Trance..."}
           />
           <FormField
             control={control}
             name={"totalKm"}
-            label={"Total km"}
-            placeholder={"Kilométrage du vélo"}
+            label={"Mileage"}
+            placeholder={"Eg: 0, 1500, 30000..."}
+            helperText={
+              "If you don't know the exact one, an estimation is enough"
+            }
             type={"numeric"}
+            endText={"km"}
           />
+          <View style={styles.kmHint}>
+            <Ionicons
+              name={"bulb-outline"}
+              size={25}
+              style={styles.kmHintIcon}
+            />
+            <Text style={styles.kmHintText}>{t("mileage_hint")}</Text>
+          </View>
           <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.buttonText}>Créer</Text>
+            <Text style={styles.buttonText}>{t("Create")}</Text>
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -121,6 +129,25 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginBottom: theme.spacing(1),
   },
+  kmHint: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    marginTop: theme.spacing(-1),
+    backgroundColor: "rgba(34, 179, 131, 0.08)",
+    borderRadius: 14,
+    borderLeftWidth: 5,
+    borderLeftColor: theme.colors.primaryDark,
+  },
+  kmHintIcon: {
+    color: theme.colors.warning,
+  },
+  kmHintText: {
+    paddingRight: 10,
+    color: theme.colors.text.secondary,
+    marginLeft: theme.spacing(1),
+  },
   error: {
     color: theme.colors.error,
     marginBottom: theme.spacing(1),
@@ -130,7 +157,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 6,
     alignItems: "center",
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(2.5),
   },
   buttonText: { color: "#000", fontWeight: "600" },
 });
