@@ -3,9 +3,9 @@ export type Bike = {
   name: string;
   brand?: string;
   model?: string;
-  total_km?: number;
-  created_at: string;
-  updated_at: string;
+  totalKm?: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CreateBikeRequest = {

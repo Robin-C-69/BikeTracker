@@ -69,6 +69,8 @@ export default function CreateBikeForm({
             placeholder={"My super bike"}
             helperText={"An easy to remind name to identify your bike"}
             isRequired={true}
+            rules={{ required: t("field_required") }}
+            error={errors.name?.message}
           />
           <FormField
             control={control}
@@ -92,6 +94,10 @@ export default function CreateBikeForm({
             }
             type={"numeric"}
             endText={"km"}
+            rules={{
+              min: { value: 0, message: t("mileage_min") },
+            }}
+            error={errors.totalKm?.message}
           />
           <View style={styles.kmHint}>
             <Ionicons

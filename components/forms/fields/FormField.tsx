@@ -68,7 +68,11 @@ export default function FormField<T extends FieldValues>(
   const isPassword = type === "password";
 
   return (
-    <FormControl isRequired={isRequired} style={styles.formControl}>
+    <FormControl
+      isRequired={isRequired}
+      style={styles.formControl}
+      isInvalid={!!error}
+    >
       <FormControlLabel>
         <FormControlLabelText style={styles.labelText}>
           {t(label)}
@@ -99,7 +103,13 @@ export default function FormField<T extends FieldValues>(
               secureTextEntry={isPassword}
               onBlur={() => setIsFocused(false)}
               onFocus={() => setIsFocused(true)}
-              onChangeText={onChange}
+              onChangeText={(text) => {
+                if (type === "numeric") {
+                  onChange(text === "" ? undefined : Number(text));
+                } else {
+                  onChange(text);
+                }
+              }}
               value={value}
               style={[
                 styles.textField,

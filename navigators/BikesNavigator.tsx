@@ -38,10 +38,7 @@ export default function BikesNavigator() {
       <Stack.Screen
         name="BikeDetail"
         component={BikeDetailView}
-        options={{
-          headerShown: true,
-          header: () => <CustomHeader />,
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="CreateBike"

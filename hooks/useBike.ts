@@ -27,6 +27,8 @@ export const useBike = (): UseBikeState & UseBikeActions => {
     error: null,
   });
 
+  // console.log("Bike state:", state.bikes);
+
   const bikeService = useMemo(() => {
     if (!db) return null;
     return new BikeService(db);
@@ -41,6 +43,7 @@ export const useBike = (): UseBikeState & UseBikeActions => {
       if (!bikeService) return;
       updateState({ loading: true, error: null });
       const { error, data } = await bikeService.getAllBikes({ page, limit });
+      console.log("getAllBikes:", data);
       if (error) {
         updateState({ loading: false, error: error });
         return [];
@@ -76,6 +79,7 @@ export const useBike = (): UseBikeState & UseBikeActions => {
     async (bike: CreateBikeRequest) => {
       if (!bikeService) return;
       updateState({ loading: true, error: null });
+      // console.log("Create bike data", bike);
       const { error, data: newBike } = await bikeService.createBike(bike);
       if (error) {
         updateState({ loading: false, error: error });

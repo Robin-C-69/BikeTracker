@@ -1,6 +1,13 @@
 import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { theme } from "@/constants/theme";
 import { Divider } from "@/components/common/Divider";
 import { PieceCard } from "@/components/piece/PieceCard";
@@ -8,6 +15,10 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
 import { useBike } from "@/hooks/useBike";
 import { usePiecesByBike } from "@/hooks/usePiecesByBike";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useCallback } from "react";
+import { Bike } from "@/database/models/BikeModel";
+import { useTranslation } from "react-i18next";
 
 type Props = NativeStackScreenProps<BikesStackParamList, "BikeDetail">;
 
@@ -16,9 +27,25 @@ export default function BikeDetailView({ navigation, route }: Props) {
   const { bikes, loading, error } = useBike();
   const bike = bikes.find((b) => b.id === bikeId);
   const { pieces } = usePiecesByBike(bikeId);
+  const { t } = useTranslation();
+
+  const brandAndModel = useCallback((bike: Bike) => {
+    if (bike.brand && bike.model) {
+      return `${bike.brand} • ${bike.model}`;
+    } else if (bike.brand) {
+      return bike.brand;
+    } else if (bike.model) {
+      return bike.model;
+    } else {
+      return "";
+    }
+  }, []);
 
   const handleAddPiece = () => {
     navigation.navigate("CreatePiece", { bikeId });
+  };
+  const navigateBack = () => {
+    navigation.goBack();
   };
 
   const handleEditBike = () => {
@@ -58,17 +85,34 @@ export default function BikeDetailView({ navigation, route }: Props) {
   return (
     <View style={styles.container}>
       <Box style={styles.headerContainer}>
+        <TouchableOpacity
+          onPress={navigateBack}
+          accessibilityLabel="Go Back"
+          style={styles.backButton}
+        >
+          <Ionicons
+            name={"chevron-back"}
+            size={24}
+            style={styles.backButtonIcon}
+          />
+          <Text style={styles.backButtonText}>{t("Back")}</Text>
+        </TouchableOpacity>
         <Text style={styles.bikeName}>{bike?.name}</Text>
-        <Text style={styles.bikeModel}>
-          {bike?.brand} - {bike?.model}
-        </Text>
+        <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
         <Box style={styles.headerButtons}>
           <Button variant="solid" style={styles.updateButton}>
-            <ButtonText>Modifier</ButtonText>
+            <ButtonText style={styles.updateText}>{t("Update")}</ButtonText>
           </Button>
-          <Button variant="solid" style={styles.deleteButton}>
-            <ButtonText>Supprimer</ButtonText>
-          </Button>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDeleteBike}
+          >
+            <Ionicons
+              name={"trash-bin-outline"}
+              size={30}
+              style={styles.deleteIcon}
+            />
+          </TouchableOpacity>
         </Box>
       </Box>
       <Divider />
@@ -97,6 +141,26 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginBottom: theme.spacing(1),
   },
+  backButton: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    width: 100,
+    height: 40,
+    backgroundColor: "#2d333a",
+    borderRadius: 12,
+    margin: 20,
+    marginLeft: 10,
+    padding: 5,
+  },
+  backButtonIcon: {
+    color: theme.colors.primaryLight,
+    marginRight: theme.spacing(1),
+  },
+  backButtonText: {
+    color: theme.colors.primaryLight,
+    fontSize: theme.typography.sizes.md,
+  },
   bikeName: {
     fontSize: theme.typography.sizes.xl,
     fontWeight: theme.typography.weights.semibold,
@@ -116,15 +180,18 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing(2),
   },
   updateButton: {
-    flex: 1,
+    flex: 3,
     color: theme.colors.text.primary,
     backgroundColor: theme.colors.primary,
   },
+  updateText: { color: theme.colors.text.primary },
   deleteButton: {
     flex: 1,
-    color: theme.colors.text.primary,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: theme.colors.error,
   },
+  deleteIcon: { color: theme.colors.text.primary },
   piecesHeader: {
     display: "flex",
     flexDirection: "row",
