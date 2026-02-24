@@ -8,17 +8,17 @@ import {
   Text,
   View,
 } from "react-native";
-import { useBike } from "@/hooks/useBike";
 import { theme } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Fab, FabIcon } from "@/components/ui/fab";
+import { useBikeContext } from "@/context/BikeContext";
 
 type Props = NativeStackScreenProps<BikesStackParamList, "BikeList">;
 
 export const AddIconComponent = () => <Ionicons name="add" />;
 
 export default function BikeListView({ navigation }: Props) {
-  const { bikes, loading, error } = useBike();
+  const { bikes, loading, error } = useBikeContext();
 
   if (loading) {
     return (

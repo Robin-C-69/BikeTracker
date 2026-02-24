@@ -3,6 +3,8 @@ import { Button, ButtonText } from "@/components/ui/button";
 import {
   ActivityIndicator,
   Alert,
+  Dimensions,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -16,18 +18,25 @@ import { BikesStackParamList } from "@/navigators/BikesNavigator";
 import { useBike } from "@/hooks/useBike";
 import { usePiecesByBike } from "@/hooks/usePiecesByBike";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Bike } from "@/database/models/BikeModel";
 import { useTranslation } from "react-i18next";
+import { useBikeMutations } from "@/hooks/useBikeMutations";
+import { useBikeContext } from "@/context/BikeContext";
 
 type Props = NativeStackScreenProps<BikesStackParamList, "BikeDetail">;
 
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
 export default function BikeDetailView({ navigation, route }: Props) {
   const { bikeId } = route.params;
-  const { bikes, loading, error } = useBike();
+  const { bikes, loading, error, deleteBike, refreshBikes } = useBikeContext();
+
   const bike = bikes.find((b) => b.id === bikeId);
   const { pieces } = usePiecesByBike(bikeId);
   const { t } = useTranslation();
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const brandAndModel = useCallback((bike: Bike) => {
     if (bike.brand && bike.model) {
@@ -52,19 +61,17 @@ export default function BikeDetailView({ navigation, route }: Props) {
     Alert.alert("Edit", "Edit functionality coming soon!");
   };
 
-  const handleDeleteBike = () => {
-    Alert.alert(
-      "Delete Bike",
-      `Are you sure you want to delete ${bike?.name}?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-        },
-      ],
-    );
-  };
+  const onDeleteBike = useCallback(
+    async (bike: Bike) => {
+      await deleteBike(bike.id);
+      if (!error) {
+        setShowDeleteModal(false);
+        await refreshBikes();
+        navigation.goBack();
+      }
+    },
+    [deleteBike, error, navigation, refreshBikes],
+  );
 
   if (loading) {
     return (
@@ -101,18 +108,25 @@ export default function BikeDetailView({ navigation, route }: Props) {
         <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
         <Box style={styles.headerButtons}>
           <Button variant="solid" style={styles.updateButton}>
+            <Ionicons
+              name={"construct-outline"}
+              size={20}
+              style={styles.buttonIcon}
+            />
             <ButtonText style={styles.updateText}>{t("Update")}</ButtonText>
           </Button>
-          <TouchableOpacity
+          <Button
             style={styles.deleteButton}
-            onPress={handleDeleteBike}
+            onPress={() => {
+              setShowDeleteModal(true);
+            }}
           >
             <Ionicons
               name={"trash-bin-outline"}
-              size={30}
-              style={styles.deleteIcon}
+              size={25}
+              style={styles.buttonIcon}
             />
-          </TouchableOpacity>
+          </Button>
         </Box>
       </Box>
       <Divider />
@@ -127,6 +141,39 @@ export default function BikeDetailView({ navigation, route }: Props) {
       {pieces.map((piece) => {
         return <PieceCard key={piece.id} piece={piece} />;
       })}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showDeleteModal}
+        onRequestClose={() => {
+          setShowDeleteModal(false);
+        }}
+      >
+        <View style={styles.modalWrapper}>
+          <View style={styles.modalContainer}>
+            <View style={styles.deleteTextWrapper}>
+              <Text style={styles.deleteText}>
+                {t("delete_bike_confirmation", { bike: bike.name })}
+              </Text>
+              <Text style={styles.deleteText}>{t("irreversible_action")}</Text>
+            </View>
+            <View style={styles.modalButtonsWrapper}>
+              <Button
+                style={styles.modalCancel}
+                onPress={() => setShowDeleteModal(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </Button>
+              <Button
+                style={styles.modalDelete}
+                onPress={() => onDeleteBike(bike)}
+              >
+                <Text style={styles.modalButtonText}>Delete</Text>
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -184,14 +231,17 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     backgroundColor: theme.colors.primary,
   },
-  updateText: { color: theme.colors.text.primary },
+  buttonIcon: { color: theme.colors.text.primary },
+  updateText: {
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.md,
+  },
   deleteButton: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: theme.colors.error,
   },
-  deleteIcon: { color: theme.colors.text.primary },
   piecesHeader: {
     display: "flex",
     flexDirection: "row",
@@ -205,5 +255,51 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     textAlign: "center",
     marginTop: 20,
+  },
+  modalWrapper: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.6)",
+  },
+  modalContainer: {
+    padding: 10,
+    backgroundColor: theme.colors.surfaceVariant,
+    width: SCREEN_WIDTH * 0.8,
+    height: SCREEN_WIDTH * 0.5,
+    borderRadius: theme.spacing(1.5),
+    justifyContent: "center",
+  },
+  deleteTextWrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deleteText: {
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.md,
+  },
+  modalButtonsWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 40,
+  },
+  modalCancel: {
+    width: 130,
+    height: 50,
+    backgroundColor: "transparent",
+    borderRadius: theme.spacing(1.5),
+    borderWidth: 1,
+  },
+  modalDelete: {
+    width: 130,
+    height: 50,
+    backgroundColor: theme.colors.error,
+    borderRadius: theme.spacing(1.5),
+  },
+  modalButtonText: {
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
   },
 });

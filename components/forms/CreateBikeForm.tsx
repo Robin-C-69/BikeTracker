@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import { theme } from "@/constants/theme";
 import { useForm } from "react-hook-form";
-import { useBike } from "@/hooks/useBike";
 import { CreateBikeRequest } from "@/database/models/BikeModel";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "@/components/forms/fields/FormField";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
+import { useBikeContext } from "@/context/BikeContext";
 
 export default function CreateBikeForm({
   onSuccess,
@@ -21,7 +21,7 @@ export default function CreateBikeForm({
   onSuccess?: () => void;
 }) {
   const { t } = useTranslation();
-  const { error, loading, createBike } = useBike();
+  const { error, loading, createBike } = useBikeContext();
   const {
     control,
     handleSubmit,
