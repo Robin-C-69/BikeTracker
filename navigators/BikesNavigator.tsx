@@ -7,11 +7,13 @@ import { theme } from "@/constants/theme";
 import CustomHeader from "@/components/common/CustomHeader";
 import { useTranslation } from "react-i18next";
 import { BikeProvider } from "@/context/BikeContext";
+import { Bike } from "@/database/models/BikeModel";
 
 export type BikesStackParamList = {
   BikeList: undefined;
   BikeDetail: { bikeId: number };
   CreateBike: undefined;
+  UpdateBike: { bike: Bike };
   CreatePiece: { bikeId: number };
 };
 
@@ -53,6 +55,14 @@ export default function BikesNavigator() {
                 subtitle={t("Add your bike to BikeTracker")}
               />
             ),
+          }}
+        />
+        <Stack.Screen
+          name="UpdateBike"
+          component={CreateBikeView}
+          options={{
+            headerShown: true,
+            header: () => <CustomHeader title={t("Update bike")} />,
           }}
         />
         <Stack.Screen

@@ -14,7 +14,6 @@ interface CustomHeaderProps {
 export default function CustomHeader({
   title,
   subtitle,
-  showBackButton = true,
   onBackButtonClick,
 }: CustomHeaderProps) {
   const navigation = useNavigation();
@@ -33,8 +32,8 @@ export default function CustomHeader({
         <Ionicons name={"chevron-back"} size={24} style={styles.backButton} />
       </TouchableOpacity>
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>{subtitle}</Text>
+        {title && <Text style={styles.title}>{title}</Text>}
+        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
     </View>
   );

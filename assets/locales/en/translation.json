@@ -1,10 +1,13 @@
 {
+  "Add": "Add",
   "Add your bike to BikeTracker": "Add your bike to BikeTracker",
   "An easy to remind name to identify your bike": "An easy to remind name to identify your bike",
   "Back": "Back",
   "Bike information": "Bike information",
   "Brand": "Brand",
+  "Cancel": "Cancel",
   "Create": "Create",
+  "Creating...": "Creating...",
   "Delete": "Delete",
   "delete_bike_confirmation": "Are you sure to delete the bike: {{bike}} ?",
   "field_required": "This field is required",
@@ -19,5 +22,7 @@
   "New bike": "New bike",
   "New piece": "New piece",
   "Pieces": "Pieces",
-  "Update": "Update"
+  "Update": "Update",
+  "Update bike": "Update bike",
+  "Updating...": "Updating..."
 }

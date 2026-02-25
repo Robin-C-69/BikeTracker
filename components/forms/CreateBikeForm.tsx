@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { theme } from "@/constants/theme";
 import { useForm } from "react-hook-form";
-import { CreateBikeRequest } from "@/database/models/BikeModel";
+import { Bike, CreateBikeRequest } from "@/database/models/BikeModel";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "@/components/forms/fields/FormField";
 import { useTranslation } from "react-i18next";
@@ -17,35 +17,43 @@ import { useBikeContext } from "@/context/BikeContext";
 
 export default function CreateBikeForm({
   onSuccess,
+  bike,
 }: {
   onSuccess?: () => void;
+  bike?: Bike;
 }) {
   const { t } = useTranslation();
-  const { error, loading, createBike } = useBikeContext();
+  const { error, loading, createBike, updateBike } = useBikeContext();
+  const isUpdate = !!bike;
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<CreateBikeRequest>({
     defaultValues: {
-      name: "",
-      brand: "",
-      model: "",
-      totalKm: undefined,
+      name: bike?.name ?? "",
+      brand: bike?.brand ?? "",
+      model: bike?.model ?? "",
+      totalKm: bike?.totalKm ?? 0,
     },
   });
 
   const onSubmit = async (data: CreateBikeRequest) => {
-    await createBike(data);
-    if (onSuccess) {
-      onSuccess();
+    if (isUpdate) {
+      await updateBike(bike.id, data);
+    } else {
+      await createBike(data);
     }
+    onSuccess?.();
   };
 
   if (loading) {
     return (
       <SafeAreaView style={styles.safe}>
-        <Text style={styles.header}>Creating Bike...</Text>
+        <Text style={styles.header}>
+          {isUpdate ? t("Updating...") : t("Creating...")}
+        </Text>
       </SafeAreaView>
     );
   }
@@ -96,6 +104,7 @@ export default function CreateBikeForm({
             endText={"km"}
             rules={{
               min: { value: 0, message: t("mileage_min") },
+              valueAsNumber: true,
             }}
             error={errors.totalKm?.message}
           />
@@ -108,7 +117,9 @@ export default function CreateBikeForm({
             <Text style={styles.kmHintText}>{t("mileage_hint")}</Text>
           </View>
           <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.buttonText}>{t("Create")}</Text>
+            <Text style={styles.buttonText}>
+              {isUpdate ? t("Update") : t("Create")}
+            </Text>
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -5,18 +5,28 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
 import { useBikeContext } from "@/context/BikeContext";
 
-type Props = NativeStackScreenProps<BikesStackParamList, "CreateBike">;
+type Props =
+  | NativeStackScreenProps<BikesStackParamList, "CreateBike">
+  | NativeStackScreenProps<BikesStackParamList, "UpdateBike">;
 
-export default function CreateBikeView({ navigation }: Props) {
+export default function CreateBikeView({ navigation, route }: Props) {
   const { refreshBikes } = useBikeContext();
+
+  const isBikePresent = route.params && "bike" in route.params;
+  const bike = isBikePresent ? route.params.bike : undefined;
+
   const onBikeCreated = async () => {
     await refreshBikes();
-    navigation.navigate("BikeList", { refresh: true } as any);
+    if (bike) {
+      navigation.navigate("BikeDetail", { bikeId: bike.id });
+    } else {
+      navigation.navigate("BikeList", { refresh: true } as any);
+    }
   };
 
   return (
     <View style={styles.safe}>
-      <CreateBikeForm onSuccess={onBikeCreated} />
+      <CreateBikeForm onSuccess={onBikeCreated} bike={bike} />
     </View>
   );
 }

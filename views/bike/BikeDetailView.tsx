@@ -2,7 +2,6 @@ import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
 import {
   ActivityIndicator,
-  Alert,
   Dimensions,
   Modal,
   StyleSheet,
@@ -15,13 +14,11 @@ import { Divider } from "@/components/common/Divider";
 import { PieceCard } from "@/components/piece/PieceCard";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
-import { useBike } from "@/hooks/useBike";
 import { usePiecesByBike } from "@/hooks/usePiecesByBike";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useState } from "react";
 import { Bike } from "@/database/models/BikeModel";
 import { useTranslation } from "react-i18next";
-import { useBikeMutations } from "@/hooks/useBikeMutations";
 import { useBikeContext } from "@/context/BikeContext";
 
 type Props = NativeStackScreenProps<BikesStackParamList, "BikeDetail">;
@@ -50,15 +47,15 @@ export default function BikeDetailView({ navigation, route }: Props) {
     }
   }, []);
 
-  const handleAddPiece = () => {
+  const onAddPiece = () => {
     navigation.navigate("CreatePiece", { bikeId });
   };
   const navigateBack = () => {
     navigation.goBack();
   };
 
-  const handleEditBike = () => {
-    Alert.alert("Edit", "Edit functionality coming soon!");
+  const onEditBike = () => {
+    bike && navigation.navigate("UpdateBike", { bike });
   };
 
   const onDeleteBike = useCallback(
@@ -107,7 +104,11 @@ export default function BikeDetailView({ navigation, route }: Props) {
         <Text style={styles.bikeName}>{bike?.name}</Text>
         <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
         <Box style={styles.headerButtons}>
-          <Button variant="solid" style={styles.updateButton}>
+          <Button
+            variant="solid"
+            style={styles.updateButton}
+            onPress={onEditBike}
+          >
             <Ionicons
               name={"construct-outline"}
               size={20}
@@ -132,9 +133,10 @@ export default function BikeDetailView({ navigation, route }: Props) {
       <Divider />
       <Box>
         <Box style={styles.piecesHeader}>
-          <Text style={styles.pieceText}>Pièces</Text>
-          <Button onPress={handleAddPiece}>
-            <ButtonText>Ajouter</ButtonText>
+          <Text style={styles.pieceText}>{t("Pieces")}</Text>
+          <Button onPress={onAddPiece} style={styles.addButton}>
+            <Ionicons name={"add-outline"} size={20} style={styles.addIcon} />
+            <ButtonText style={styles.addText}>{t("Add")}</ButtonText>
           </Button>
         </Box>
       </Box>
@@ -162,13 +164,13 @@ export default function BikeDetailView({ navigation, route }: Props) {
                 style={styles.modalCancel}
                 onPress={() => setShowDeleteModal(false)}
               >
-                <Text style={styles.modalButtonText}>Cancel</Text>
+                <Text style={styles.modalButtonText}>{t("Cancel")}</Text>
               </Button>
               <Button
                 style={styles.modalDelete}
                 onPress={() => onDeleteBike(bike)}
               >
-                <Text style={styles.modalButtonText}>Delete</Text>
+                <Text style={styles.modalButtonText}>{t("Delete")}</Text>
               </Button>
             </View>
           </View>
@@ -246,8 +248,23 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    marginLeft: 10,
   },
-  pieceText: { color: theme.colors.text.primary },
+  pieceText: {
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold,
+  },
+  addButton: {
+    backgroundColor: theme.colors.primary,
+  },
+  addIcon: {
+    color: theme.colors.text.primary,
+  },
+  addText: {
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.md,
+  },
   loading: {
     justifyContent: "center",
   },

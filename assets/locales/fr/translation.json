@@ -1,10 +1,13 @@
 {
+  "Add": "Ajouter",
   "Add your bike to BikeTracker": "Ajoutez votre vélo à BikeTracker",
   "An easy to remind name to identify your bike": "Un nom facile à retenir pour identifier votre vélo",
   "Back": "Retour",
   "Bike information": "Informations sur le vélo",
   "Brand": "Marque",
+  "Cancel": "Annuler",
   "Create": "Créer",
+  "Creating...": "Création...",
   "Delete": "Supprimer",
   "delete_bike_confirmation": "Etes-vous sur de supprimer le vélo: {{bike}} ?",
   "field_required": "Ce champ est requis",
@@ -19,5 +22,7 @@
   "New bike": "Nouveau vélo",
   "New piece": "Nouvelle pièce",
   "Pieces": "Pièces",
-  "Update": "Modifier"
+  "Update": "Modifier",
+  "Update bike": "Modifier le vélo",
+  "Updating...": "Mise à jour..."
 }

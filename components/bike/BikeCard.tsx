@@ -31,7 +31,7 @@ export default function BikeCard({ bike, image, onPress }: BikeCardProps) {
 
   const brandAndModel = useCallback((bike: Bike) => {
     if (bike.brand && bike.model) {
-      return `${bike.brand}• ${bike.model}`;
+      return `${bike.brand} • ${bike.model}`;
     } else if (bike.brand) {
       return bike.brand;
     } else if (bike.model) {

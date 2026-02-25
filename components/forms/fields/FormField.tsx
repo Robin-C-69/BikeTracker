@@ -110,7 +110,7 @@ export default function FormField<T extends FieldValues>(
                   onChange(text);
                 }
               }}
-              value={value}
+              value={value != null ? String(value) : ""}
               style={[
                 styles.textField,
                 endText && styles.textFieldWithAdornment,
