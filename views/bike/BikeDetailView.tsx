@@ -102,7 +102,12 @@ export default function BikeDetailView({ navigation, route }: Props) {
           <Text style={styles.backButtonText}>{t("Back")}</Text>
         </TouchableOpacity>
         <Text style={styles.bikeName}>{bike?.name}</Text>
-        <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
+        <View style={styles.brandKm}>
+          <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
+          <Text style={styles.bikeModel}>
+            {bike.totalKm} {t("km")}
+          </Text>
+        </View>
         <Box style={styles.headerButtons}>
           <Button
             variant="solid"
@@ -215,6 +220,10 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.weights.semibold,
     marginBottom: theme.spacing(2),
     color: theme.colors.text.primary,
+  },
+  brandKm: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   bikeModel: {
     fontSize: theme.typography.sizes.md,

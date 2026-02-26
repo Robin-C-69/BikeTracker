@@ -17,11 +17,7 @@ export default function CreateBikeView({ navigation, route }: Props) {
 
   const onBikeCreated = async () => {
     await refreshBikes();
-    if (bike) {
-      navigation.navigate("BikeDetail", { bikeId: bike.id });
-    } else {
-      navigation.navigate("BikeList", { refresh: true } as any);
-    }
+    navigation.goBack();
   };
 
   return (

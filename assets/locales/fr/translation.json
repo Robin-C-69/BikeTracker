@@ -13,6 +13,7 @@
   "field_required": "Ce champ est requis",
   "If you don't know the exact one, an estimation is enough": "Si vous ne connaissez pas le kilométrage exact, une estimation suffit",
   "irreversible_action": "Cette action est irréversible",
+  "km_traveled": "km parcourus",
   "Mileage": "Kilométrage",
   "mileage_hint": "Le kilométrage vous permet de suivre l'usure de vos pièces en fonction de la distance parcourue depuis leur installation.",
   "mileage_min": "Le kilométrage ne doit pas être négatif",

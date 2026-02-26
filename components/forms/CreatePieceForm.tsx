@@ -23,9 +23,6 @@ import {
   FormControlLabel,
   FormControlLabelText,
 } from "@/components/ui/form-control";
-import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
-import { Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { CreatePiece } from "@/database/models/PieceModel";
 import { PieceRepository } from "@/database/repositories/PieceRepository";
 import { Button, ButtonText } from "@/components/ui/button";
@@ -58,13 +55,10 @@ export default function CreatePieceForm({
   const { db } = useDatabase();
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [pickerDate, setPickerDate] = useState<Date>(new Date());
 
   const {
     control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),
@@ -76,14 +70,6 @@ export default function CreatePieceForm({
       installKm: undefined,
     },
   });
-
-  const formatDate = (isoString: string) => {
-    if (!isoString) return "";
-    const date = new Date(isoString);
-    // Check if date is valid
-    if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString("en-GB");
-  };
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log("Submitting form with data:", data);

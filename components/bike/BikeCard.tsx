@@ -59,7 +59,7 @@ export default function BikeCard({ bike, image, onPress }: BikeCardProps) {
       <View style={styles.detailsBanner}>
         <View>
           <Text style={styles.detailsValue}>{bike.totalKm}</Text>
-          <Text style={styles.detailsName}>km parcourus</Text>
+          <Text style={styles.detailsName}>{t("km_traveled")}</Text>
         </View>
         <View>
           <Text style={styles.detailsValue}>{pieces.length}</Text>

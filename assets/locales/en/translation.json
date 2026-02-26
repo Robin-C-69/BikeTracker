@@ -13,6 +13,7 @@
   "field_required": "This field is required",
   "If you don't know the exact one, an estimation is enough": "If you don't know the exact one, an estimation is enough",
   "irreversible_action": "This action cannot be undone",
+  "km_traveled": "km traveled",
   "Mileage": "Mileage",
   "mileage_hint": "The mileage is used to follow the use of pieces since their installation",
   "mileage_min": "The mileage cannot be negative",
