@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Box } from "@/components/ui/box";
 import { theme } from "@/constants/theme";
 import CreatePieceForm from "@/components/forms/CreatePieceForm";
@@ -8,7 +8,7 @@ import { BikesStackParamList } from "@/navigators/BikesNavigator";
 type Props = NativeStackScreenProps<BikesStackParamList, "CreatePiece">;
 
 export const CreatePieceView = ({ navigation, route }: Props) => {
-  const { bikeId } = route.params;
+  const { bikeId, bikeName } = route.params;
 
   const onPieceCreated = () => {
     navigation.navigate("BikeDetail", { bikeId, refresh: true } as any);
@@ -22,6 +22,7 @@ export const CreatePieceView = ({ navigation, route }: Props) => {
     <Box style={styles.container}>
       <CreatePieceForm
         bikeId={bikeId}
+        bikeName={bikeName}
         onSuccess={onPieceCreated}
         onCancel={onCancel}
       />

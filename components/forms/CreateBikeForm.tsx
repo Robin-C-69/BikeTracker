@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     marginTop: theme.spacing(-1),
-    backgroundColor: "rgba(34, 179, 131, 0.08)",
+    backgroundColor: theme.colors.greenHint,
     borderRadius: 14,
     borderLeftWidth: 5,
     borderLeftColor: theme.colors.primaryDark,
@@ -176,5 +176,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: theme.spacing(2.5),
   },
-  buttonText: { color: "#000", fontWeight: "600" },
+  buttonText: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.typography.weights.bold,
+    fontSize: theme.typography.sizes.md,
+  },
 });

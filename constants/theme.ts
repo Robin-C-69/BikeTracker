@@ -10,6 +10,7 @@ export const colors = {
   warning: "#fbbf24",
   warningDark: "#f59e0b",
   success: "#22c55e",
+  greenHint: "rgba(34, 179, 131, 0.08)",
   text: {
     primary: "#ffffff",
     secondary: "#e0e0e0",

@@ -14,7 +14,7 @@ export type BikesStackParamList = {
   BikeDetail: { bikeId: number };
   CreateBike: undefined;
   UpdateBike: { bike: Bike };
-  CreatePiece: { bikeId: number };
+  CreatePiece: { bikeId: number; bikeName?: string };
 };
 
 const Stack = createNativeStackNavigator<BikesStackParamList>();

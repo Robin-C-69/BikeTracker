@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Alert,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -27,18 +28,27 @@ import { CreatePiece } from "@/database/models/PieceModel";
 import { PieceRepository } from "@/database/repositories/PieceRepository";
 import { Button, ButtonText } from "@/components/ui/button";
 import FormField from "@/components/forms/fields/FormField";
+import { theme } from "@/constants/theme";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   bikeId: number;
+  bikeName?: string;
   onSuccess: () => void;
   onCancel: () => void;
 };
 
 export default function CreatePieceForm({
   bikeId,
+  bikeName,
   onSuccess,
   onCancel,
 }: Props) {
+  const { db } = useDatabase();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
+
   const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
     categoryId: z.number({ error: "Category is required" }).int(),
@@ -51,10 +61,6 @@ export default function CreatePieceForm({
       .optional()
       .nullable(),
   });
-
-  const { db } = useDatabase();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const {
     control,
@@ -72,19 +78,17 @@ export default function CreatePieceForm({
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log("Submitting form with data:", data);
     if (!db) {
-      Alert.alert("Error", "Database not available");
       return;
     }
     try {
       const pieceData: CreatePiece = {
-        bike_id: bikeId,
+        bikeId: bikeId,
         name: data.name,
-        category_id: data.categoryId,
+        categoryId: data.categoryId,
         description: data.description,
-        install_date: data.installDate || undefined,
-        install_km: data.installKm || undefined,
+        installDate: data.installDate || undefined,
+        installKm: data.installKm || undefined,
       };
 
       const pieceRepo = new PieceRepository(db);
@@ -127,81 +131,104 @@ export default function CreatePieceForm({
 
   return (
     <Box style={styles.container}>
-      <VStack space="md" style={styles.form}>
-        <FormField
-          control={control}
-          name={"name"}
-          label={"Nom"}
-          isRequired={true}
-          placeholder={"Nom"}
-        />
-        <FormField
-          control={control}
-          name={"description"}
-          label={"Description"}
-          placeholder={"Description"}
-        />
-        <FormControl isRequired={true}>
-          <FormControlLabel>
-            <FormControlLabelText>Categorie</FormControlLabelText>
-          </FormControlLabel>
-          <Controller
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <VStack space="md" style={styles.form}>
+          <View style={styles.header}>
+            <Text style={styles.addTo}>{t("Add to")}</Text>
+            <Text style={styles.bikeName}>{bikeName}</Text>
+          </View>
+          <FormField
             control={control}
-            name={"categoryId"}
-            rules={{ required: true }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View>
-                {categories.map((category) => {
-                  const isSelected = value === category.id;
-                  return (
-                    <TouchableOpacity
-                      key={category.id}
-                      onPress={() =>
-                        onChange(
-                          value === category.id ? undefined : category.id,
-                        )
-                      }
-                      onBlur={onBlur}
-                      style={[styles.chip, isSelected && styles.chipSelected]}
-                    >
-                      <Text style={styles.chipText}>{category.name}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            )}
+            name={"name"}
+            label={t("Name")}
+            isRequired={true}
+            placeholder={t("Name")}
           />
-          {errors.categoryId && (
-            <FormControlError>
-              <FormControlErrorText>
-                {errors.categoryId.message}
-              </FormControlErrorText>
-            </FormControlError>
-          )}
-        </FormControl>
-        <FormField
-          control={control}
-          name={"installDate"}
-          label={"Date d'installation"}
-          type={"date"}
-          isRequired={true}
-        />
-        <FormField
-          control={control}
-          name={"installKm"}
-          label={"Km du vélo à l'installation"}
-          placeholder={"1000"}
-          type={"numeric"}
-        />
-        <View>
-          <Button variant="outline" size="lg" onPress={onCancel}>
-            <ButtonText>Cancel</ButtonText>
-          </Button>
-          <Button size="lg" onPress={handleSubmit(onSubmit)}>
-            <ButtonText>Create Piece</ButtonText>
-          </Button>
-        </View>
-      </VStack>
+          <FormField
+            control={control}
+            name={"description"}
+            label={t("Description")}
+            placeholder={t("Description")}
+          />
+          <FormControl isRequired={true}>
+            <FormControlLabel>
+              <FormControlLabelText style={styles.labelText}>
+                {t("Category")}
+              </FormControlLabelText>
+            </FormControlLabel>
+            <Controller
+              control={control}
+              name={"categoryId"}
+              rules={{ required: true }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.chipsContainer}>
+                  {categories.map((category) => {
+                    const isSelected = value === category.id;
+                    return (
+                      <TouchableOpacity
+                        key={category.id}
+                        onPress={() =>
+                          onChange(
+                            value === category.id ? undefined : category.id,
+                          )
+                        }
+                        onBlur={onBlur}
+                        style={[styles.chip, isSelected && styles.chipSelected]}
+                        activeOpacity={1}
+                      >
+                        <Text style={styles.chipText}>
+                          {t(`categories.${category.name}`, {
+                            defaultValue: category.name,
+                          })}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+            />
+            {errors.categoryId && (
+              <FormControlError>
+                <FormControlErrorText>
+                  {errors.categoryId.message}
+                </FormControlErrorText>
+              </FormControlError>
+            )}
+          </FormControl>
+          <FormField
+            control={control}
+            name={"installDate"}
+            label={t("Installed date")}
+            type={"date"}
+            isRequired={true}
+          />
+          <FormField
+            control={control}
+            name={"installKm"}
+            label={t("bike_mileage_at_install")}
+            placeholder={"1000"}
+            endText={"km"}
+            type={"numeric"}
+          />
+        </VStack>
+      </ScrollView>
+      <View style={styles.buttonsWrapper}>
+        <Button
+          variant="outline"
+          size="lg"
+          onPress={onCancel}
+          style={styles.cancelButton}
+        >
+          <ButtonText>{t("Cancel")}</ButtonText>
+        </Button>
+        <Button
+          size="lg"
+          onPress={handleSubmit(onSubmit)}
+          style={styles.deleteButton}
+        >
+          <ButtonText style={styles.deleteText}>{t("Create")}</ButtonText>
+        </Button>
+      </View>
     </Box>
   );
 }
@@ -211,8 +238,41 @@ const styles = StyleSheet.create({
     display: "flex",
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+  },
   form: {
     margin: 25,
+  },
+  header: {
+    display: "flex",
+    padding: 10,
+    backgroundColor: theme.colors.greenHint,
+    borderRadius: 14,
+    borderLeftWidth: 5,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderTopWidth: 1,
+    borderColor: theme.colors.primaryDark,
+  },
+  addTo: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.semibold,
+  },
+  bikeName: {
+    color: theme.colors.primaryLight,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.semibold,
+  },
+  labelText: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.typography.weights.semibold,
+    fontSize: theme.typography.sizes.md,
+  },
+  chipsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   chip: {
     paddingVertical: 8,
@@ -230,5 +290,21 @@ const styles = StyleSheet.create({
   },
   dateInputWrapper: {
     position: "relative",
+  },
+  buttonsWrapper: {
+    gap: 12,
+    padding: 16,
+  },
+  cancelButton: {
+    borderRadius: 20,
+  },
+  deleteButton: {
+    borderRadius: 20,
+    backgroundColor: theme.colors.primary,
+  },
+  deleteText: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.typography.weights.bold,
+    fontSize: theme.typography.sizes.md,
   },
 });

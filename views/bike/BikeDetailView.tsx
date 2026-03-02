@@ -48,7 +48,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
   }, []);
 
   const onAddPiece = () => {
-    navigation.navigate("CreatePiece", { bikeId });
+    navigation.navigate("CreatePiece", { bikeId, bikeName: bike?.name });
   };
   const navigateBack = () => {
     navigation.goBack();

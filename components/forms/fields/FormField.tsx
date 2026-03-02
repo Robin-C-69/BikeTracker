@@ -14,17 +14,10 @@ import {
   FormControlLabel,
   FormControlLabelText,
 } from "@/components/ui/form-control";
-import {
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Text,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { theme } from "@/constants/theme";
 import DateFormField from "@/components/forms/fields/DateFormField";
-import { useTranslation } from "react-i18next";
-import { useState, ReactNode } from "react";
+import { useState } from "react";
 
 type BaseFieldProps<T extends FieldValues> = {
   control: Control<T>;
@@ -45,7 +38,6 @@ type FormFieldProps<T extends FieldValues> =
 export default function FormField<T extends FieldValues>(
   props: FormFieldProps<T>,
 ) {
-  const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
 
   if (props.type === "date") {
@@ -75,13 +67,13 @@ export default function FormField<T extends FieldValues>(
     >
       <FormControlLabel>
         <FormControlLabelText style={styles.labelText}>
-          {t(label)}
+          {label}
         </FormControlLabelText>
       </FormControlLabel>
       {helperText && (
         <FormControlHelper>
           <FormControlHelperText style={styles.helperText}>
-            {t(helperText)}
+            {helperText}
           </FormControlHelperText>
         </FormControlHelper>
       )}
@@ -97,7 +89,7 @@ export default function FormField<T extends FieldValues>(
             ]}
           >
             <TextInput
-              placeholder={placeholder && t(placeholder)}
+              placeholder={placeholder && placeholder}
               placeholderTextColor={theme.colors.text.tertiary}
               inputMode={isPassword ? "text" : type}
               secureTextEntry={isPassword}
@@ -119,7 +111,7 @@ export default function FormField<T extends FieldValues>(
 
             {endText && (
               <View style={styles.endAdornment}>
-                <Text style={styles.endText}>{t(endText)}</Text>
+                <Text style={styles.endText}>{endText}</Text>
               </View>
             )}
           </View>

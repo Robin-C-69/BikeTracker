@@ -2,24 +2,24 @@ import { MaintenanceType } from "@/database/models/MaintenanceTypeModel";
 
 export type MaintenanceHistory = {
   id: number;
-  piece_id: number;
-  maintenance_type_id: number;
+  pieceId: number;
+  maintenanceTypeId: number;
   date: string;
-  km_at_maintenance?: number;
+  kmAtMaintenance?: number;
   notes?: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CreateMaintenanceHistory = {
-  piece_id: number;
-  maintenance_type_id: number;
+  pieceId: number;
+  maintenanceTypeId: number;
   date: string;
-  km_at_maintenance?: number;
+  kmAtMaintenance?: number;
   notes?: string;
-  updated_at?: string;
+  updatedAt?: string;
 };
 
 export interface MaintenanceHistoryWithType extends MaintenanceHistory {
-  maintenance_type: MaintenanceType;
+  maintenanceType: MaintenanceType;
 }

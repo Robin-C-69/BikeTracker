@@ -3,34 +3,34 @@ import { PieceCategoryWithType } from "@/database/models/PieceCategoryModel";
 
 export type Piece = {
   id: number;
-  bike_id: number;
-  category_id: number;
+  bikeId: number;
+  categoryId: number;
   name: string;
   description?: string;
-  install_date?: string;
-  install_km?: number;
-  created_at: string;
-  updated_at: string;
+  installDate?: string;
+  installKm?: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export interface PieceWithDetails extends Piece {
   category: PieceCategoryWithType;
-  maintenance_history: MaintenanceHistoryWithType[];
+  maintenanceHistory: MaintenanceHistoryWithType[];
 }
 
 export type CreatePiece = {
-  bike_id: number;
-  category_id: number;
+  bikeId: number;
+  categoryId: number;
   name: string;
   description?: string;
-  install_date?: string;
-  install_km?: number;
+  installDate?: string;
+  installKm?: number;
 };
 
 export type UpdatePiece = {
   name?: string;
   description?: string;
-  install_date?: string;
-  install_km?: number;
-  updated_at?: string;
+  installDate?: string;
+  installKm?: number;
+  updatedAt?: string;
 };
