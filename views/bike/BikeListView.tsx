@@ -8,17 +8,17 @@ import {
   Text,
   View,
 } from "react-native";
-import { useBike } from "@/hooks/useBike";
 import { theme } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Fab, FabIcon } from "@/components/ui/fab";
+import { useBikeContext } from "@/context/BikeContext";
 
 type Props = NativeStackScreenProps<BikesStackParamList, "BikeList">;
 
 export const AddIconComponent = () => <Ionicons name="add" />;
 
 export default function BikeListView({ navigation }: Props) {
-  const { bikes, loading, error } = useBike();
+  const { bikes, loading, error } = useBikeContext();
 
   if (loading) {
     return (
@@ -38,32 +38,26 @@ export default function BikeListView({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>BikeTracker</Text>
+        <Text style={styles.subTitle}>Suivez le cycle de vie de vos vélos</Text>
+      </View>
       <ScrollView
-        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {bikes.map((bike) => (
           <BikeCard
             key={bike.id}
-            name={bike.name}
+            bike={bike}
             onPress={() =>
               navigation.navigate("BikeDetail", { bikeId: bike.id })
             }
           />
         ))}
-        <BikeCard
-          name="Add bike"
-          image={<Ionicons name="add-outline" />}
-          onPress={() => navigation.navigate("CreateBike")}
-        />
       </ScrollView>
 
-      <Fab
-        size="lg"
-        style={styles.fab}
-        onPress={() => navigation.navigate("CreateBike")}
-      >
+      <Fab style={styles.fab} onPress={() => navigation.navigate("CreateBike")}>
         <FabIcon as={AddIconComponent} />
       </Fab>
     </View>
@@ -74,6 +68,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
+  },
+  header: {
+    backgroundColor: theme.colors.surface,
+    padding: 20,
+    borderBottomColor: "#2d333a",
+    borderWidth: 1,
+  },
+  title: {
+    color: theme.colors.text.lighting,
+    fontSize: 26,
+    marginBottom: theme.spacing(0.5),
+    fontWeight: "bold",
+  },
+  subTitle: {
+    fontSize: 15,
+    color: theme.colors.text.tertiary,
   },
   scrollContent: {
     alignItems: "center",
@@ -92,5 +102,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     right: 20,
     backgroundColor: theme.colors.primary,
+    height: 50,
+    width: 50,
   },
 });

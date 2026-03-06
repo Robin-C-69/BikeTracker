@@ -1,6 +1,6 @@
 import { BikeRepository } from "@/database/repositories/BikeRepository";
 import { SQLiteDatabase } from "expo-sqlite";
-import { BikeModel, ICreateBikeRequest } from "@/database/models/BikeModel";
+import { BikeModel, CreateBikeRequest } from "@/database/models/BikeModel";
 import { IResponseModel, ResponseModel } from "@/database/models/ResponseModel";
 
 export class BikeService {
@@ -39,7 +39,7 @@ export class BikeService {
     }
   }
 
-  async createBike(bike: ICreateBikeRequest): Promise<IResponseModel> {
+  async createBike(bike: CreateBikeRequest): Promise<IResponseModel> {
     const errors = BikeModel.validate(bike);
     if (errors.length > 0) {
       return ResponseModel.createError(
@@ -60,7 +60,7 @@ export class BikeService {
     bike,
   }: {
     id: number;
-    bike: ICreateBikeRequest;
+    bike: CreateBikeRequest;
   }): Promise<IResponseModel> {
     const errors = BikeModel.validate(bike);
     if (errors.length > 0) {

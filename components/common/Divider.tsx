@@ -1,15 +1,19 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 
-export const Divider = () => {
-  return <View style={styles.divider} />;
+type Props = {
+  style?: ViewStyle;
+};
+
+export const Divider = ({ style }: Props) => {
+  return <View style={[styles.divider, style]} />;
 };
 
 const styles = StyleSheet.create({
   divider: {
     height: 0.5,
-    backgroundColor: "#ccc", // Grey color
-    width: "100%", // Full width
-    marginVertical: 10, // Optional: adds vertical spacing
+    backgroundColor: "#ccc",
+    width: "100%",
+    marginVertical: 10,
   },
 });

@@ -1,24 +1,19 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "@/constants/theme";
-import Logo from "@/assets/images/logo.png";
 import { useNavigation } from "expo-router";
 
 interface CustomHeaderProps {
   title?: string;
-  actionButton?: () => void;
-  actionButtonName?: keyof typeof Ionicons.glyphMap;
+  subtitle?: string;
   showBackButton?: boolean;
   onBackButtonClick?: () => void;
 }
 
 export default function CustomHeader({
   title,
-  actionButton,
-  actionButtonName,
-  showBackButton = true,
+  subtitle,
   onBackButtonClick,
 }: CustomHeaderProps) {
   const navigation = useNavigation();
@@ -33,33 +28,13 @@ export default function CustomHeader({
 
   return (
     <View style={styles.header}>
-      <View style={styles.logoContainer}>
-        {showBackButton && (
-          <TouchableOpacity onPress={navigateBack} accessibilityLabel="Go Back">
-            <Ionicons
-              name={"chevron-back"}
-              size={24}
-              style={styles.backButton}
-            />
-          </TouchableOpacity>
-        )}
-        <Image
-          source={Logo}
-          alt="BikeTracker Logo"
-          style={styles.logo}
-          contentFit="contain"
-        />
-        <Text style={styles.title}>{title}</Text>
+      <TouchableOpacity onPress={navigateBack} accessibilityLabel="Go Back">
+        <Ionicons name={"chevron-back"} size={24} style={styles.backButton} />
+      </TouchableOpacity>
+      <View style={styles.textContainer}>
+        {title && <Text style={styles.title}>{title}</Text>}
+        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
-      {actionButton && (
-        <TouchableOpacity
-          onPress={actionButton}
-          style={styles.actionButton}
-          accessibilityLabel="Action Button"
-        >
-          <Ionicons name={actionButtonName} style={styles.actionIcon} />
-        </TouchableOpacity>
-      )}
     </View>
   );
 }
@@ -69,35 +44,32 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     padding: theme.spacing(2),
     paddingTop: 30,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.surface,
+    borderBottomColor: "#2d333a",
+    borderWidth: 1,
+    gap: 10,
   },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  logo: {
-    height: 32,
-    width: 32,
-    marginRight: 8,
+  textContainer: {
+    display: "flex",
   },
   title: {
-    color: theme.colors.primary,
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold,
   },
-  actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  actionIcon: {
-    color: theme.colors.primary,
-    fontSize: theme.typography.sizes.xl,
+  subtitle: {
+    color: theme.colors.text.tertiary,
+    fontSize: theme.typography.sizes.sm,
   },
   backButton: {
-    marginRight: 8,
-    color: "white",
+    width: 40,
+    height: 40,
+    color: theme.colors.primaryLight,
+    backgroundColor: "#2d333a",
+    borderRadius: 12,
+    textAlign: "center",
+    lineHeight: 40,
   },
 });

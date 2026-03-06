@@ -3,7 +3,6 @@ import { SQLiteDatabase } from "expo-sqlite";
 import { IResponseModel, ResponseModel } from "@/database/models/ResponseModel";
 import {
   CreatePiece,
-  PieceCategoryWithType,
   PieceWithDetails,
   UpdatePiece,
 } from "@/database/models/PieceModel";
@@ -12,6 +11,7 @@ import { PieceTypeRepository } from "@/database/repositories/PieceTypeRepository
 import { MaintenanceHistoryRepository } from "@/database/repositories/MaintenanceHistoryRepository";
 import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTypeRepository";
 import { MaintenanceHistoryWithType } from "@/database/models/MaintenanceHistoryModel";
+import { PieceCategoryWithType } from "@/database/models/PieceCategoryModel";
 
 interface IPieceService {
   getAllPieces({
@@ -98,15 +98,19 @@ export class PieceService implements IPieceService {
       }
 
       const category = await this.categoryRepository.findCategoryById(
-        piece.category_id,
+        piece.categoryId,
       );
       if (!category) {
-        return ResponseModel.createError(`Category with ${id} not found`);
+        return ResponseModel.createError(
+          `Category with ${piece.categoryId} not found`,
+        );
       }
 
-      const type = await this.typeRepository.findTypeById(category.type_id);
+      const type = await this.typeRepository.findTypeById(category.typeId);
       if (!type) {
-        return ResponseModel.createError(`Type with ${id} not found`);
+        return ResponseModel.createError(
+          `Type with ${category.typeId} not found`,
+        );
       }
 
       const history = await this.historyRepository.findByPieceId(id);
@@ -115,9 +119,9 @@ export class PieceService implements IPieceService {
       const historyWithTypes: MaintenanceHistoryWithType[] = await Promise.all(
         history.map(async (entry) => {
           const maintenanceType = await this.maintenanceTypeRepository.findById(
-            entry.maintenance_type_id,
+            entry.maintenanceTypeId,
           );
-          return { ...entry, maintenance_type: maintenanceType! };
+          return { ...entry, maintenanceType: maintenanceType! };
         }),
       );
 
@@ -126,7 +130,7 @@ export class PieceService implements IPieceService {
       const pieceWithDetails: PieceWithDetails = {
         ...piece,
         category: categoryWithType,
-        maintenance_history: historyWithTypes,
+        maintenanceHistory: historyWithTypes,
       };
 
       return ResponseModel.createSuccess(pieceWithDetails);
@@ -162,13 +166,10 @@ export class PieceService implements IPieceService {
       const piecesWithDetails = await Promise.all(
         pieces.map(async (piece) => {
           const result = await this.getPieceWithDetails(piece.id);
-          if (!result.error) {
-            return result.data as PieceWithDetails;
-          } else {
-            throw new Error(
-              `Failed to get details for piece with id ${piece.id}`,
-            );
+          if (result.error) {
+            throw new Error(result.error);
           }
+          return result.data as PieceWithDetails;
         }),
       );
       return ResponseModel.createSuccess(piecesWithDetails);

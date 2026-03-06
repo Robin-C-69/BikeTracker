@@ -11,7 +11,7 @@ export class PieceCategoryRepository {
 
   async findAllCategories(): Promise<Category[]> {
     const results = await this.db.getAllAsync(
-      `SELECT id, name
+      `SELECT *
        FROM ${PIECE_CATEGORIES_TABLE_NAME}
        ORDER BY name ASC`,
     );
@@ -20,7 +20,7 @@ export class PieceCategoryRepository {
 
   async findCategoryById(id: number): Promise<Category | null> {
     const result = await this.db.getFirstAsync(
-      `SELECT id, name
+      `SELECT *
        FROM ${PIECE_CATEGORIES_TABLE_NAME}
        WHERE id = ?`,
       id,

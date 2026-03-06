@@ -2,7 +2,7 @@ import { PieceType } from "@/database/models/PieceTypeModel";
 
 export type Category = {
   id: number;
-  type_id: number;
+  typeId: number;
   name: string;
   description: string;
 };
@@ -12,7 +12,7 @@ export interface PieceCategoryWithType extends Category {
 }
 
 export type CreateCategory = {
-  type_id: number;
+  typeId: number;
   name: string;
   description: string;
 };

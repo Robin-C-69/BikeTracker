@@ -1,3 +1,4 @@
+import "../i18n";
 import { Tabs } from "expo-router";
 import { DatabaseProvider } from "@/context/DatabaseContext";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
@@ -30,7 +31,7 @@ export default function RootLayout() {
             headerShown: false,
             tabBarActiveTintColor: theme.colors.primary,
             tabBarStyle: {
-              backgroundColor: theme.colors.surfaceVariant,
+              backgroundColor: theme.colors.surface,
               borderTopWidth: 0,
               height: "8%",
             },
@@ -51,7 +52,11 @@ export default function RootLayout() {
             options={{
               title: "Next",
               tabBarIcon: ({ color }) => (
-                <Ionicons name="home" size={24} color={color} />
+                <Ionicons
+                  name="ellipsis-horizontal-outline"
+                  size={24}
+                  color={color}
+                />
               ),
               headerShown: true,
               header: () => (

@@ -1,7 +1,4 @@
-import {
-  MAINTENANCE_HISTORY_TABLE_NAME,
-  PIECES_TABLE_NAME,
-} from "@/database/migrations/tables";
+import { MAINTENANCE_HISTORY_TABLE_NAME } from "@/database/migrations/tables";
 import { SQLiteDatabase } from "expo-sqlite";
 import {
   CreateMaintenanceHistory,
@@ -27,8 +24,8 @@ export class MaintenanceHistoryRepository
     const results = await this.db.getAllAsync(
       `SELECT *
        FROM ${MAINTENANCE_HISTORY_TABLE_NAME}
-       WHERE piece_id = ?
-       ORDER BY maintenance_date DESC`,
+       WHERE pieceId = ?
+       ORDER BY date DESC`,
       pieceId,
     );
     return results as MaintenanceHistory[];
@@ -36,12 +33,12 @@ export class MaintenanceHistoryRepository
 
   async create(data: CreateMaintenanceHistory): Promise<number> {
     const result = await this.db.runAsync(
-      `INSERT INTO ${MAINTENANCE_HISTORY_TABLE_NAME} (piece_id, maintenance_type_id, maintenance_date, km_at_maintenance, notes, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+      `INSERT INTO ${MAINTENANCE_HISTORY_TABLE_NAME} (pieceId, maintenanceTypeId, date, kmAtMaintenance, notes, createdAt) VALUES (?, ?, ?, ?, ?, datetime('now'))`,
       [
-        data.piece_id,
-        data.maintenance_type_id,
+        data.pieceId,
+        data.maintenanceTypeId,
         data.date,
-        data.km_at_maintenance || null,
+        data.kmAtMaintenance || null,
         data.notes || null,
       ],
     );
@@ -52,7 +49,7 @@ export class MaintenanceHistoryRepository
     id: number,
     data: Partial<CreateMaintenanceHistory>,
   ): Promise<number> {
-    data.updated_at = new Date().toISOString();
+    data.updatedAt = new Date().toISOString();
     const fields = Object.keys(data);
 
     const setClause = fields.map((field) => `${field} = ?`).join(", ");

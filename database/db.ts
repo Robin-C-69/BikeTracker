@@ -1,6 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 export const db = SQLite.openDatabaseSync("biketracker.db");
+db.execSync("PRAGMA foreign_keys = ON;");
 
 export const setVersion = (version: number): void => {
   db.execSync(`PRAGMA user_version = ${version};`);

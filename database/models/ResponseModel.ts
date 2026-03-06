@@ -12,9 +12,16 @@ export class ResponseModel {
   }
 
   static createError(errorMessage: any): IResponseModel {
+    let error: string;
+    if (errorMessage instanceof Error) {
+      error = errorMessage.message;
+    } else if (typeof errorMessage === "string") {
+      error = errorMessage;
+    } else {
+      error = "Unknow error";
+    }
     return {
-      error:
-        errorMessage instanceof Error ? errorMessage.message : "Unknown error",
+      error,
       data: null,
     };
   }

@@ -69,5 +69,7 @@ export const runMigrations = (): void => {
     }
   });
 
-  console.log(`✅ All migrations completed. New version: ${currentVersion}`);
+  console.log(
+    `✅ All migrations completed. New version: ${getCurrentVersion()}`,
+  );
 };

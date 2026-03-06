@@ -3,15 +3,23 @@ import { Box } from "@/components/ui/box";
 import { theme } from "@/constants/theme";
 import CreatePieceForm from "@/components/forms/CreatePieceForm";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { BikesStackParamList } from "@/navigators/BikesNavigator";
+import { usePiecesByBike } from "@/hooks/usePiecesByBike";
+import { PieceStackParamList } from "@/navigators/PieceNavigator";
 
-type Props = NativeStackScreenProps<BikesStackParamList, "CreatePiece">;
+type Props =
+  | NativeStackScreenProps<PieceStackParamList, "CreatePiece">
+  | NativeStackScreenProps<PieceStackParamList, "UpdatePiece">;
 
 export const CreatePieceView = ({ navigation, route }: Props) => {
-  const { bikeId } = route.params;
+  const { bikeId, bikeName } = route.params;
+  const { refreshPieces } = usePiecesByBike(bikeId);
 
-  const onPieceCreated = () => {
-    navigation.navigate("BikeDetail", { bikeId, refresh: true } as any);
+  const isPiecePresent = route.params && "piece" in route.params;
+  const piece = isPiecePresent ? route.params.piece : undefined;
+
+  const onPieceCreated = async () => {
+    await refreshPieces();
+    navigation.goBack();
   };
 
   const onCancel = () => {
@@ -22,6 +30,8 @@ export const CreatePieceView = ({ navigation, route }: Props) => {
     <Box style={styles.container}>
       <CreatePieceForm
         bikeId={bikeId}
+        bikeName={bikeName}
+        piece={piece}
         onSuccess={onPieceCreated}
         onCancel={onCancel}
       />

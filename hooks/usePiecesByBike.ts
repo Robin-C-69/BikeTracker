@@ -1,16 +1,21 @@
 import { useDatabase } from "@/context/DatabaseContext";
-import { Piece } from "@/database/models/PieceModel";
+import { PieceWithDetails } from "@/database/models/PieceModel";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PieceService } from "@/database/services/PieceService";
 
 interface UsePiecesByBikeState {
-  pieces: Piece[];
+  pieces: PieceWithDetails[];
   loading: boolean;
   error: string | null;
-  refetch?: () => Promise<Piece[]>;
 }
 
-export const usePiecesByBike = (bikeId: number): UsePiecesByBikeState => {
+interface Actions {
+  refreshPieces: () => Promise<void>;
+}
+
+export const usePiecesByBike = (
+  bikeId: number,
+): UsePiecesByBikeState & Actions => {
   const { db } = useDatabase();
   const [pieces, setPieces] = useState<UsePiecesByBikeState>({
     pieces: [],
@@ -27,10 +32,11 @@ export const usePiecesByBike = (bikeId: number): UsePiecesByBikeState => {
     setPieces((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  const getPieces = useCallback(async () => {
-    updateState({ loading: true, error: null });
+  const getAllPiecesWithDetails = useCallback(async () => {
+    updateState({ loading: true, error: null, pieces: [] });
     if (!pieceService) return;
-    const { error, data } = await pieceService.getPiecesByBike(bikeId);
+    const { error, data } =
+      await pieceService.getPiecesByBikeWithDetails(bikeId);
     if (error) {
       updateState({ loading: false, error: error });
       return [];
@@ -39,14 +45,18 @@ export const usePiecesByBike = (bikeId: number): UsePiecesByBikeState => {
     return data;
   }, [pieceService, updateState, bikeId]);
 
+  const refreshPieces = useCallback(async () => {
+    await getAllPiecesWithDetails();
+  }, [getAllPiecesWithDetails]);
+
   useEffect(() => {
     if (db && pieceService) {
-      getPieces();
+      getAllPiecesWithDetails();
     }
-  }, [db, pieceService, getPieces]);
+  }, [db, pieceService, getAllPiecesWithDetails]);
 
   return {
     ...pieces,
-    refetch: getPieces,
+    refreshPieces,
   };
 };
