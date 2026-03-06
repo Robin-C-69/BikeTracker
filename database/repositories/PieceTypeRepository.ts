@@ -9,6 +9,15 @@ export class PieceTypeRepository {
     this.db = db;
   }
 
+  async findAllTypes(): Promise<PieceType[]> {
+    const results = await this.db.getAllAsync(
+      `SELECT *
+       FROM ${PIECE_TYPES_TABLE_NAME}
+       ORDER BY name ASC`,
+    );
+    return results as PieceType[];
+  }
+
   async findTypeById(id: number): Promise<PieceType | null> {
     const result = await this.db.getFirstAsync(
       `SELECT *
