@@ -28,7 +28,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const { piece } = route.params;
   const { t } = useTranslation();
   const { deletePiece } = usePieceMutations();
-  const { bikes } = useBikeContext();
+  const { bikes, refreshBikes } = useBikeContext();
   const currentBike = bikes.find((bike) => bike.id === piece.bikeId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -93,9 +93,11 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const onDeletePiece = useCallback(
     async (piece: PieceWithDetails) => {
       await deletePiece(piece.id);
+      await refreshBikes();
       setShowDeleteModal(false);
+      navigation.goBack();
     },
-    [deletePiece],
+    [deletePiece, navigation, refreshBikes],
   );
 
   const StatCard = ({ label, value }: { label: string; value: string }) => {
