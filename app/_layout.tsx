@@ -52,7 +52,11 @@ export default function RootLayout() {
             options={{
               title: "Next",
               tabBarIcon: ({ color }) => (
-                <Ionicons name="home" size={24} color={color} />
+                <Ionicons
+                  name="ellipsis-horizontal-outline"
+                  size={24}
+                  color={color}
+                />
               ),
               headerShown: true,
               header: () => (
