@@ -2,19 +2,22 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import BikeListView from "@/views/bike/BikeListView";
 import BikeDetailView from "@/views/bike/BikeDetailView";
 import CreateBikeView from "@/views/bike/CreateBikeView";
-import { CreatePieceView } from "@/views/piece/CreatePieceView";
 import { theme } from "@/constants/theme";
 import CustomHeader from "@/components/common/CustomHeader";
 import { useTranslation } from "react-i18next";
 import { BikeProvider } from "@/context/BikeContext";
 import { Bike } from "@/database/models/BikeModel";
+import PieceNavigator, {
+  PieceStackParamList,
+} from "@/navigators/PieceNavigator";
+import { NavigatorScreenParams } from "@react-navigation/core";
 
 export type BikesStackParamList = {
   BikeList: undefined;
   BikeDetail: { bikeId: number };
   CreateBike: undefined;
   UpdateBike: { bike: Bike };
-  CreatePiece: { bikeId: number; bikeName?: string };
+  PieceNavigator: NavigatorScreenParams<PieceStackParamList>;
 };
 
 const Stack = createNativeStackNavigator<BikesStackParamList>();
@@ -66,12 +69,9 @@ export default function BikesNavigator() {
           }}
         />
         <Stack.Screen
-          name="CreatePiece"
-          component={CreatePieceView}
-          options={{
-            headerShown: true,
-            header: () => <CustomHeader title={t("New piece")} />,
-          }}
+          name="PieceNavigator"
+          component={PieceNavigator}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </BikeProvider>

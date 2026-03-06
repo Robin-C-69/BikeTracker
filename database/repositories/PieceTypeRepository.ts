@@ -1,5 +1,6 @@
 import { SQLiteDatabase } from "expo-sqlite";
 import { PieceType } from "@/database/models/PieceTypeModel";
+import { PIECE_TYPES_TABLE_NAME } from "@/database/migrations/tables";
 
 export class PieceTypeRepository {
   protected db: SQLiteDatabase;
@@ -10,8 +11,8 @@ export class PieceTypeRepository {
 
   async findAllTypes(): Promise<PieceType[]> {
     const results = await this.db.getAllAsync(
-      `SELECT id, name
-       FROM piece_types
+      `SELECT *
+       FROM ${PIECE_TYPES_TABLE_NAME}
        ORDER BY name ASC`,
     );
     return results as PieceType[];
@@ -19,8 +20,8 @@ export class PieceTypeRepository {
 
   async findTypeById(id: number): Promise<PieceType | null> {
     const result = await this.db.getFirstAsync(
-      `SELECT id, name
-       FROM piece_types
+      `SELECT *
+       FROM ${PIECE_TYPES_TABLE_NAME}
        WHERE id = ?`,
       id,
     );

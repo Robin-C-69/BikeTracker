@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -48,14 +49,30 @@ export default function BikeDetailView({ navigation, route }: Props) {
   }, []);
 
   const onAddPiece = () => {
-    navigation.navigate("CreatePiece", { bikeId, bikeName: bike?.name });
-  };
-  const navigateBack = () => {
-    navigation.goBack();
+    navigation.navigate("PieceNavigator", {
+      screen: "CreatePiece",
+      params: {
+        bikeId,
+        bikeName: bike?.name,
+      },
+    });
   };
 
   const onEditBike = () => {
     bike && navigation.navigate("UpdateBike", { bike });
+  };
+
+  const navigateBack = () => {
+    navigation.goBack();
+  };
+
+  const navigateToPieceDetails = (pieceId: number) => {
+    const selectedPiece = pieces.find((piece) => piece.id === pieceId);
+    if (!selectedPiece) return;
+    navigation.navigate("PieceNavigator", {
+      screen: "PieceDetails",
+      params: { piece: selectedPiece, bikeName: bike?.name },
+    });
   };
 
   const onDeleteBike = useCallback(
@@ -145,9 +162,18 @@ export default function BikeDetailView({ navigation, route }: Props) {
           </Button>
         </Box>
       </Box>
-      {pieces.map((piece) => {
-        return <PieceCard key={piece.id} piece={piece} />;
-      })}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {pieces.map((piece) => {
+          return (
+            <TouchableOpacity
+              key={piece.id}
+              onPress={() => navigateToPieceDetails(piece.id)}
+            >
+              <PieceCard piece={piece} />
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
       <Modal
         animationType="fade"
         transparent={true}

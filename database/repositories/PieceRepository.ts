@@ -10,21 +10,21 @@ export class PieceRepository extends BaseRepository<Piece> {
 
   async create(data: CreatePiece): Promise<number> {
     const result = await this.db.runAsync(
-      `INSERT INTO ${PIECES_TABLE_NAME} (bike_id, category_id, name, description, install_date, install_km, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+      `INSERT INTO ${PIECES_TABLE_NAME} (bikeId, categoryId, name, description, installDate, installKm, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
       [
-        data.bike_id,
-        data.category_id,
+        data.bikeId,
+        data.categoryId,
         data.name,
         data.description || null,
-        data.install_date || null,
-        data.install_km || null,
+        data.installDate || null,
+        data.installKm || null,
       ],
     );
     return result.lastInsertRowId;
   }
 
   async update(id: number, data: UpdatePiece): Promise<number> {
-    data.updated_at = new Date().toISOString();
+    data.updatedAt = new Date().toISOString();
     const fields = Object.keys(data);
 
     const setClause = fields.map((field) => `${field} = ?`).join(", ");
@@ -39,7 +39,7 @@ export class PieceRepository extends BaseRepository<Piece> {
     const results = await this.db.getAllAsync(
       `SELECT *
        FROM ${PIECES_TABLE_NAME}
-       WHERE bike_id = ?
+       WHERE bikeId = ?
        ORDER BY id DESC`,
       bikeId,
     );

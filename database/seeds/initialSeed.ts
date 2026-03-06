@@ -45,22 +45,17 @@ export const seedInitialData = (): void => {
 
     initialCategories.forEach((category) => {
       db.runSync(
-        `INSERT INTO ${PIECE_CATEGORIES_TABLE_NAME} (type_id, name, description) VALUES (?, ?, ?)`,
-        [category.type_id, category.name, category.description],
+        `INSERT INTO ${PIECE_CATEGORIES_TABLE_NAME} (typeId, name, description) VALUES (?, ?, ?)`,
+        [category.typeId, category.name, category.description],
       );
     });
     console.log(`✅ Inserted ${initialCategories.length} piece categories`);
 
     initialMaintenanceTypes.forEach((type) => {
       db.runSync(
-        `INSERT INTO ${MAINTENANCE_TYPE_TABLE_NAME} (name, description, recommended_km, recommended_days) 
+        `INSERT INTO ${MAINTENANCE_TYPE_TABLE_NAME} (name, description, recommendedKm, recommendedDays) 
          VALUES (?, ?, ?, ?)`,
-        [
-          type.name,
-          type.description,
-          type.recommended_km,
-          type.recommended_days,
-        ],
+        [type.name, type.description, type.recommendedKm, type.recommendedDays],
       );
     });
 
@@ -70,8 +65,8 @@ export const seedInitialData = (): void => {
 
     initialCategoryMaintenanceLinks.forEach((cat) => {
       db.runSync(
-        `INSERT INTO ${CATEGORY_MAINTENANCE_TYPE_TABLE_NAME} (category_id, maintenance_type_id) VALUES (?, ?)`,
-        [cat.category_id, cat.maintenance_type_id],
+        `INSERT INTO ${CATEGORY_MAINTENANCE_TYPE_TABLE_NAME} (categoryId, maintenanceTypeId) VALUES (?, ?)`,
+        [cat.categoryId, cat.maintenanceTypeId],
       );
     });
     console.log(

@@ -1,11 +1,15 @@
 {
   "Add": "Add",
+  "Add a maintenance": "Add a maintenance",
   "Add to": "Add to",
   "Add your bike to BikeTracker": "Add your bike to BikeTracker",
+  "Age": "Age",
   "An easy to remind name to identify your bike": "An easy to remind name to identify your bike",
   "Back": "Back",
   "Bike information": "Bike information",
+  "Bike km": "Bike km",
   "bike_mileage_at_install": "Bike mileage at install",
+  "bike_mileage_at_maintenance": "Bike mileage at maintenance",
   "Brand": "Brand",
   "Cancel": "Cancel",
   "Create": "Create",
@@ -13,23 +17,42 @@
   "Category": "Category",
   "Delete": "Delete",
   "delete_bike_confirmation": "Are you sure to delete the bike: {{bike}} ?",
+  "delete_piece_confirmation": "Are you sure to delete the piece: {{piece}} ?",
   "field_required": "This field is required",
+  "History": "History",
   "If you don't know the exact one, an estimation is enough": "If you don't know the exact one, an estimation is enough",
+  "interventions_carried": "Interventions carried out",
   "Installed date": "Installed date",
   "irreversible_action": "This action cannot be undone",
   "km_traveled": "km traveled",
+  "Last Maintenance": "Last Maintenance",
+  "Lifetime": "Lifetime",
+  "Maintenance type": "Maintenance type",
+  "Maintenance date": "Maintenance date",
   "Mileage": "Mileage",
   "mileage_hint": "The mileage is used to follow the use of pieces since their installation",
   "mileage_min": "The mileage cannot be negative",
   "Model": "Model",
   "My super bike": "My super bike",
   "Name": "Name",
+  "Next action": "Next action",
   "New bike": "New bike",
   "New piece": "New piece",
+  "Notes": "Notes",
   "Pieces": "Pieces",
+  "Piece details": "Piece details",
   "Update": "Update",
   "Update bike": "Update bike",
   "Updating...": "Updating...",
+
+  "age": {
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "months_one": "{{count}} month",
+    "months_other": "{{count}} months",
+    "years_one": "{{count}} year",
+    "years_other": "{{count}} years"
+  },
 
   "categories": {
     "Chain": "Chain",
@@ -43,5 +66,14 @@
     "Rear Shock": "Rear Shock",
     "Shifters": "Shifters",
     "Tires": "Tires"
+  },
+
+  "maintenance_type": {
+    "Adjustment": "Adjustment",
+    "Bleed": "Bleed",
+    "Inspection": "Inspection",
+    "Replace": "Replace",
+    "Revision": "Revision",
+    "Tubeless": "Tubeless"
   }
 }

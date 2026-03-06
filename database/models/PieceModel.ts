@@ -7,7 +7,7 @@ export type Piece = {
   categoryId: number;
   name: string;
   description?: string;
-  installDate?: string;
+  installDate: string;
   installKm?: number;
   createdAt: string;
   updatedAt: string;

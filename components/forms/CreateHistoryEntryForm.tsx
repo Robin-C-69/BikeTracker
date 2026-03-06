@@ -1,3 +1,9 @@
+import { useDatabase } from "@/context/DatabaseContext";
+import { useTranslation } from "react-i18next";
+import z from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Box } from "@/components/ui/box";
 import {
   ActivityIndicator,
   Alert,
@@ -7,16 +13,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { z } from "zod";
-import { useDatabase } from "@/context/DatabaseContext";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { PieceCategoryRepository } from "@/database/repositories/PieceCategoryRepository";
-import { Category } from "@/database/models/PieceCategoryModel";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Box } from "@/components/ui/box";
-import { VStack } from "@/components/ui/vstack";
+import { theme } from "@/constants/theme";
+import { VStack } from "../ui/vstack";
+import FormField from "@/components/forms/fields/FormField";
 import {
   FormControl,
   FormControlError,
@@ -24,47 +23,42 @@ import {
   FormControlLabel,
   FormControlLabelText,
 } from "@/components/ui/form-control";
-import { CreatePiece, PieceWithDetails } from "@/database/models/PieceModel";
+import { useEffect, useState } from "react";
+import { MaintenanceType } from "@/database/models/MaintenanceTypeModel";
+import { PieceTypeRepository } from "@/database/repositories/PieceTypeRepository";
+import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTypeRepository";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, ButtonText } from "@/components/ui/button";
-import FormField from "@/components/forms/fields/FormField";
-import { theme } from "@/constants/theme";
-import { useTranslation } from "react-i18next";
-import { usePieceMutations } from "@/hooks/usePieceMutations";
+import { CreateMaintenanceHistory } from "@/database/models/MaintenanceHistoryModel";
+import { useMaintenanceHistory } from "@/hooks/useMaintenanceHistory";
 
 type Props = {
-  bikeId: number;
-  bikeName?: string;
-  piece?: PieceWithDetails;
+  pieceId: number;
+  pieceName: string;
   onSuccess: () => void;
   onCancel: () => void;
 };
 
-export default function CreatePieceForm({
-  bikeId,
-  bikeName,
-  piece,
+export const CreateHistoryEntryForm = ({
+  pieceId,
+  pieceName,
   onSuccess,
   onCancel,
-}: Props) {
+}: Props) => {
   const { db } = useDatabase();
-  const { createPiece, updatePiece } = usePieceMutations();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
+  const { createHistoryEntry } = useMaintenanceHistory();
 
-  const isUpdate = !!piece;
+  const [maintenanceTypes, setMaintenanceTypes] = useState<MaintenanceType[]>(
+    [],
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
   const formSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    categoryId: z.number({ error: "Category is required" }).int(),
-    description: z.string().optional(),
-    installDate: z.string().optional(),
-    installKm: z
-      .number()
-      .int()
-      .min(0, "Kilometers cannot be negative")
-      .optional()
-      .nullable(),
+    maintenanceTypeId: z.number({ error: "Category is required" }).int(),
+    date: z.string(),
+    kmAtMaintenance: z.number(),
+    notes: z.string().optional(),
   });
 
   const {
@@ -74,49 +68,39 @@ export default function CreatePieceForm({
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: piece?.name ?? "",
-      categoryId: piece?.categoryId ?? undefined,
-      description: piece?.description ?? "",
-      installDate: piece?.installDate ?? "",
-      installKm: piece?.installKm ?? undefined,
+      maintenanceTypeId: undefined,
+      date: "",
+      kmAtMaintenance: undefined,
+      notes: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    if (!db) {
-      return;
-    }
-    try {
-      const pieceData: CreatePiece = {
-        bikeId: bikeId,
-        name: data.name,
-        categoryId: data.categoryId,
-        description: data.description,
-        installDate: data.installDate || undefined,
-        installKm: data.installKm || undefined,
-      };
+    if (!db) return;
 
-      if (isUpdate) {
-        await updatePiece(piece.id, pieceData);
-      } else {
-        await createPiece(pieceData);
-      }
+    try {
+      const historyData: CreateMaintenanceHistory = {
+        pieceId: pieceId,
+        maintenanceTypeId: data.maintenanceTypeId,
+        date: data.date,
+        kmAtMaintenance: data.kmAtMaintenance,
+        notes: data.notes,
+      };
+      await createHistoryEntry(historyData);
       onSuccess?.();
     } catch (e) {
-      console.error("Failed to create piece", e);
-      Alert.alert("Error", "Failed to create piece");
+      console.error("Failed to add history entry:", e);
+      Alert.alert("Error", "Failed to add history entry");
     }
   };
 
-  // Load types and category on mount
   useEffect(() => {
     const loadData = async () => {
       try {
         if (!db) return;
-        const categoryRepo = new PieceCategoryRepository(db);
-        const categoriesData = await categoryRepo.findAllCategories();
-
-        setCategories(categoriesData);
+        const typeRepo = new MaintenanceTypeRepository(db);
+        const typeData = await typeRepo.findAll();
+        setMaintenanceTypes(typeData);
       } catch (e) {
         console.error("Failed to load types or categories", e);
         Alert.alert("Error", "Failed to load types or categories");
@@ -141,51 +125,35 @@ export default function CreatePieceForm({
         <VStack space="md" style={styles.form}>
           <View style={styles.header}>
             <Text style={styles.addTo}>{t("Add to")}</Text>
-            <Text style={styles.bikeName}>{bikeName}</Text>
+            <Text style={styles.pieceName}>{pieceName}</Text>
           </View>
-          <FormField
-            control={control}
-            name={"name"}
-            label={t("Name")}
-            isRequired={true}
-            placeholder={t("Name")}
-            error={errors.name?.message}
-          />
-          <FormField
-            control={control}
-            name={"description"}
-            label={t("Description")}
-            placeholder={t("Description")}
-          />
           <FormControl isRequired={true}>
             <FormControlLabel>
               <FormControlLabelText style={styles.labelText}>
-                {t("Category")}
+                {t("Maintenance type")}
               </FormControlLabelText>
             </FormControlLabel>
             <Controller
               control={control}
-              name={"categoryId"}
+              name={"maintenanceTypeId"}
               rules={{ required: true }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={styles.chipsContainer}>
-                  {categories.map((category) => {
-                    const isSelected = value === category.id;
+                  {maintenanceTypes.map((type) => {
+                    const isSelected = value === type.id;
                     return (
                       <TouchableOpacity
-                        key={category.id}
+                        key={type.id}
                         onPress={() =>
-                          onChange(
-                            value === category.id ? undefined : category.id,
-                          )
+                          onChange(value === type.id ? undefined : type.id)
                         }
                         onBlur={onBlur}
                         style={[styles.chip, isSelected && styles.chipSelected]}
                         activeOpacity={1}
                       >
                         <Text style={styles.chipText}>
-                          {t(`categories.${category.name}`, {
-                            defaultValue: category.name,
+                          {t(`maintenance_type.${type.name}`, {
+                            defaultValue: type.name,
                           })}
                         </Text>
                       </TouchableOpacity>
@@ -194,30 +162,32 @@ export default function CreatePieceForm({
                 </View>
               )}
             />
-            {errors.categoryId && (
+            {errors.maintenanceTypeId && (
               <FormControlError>
                 <FormControlErrorText>
-                  {errors.categoryId.message}
+                  {errors.maintenanceTypeId.message}
                 </FormControlErrorText>
               </FormControlError>
             )}
           </FormControl>
           <FormField
             control={control}
-            name={"installDate"}
-            label={t("Installed date")}
+            name={"date"}
+            label={t("Maintenance date")}
             type={"date"}
             isRequired={true}
-            error={errors.installDate?.message}
+            error={errors.date?.message}
           />
           <FormField
             control={control}
-            name={"installKm"}
-            label={t("bike_mileage_at_install")}
-            placeholder={"1000"}
-            endText={"km"}
+            name={"kmAtMaintenance"}
+            label={t("bike_mileage_at_maintenance")}
             type={"numeric"}
+            isRequired={true}
+            error={errors.kmAtMaintenance?.message}
+            endText={"km"}
           />
+          <FormField control={control} name={"notes"} label={t("Notes")} />
         </VStack>
       </ScrollView>
       <View style={styles.buttonsWrapper}>
@@ -226,9 +196,7 @@ export default function CreatePieceForm({
           onPress={handleSubmit(onSubmit)}
           style={styles.deleteButton}
         >
-          <ButtonText style={styles.deleteText}>
-            {isUpdate ? t("Update") : t("Create")}
-          </ButtonText>
+          <ButtonText style={styles.deleteText}>{t("Create")}</ButtonText>
         </Button>
         <Button
           variant="outline"
@@ -241,7 +209,7 @@ export default function CreatePieceForm({
       </View>
     </Box>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -270,7 +238,7 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.sm,
     fontWeight: theme.typography.weights.semibold,
   },
-  bikeName: {
+  pieceName: {
     color: theme.colors.primaryLight,
     fontSize: theme.typography.sizes.md,
     fontWeight: theme.typography.weights.semibold,
@@ -297,9 +265,6 @@ const styles = StyleSheet.create({
   },
   chipText: {
     color: "white",
-  },
-  dateInputWrapper: {
-    position: "relative",
   },
   buttonsWrapper: {
     gap: 12,
