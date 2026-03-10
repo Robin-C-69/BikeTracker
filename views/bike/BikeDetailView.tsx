@@ -28,7 +28,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function BikeDetailView({ navigation, route }: Props) {
   const { bikeId } = route.params;
-  const { bikes, loading, error, deleteBike, refreshBikes } = useBikeContext();
+  const { bikes, loading, error, deleteBike } = useBikeContext();
 
   const bike = bikes.find((b) => b.id === bikeId);
   const { pieces } = usePiecesByBike(bikeId);
@@ -80,11 +80,10 @@ export default function BikeDetailView({ navigation, route }: Props) {
       await deleteBike(bike.id);
       if (!error) {
         setShowDeleteModal(false);
-        await refreshBikes();
         navigation.goBack();
       }
     },
-    [deleteBike, error, navigation, refreshBikes],
+    [deleteBike, error, navigation],
   );
 
   if (loading) {

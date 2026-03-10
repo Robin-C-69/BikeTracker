@@ -28,7 +28,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const { piece } = route.params;
   const { t } = useTranslation();
   const { deletePiece } = usePieceMutations();
-  const { bikes, refreshBikes } = useBikeContext();
+  const { bikes } = useBikeContext();
   const currentBike = bikes.find((bike) => bike.id === piece.bikeId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -68,8 +68,10 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   }, [piece.categoryId, t]);
 
   const getLastMaintenanceDate = useCallback(() => {
-    const lastHistoryEntry = piece.maintenanceHistory[-1] ?? null;
-    if (!lastHistoryEntry) return "-";
+    if (!piece.maintenanceHistory || piece.maintenanceHistory.length === 0)
+      return "-";
+    const lastHistoryEntry =
+      piece.maintenanceHistory[piece.maintenanceHistory.length - 1];
     return lastHistoryEntry.date;
   }, [piece.maintenanceHistory]);
 
@@ -93,11 +95,10 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const onDeletePiece = useCallback(
     async (piece: PieceWithDetails) => {
       await deletePiece(piece.id);
-      await refreshBikes();
       setShowDeleteModal(false);
       navigation.goBack();
     },
-    [deletePiece, navigation, refreshBikes],
+    [deletePiece, navigation],
   );
 
   const StatCard = ({ label, value }: { label: string; value: string }) => {

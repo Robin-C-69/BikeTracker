@@ -2,9 +2,15 @@ import { useDatabase } from "@/context/DatabaseContext";
 import { useCallback, useMemo } from "react";
 import { PieceService } from "@/database/services/PieceService";
 import { CreatePiece } from "@/database/models/PieceModel";
+import { usePieceStore } from "@/stores/pieceStore";
 
 export const usePieceMutations = () => {
   const { db } = useDatabase();
+  const {
+    addPiece,
+    updatePiece: updatePieceInStore,
+    removePiece,
+  } = usePieceStore();
 
   const pieceService = useMemo(() => {
     if (!db) return null;
@@ -15,12 +21,15 @@ export const usePieceMutations = () => {
     async (piece: CreatePiece) => {
       if (!pieceService) return;
       const { error, data: newPiece } = await pieceService.createPiece(piece);
-      if (error) {
+      if (error || !newPiece) {
         return null;
       }
-      return newPiece;
+      const { data: newPieceWithDetails } =
+        await pieceService.getPieceWithDetails(newPiece.id);
+      if (newPieceWithDetails) addPiece(newPieceWithDetails);
+      return newPieceWithDetails;
     },
-    [pieceService],
+    [addPiece, pieceService],
   );
 
   const updatePiece = useCallback(
@@ -33,20 +42,19 @@ export const usePieceMutations = () => {
       if (error) {
         return null;
       }
+      updatePieceInStore(id, updatedPiece);
       return updatedPiece;
     },
-    [pieceService],
+    [pieceService, updatePieceInStore],
   );
 
   const deletePiece = useCallback(
     async (id: number) => {
       if (!pieceService) return;
       const { error } = await pieceService.deletePiece(id);
-      if (error) {
-        return;
-      }
+      if (!error) removePiece(id);
     },
-    [pieceService],
+    [pieceService, removePiece],
   );
 
   return {

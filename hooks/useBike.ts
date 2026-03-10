@@ -1,76 +1,52 @@
-import { Bike } from "@/database/models/BikeModel";
 import { useDatabase } from "@/context/DatabaseContext";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { BikeService } from "@/database/services/BikeService";
+import { useBikeStore } from "@/stores/bikeStore";
 
-interface UseBikeState {
-  bikes: Bike[];
-  loading: boolean;
-  error: string | null;
-}
-
-interface UseBikeActions {
-  getAllBikes: (page?: number, limit?: number) => Promise<Bike[]>;
-  getBikeById: (id: number) => Promise<Bike | null>;
-  refreshBikes: () => Promise<void>;
-}
-
-export const useBike = (): UseBikeState & UseBikeActions => {
+export const useBike = () => {
   const { db } = useDatabase();
-  const [state, setState] = useState<UseBikeState>({
-    bikes: [],
-    loading: false,
-    error: null,
-  });
+  const { bikes, loading, error, addBike, setBikes, setError, setLoading } =
+    useBikeStore();
 
   const bikeService = useMemo(() => {
     if (!db) return null;
     return new BikeService(db);
   }, [db]);
 
-  const updateState = useCallback((updates: Partial<UseBikeState>) => {
-    setState((prev) => ({ ...prev, ...updates }));
-  }, []);
-
   const getAllBikes = useCallback(
     async (page?: number, limit?: number) => {
       if (!bikeService) return;
-      updateState({ loading: true, error: null });
+      setLoading(true);
+      setError(null);
       const { error, data } = await bikeService.getAllBikes({ page, limit });
       if (error) {
-        updateState({ loading: false, error: error });
+        setError(error);
+        setLoading(false);
         return [];
       }
-      updateState({ bikes: data, loading: false });
+      setBikes(data);
+      setLoading(false);
       return data;
     },
-    [bikeService, updateState],
+    [bikeService, setBikes, setError, setLoading],
   );
 
   const getBikeById = useCallback(
     async (id: number) => {
-      const cachedBike = state.bikes.find((bike) => bike.id === id);
+      const cachedBike = bikes.find((bike) => bike.id === id);
       if (cachedBike) return cachedBike;
 
       if (!bikeService) return;
-      updateState({ loading: true, error: null });
+      setLoading(true);
+      setError(null);
       const { error, data } = await bikeService.getBikeById(id);
-
+      setLoading(false);
       if (error) return null;
-
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        bikes: [...prev.bikes, data],
-      }));
+      addBike(data);
       return data;
     },
-    [bikeService, state.bikes, updateState],
+    [addBike, bikeService, bikes, setError, setLoading],
   );
-
-  const refreshBikes = useCallback(async () => {
-    await getAllBikes();
-  }, [getAllBikes]);
 
   useEffect(() => {
     if (db && bikeService) {
@@ -79,9 +55,10 @@ export const useBike = (): UseBikeState & UseBikeActions => {
   }, [bikeService, db, getAllBikes]);
 
   return {
-    ...state,
+    bikes,
+    loading,
+    error,
     getAllBikes,
     getBikeById,
-    refreshBikes,
   };
 };

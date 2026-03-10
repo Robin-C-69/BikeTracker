@@ -1,53 +1,33 @@
 import { useDatabase } from "@/context/DatabaseContext";
-import { PieceWithDetails } from "@/database/models/PieceModel";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { PieceService } from "@/database/services/PieceService";
+import { usePieceStore } from "@/stores/pieceStore";
 
-interface UsePiecesByBikeState {
-  pieces: PieceWithDetails[];
-  loading: boolean;
-  error: string | null;
-}
-
-interface Actions {
-  refreshPieces: () => Promise<void>;
-}
-
-export const usePiecesByBike = (
-  bikeId: number,
-): UsePiecesByBikeState & Actions => {
+export const usePiecesByBike = (bikeId: number) => {
   const { db } = useDatabase();
-  const [pieces, setPieces] = useState<UsePiecesByBikeState>({
-    pieces: [],
-    loading: false,
-    error: null,
-  });
+  const { pieces, error, loading, setError, setLoading, setPieces } =
+    usePieceStore();
 
   const pieceService = useMemo(() => {
     if (!db) return null;
     return new PieceService(db);
   }, [db]);
 
-  const updateState = useCallback((updates: Partial<UsePiecesByBikeState>) => {
-    setPieces((prev) => ({ ...prev, ...updates }));
-  }, []);
-
   const getAllPiecesWithDetails = useCallback(async () => {
-    updateState({ loading: true, error: null, pieces: [] });
+    setLoading(true);
+    setError(null);
     if (!pieceService) return;
     const { error, data } =
       await pieceService.getPiecesByBikeWithDetails(bikeId);
     if (error) {
-      updateState({ loading: false, error: error });
+      setError(error);
+      setLoading(false);
       return [];
     }
-    updateState({ pieces: data, loading: false });
+    setPieces(data);
+    setLoading(false);
     return data;
-  }, [pieceService, updateState, bikeId]);
-
-  const refreshPieces = useCallback(async () => {
-    await getAllPiecesWithDetails();
-  }, [getAllPiecesWithDetails]);
+  }, [setLoading, setError, pieceService, bikeId, setPieces]);
 
   useEffect(() => {
     if (db && pieceService) {
@@ -56,7 +36,8 @@ export const usePiecesByBike = (
   }, [db, pieceService, getAllPiecesWithDetails]);
 
   return {
-    ...pieces,
-    refreshPieces,
+    pieces: pieces.filter((piece) => piece.bikeId === bikeId),
+    loading,
+    error,
   };
 };

@@ -2,14 +2,12 @@ import { createContext, ReactNode, useContext } from "react";
 import { useBike } from "@/hooks/useBike";
 import { useBikeMutations } from "@/hooks/useBikeMutations";
 import { Bike, CreateBikeRequest } from "@/database/models/BikeModel";
+import { useBikeStore } from "@/stores/bikeStore";
 
 interface BikeContextProps {
   bikes: Bike[];
   loading: boolean;
   error: string | null;
-  getAllBikes: (page?: number, limit?: number) => Promise<Bike[]>;
-  getBikeById: (id: number) => Promise<Bike | null>;
-  refreshBikes: () => Promise<void>;
   createBike: (bike: CreateBikeRequest) => Promise<any>;
   updateBike: (id: number, bike: CreateBikeRequest) => Promise<any>;
   deleteBike: (id: number) => Promise<any>;
@@ -18,21 +16,16 @@ interface BikeContextProps {
 const BikeContext = createContext<BikeContextProps | undefined>(undefined);
 
 export const BikeProvider = ({ children }: { children: ReactNode }) => {
-  const {
-    bikes,
-    loading: queryLoading,
-    error: queryError,
-    ...queries
-  } = useBike();
+  useBike();
   const mutations = useBikeMutations();
+  const { bikes, loading, error } = useBikeStore();
 
   return (
     <BikeContext.Provider
       value={{
         bikes,
-        loading: queryLoading,
-        error: queryError,
-        ...queries,
+        loading,
+        error,
         ...mutations,
       }}
     >
