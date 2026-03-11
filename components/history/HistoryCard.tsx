@@ -4,6 +4,7 @@ import { Divider } from "@/components/common/Divider";
 import { theme } from "@/constants/theme";
 import { useTranslation } from "react-i18next";
 import { useCallback } from "react";
+import { formatDateToHumanString } from "@/components/utils";
 
 export const HistoryCard = ({
   historyEntry,
@@ -12,16 +13,9 @@ export const HistoryCard = ({
 }) => {
   const { t } = useTranslation();
 
-  const dateOptions = {
-    weekday: undefined,
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  } as const;
-  const dateDone = new Date(historyEntry.date).toLocaleDateString(
-    "fr",
-    dateOptions,
-  );
+  const dateDone = useCallback(() => {
+    return formatDateToHumanString(historyEntry.date);
+  }, [historyEntry.date]);
 
   const formatBikeKm = useCallback(() => {
     return `${t("Bike km")} : ${historyEntry.kmAtMaintenance} km`;
@@ -46,7 +40,7 @@ export const HistoryCard = ({
             <Text style={styles.notes}>{historyEntry.notes}</Text>
           </View>
           <View>
-            <Text style={styles.date}>{dateDone}</Text>
+            <Text style={styles.date}>{dateDone()}</Text>
           </View>
         </View>
         <Divider />

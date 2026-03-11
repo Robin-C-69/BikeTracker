@@ -17,7 +17,7 @@ export class PieceRepository extends BaseRepository<Piece> {
         data.name,
         data.description || null,
         data.installDate || null,
-        data.installKm || null,
+        data.installKm ?? null,
       ],
     );
     return result.lastInsertRowId;

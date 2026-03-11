@@ -6,45 +6,22 @@ import { theme } from "@/constants/theme";
 import { Piece } from "@/database/models/PieceModel";
 import { useTranslation } from "react-i18next";
 import { initialCategories, initialTypes } from "@/database/seeds/initialData";
+import {
+  calculateAndFormatAge,
+  capitalized,
+  formatDateToHumanString,
+} from "@/components/utils";
 
 export const PieceCard = ({ piece }: { piece: Piece }) => {
   const { t } = useTranslation();
 
-  const dateOptions = {
-    weekday: undefined,
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  } as const;
-  const pieceInstalledDate = new Date(piece.installDate).toLocaleDateString(
-    "fr",
-    dateOptions,
-  );
+  const pieceInstalledDate = useCallback(() => {
+    return formatDateToHumanString(piece.installDate);
+  }, [piece.installDate]);
 
-  const calculateAge = useCallback(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const installDate = new Date(piece.installDate);
-    installDate.setHours(0, 0, 0, 0);
-
-    const diffTime = Math.abs(today.getTime() - installDate.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 30) {
-      return t("age.days", { count: diffDays });
-    } else if (diffDays < 365) {
-      const months = Math.floor(diffDays / 30);
-      return t("age.months", { count: months });
-    } else {
-      const years = Math.floor(diffDays / 365);
-      return t("age.years", { count: years });
-    }
+  const formatDays = useCallback(() => {
+    return calculateAndFormatAge(piece.installDate, t);
   }, [piece.installDate, t]);
-
-  const capitalized = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  };
 
   const formatTypeAndCategory = useCallback(() => {
     // Todo: get infos from the db instead of the initialData
@@ -69,7 +46,7 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
         <Box style={styles.column}>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Installed date")}</Text>
-            <Text style={styles.infoValue}>{pieceInstalledDate}</Text>
+            <Text style={styles.infoValue}>{pieceInstalledDate()}</Text>
           </Box>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Last Maintenance")}</Text>
@@ -79,7 +56,7 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
         <Box style={styles.column}>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Age")}</Text>
-            <Text style={styles.infoValue}>{calculateAge()}</Text>
+            <Text style={styles.infoValue}>{formatDays()}</Text>
           </Box>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Next action")}</Text>

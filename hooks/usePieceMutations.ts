@@ -42,8 +42,11 @@ export const usePieceMutations = () => {
       if (error) {
         return null;
       }
-      updatePieceInStore(id, updatedPiece);
-      return updatedPiece;
+      const { data: pieceWithDetails } = await pieceService.getPieceWithDetails(
+        updatedPiece.id,
+      );
+      if (pieceWithDetails) updatePieceInStore(id, pieceWithDetails);
+      return pieceWithDetails;
     },
     [pieceService, updatePieceInStore],
   );

@@ -19,6 +19,7 @@ import { PieceHistory } from "@/components/history/PieceHistory";
 import { usePieceMutations } from "@/hooks/usePieceMutations";
 import { PieceWithDetails } from "@/database/models/PieceModel";
 import { useBikeContext } from "@/context/BikeContext";
+import { calculateAndFormatAge, capitalized } from "@/components/utils";
 
 type Props = NativeStackScreenProps<PieceStackParamList, "PieceDetails">;
 
@@ -33,30 +34,19 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const calculateAge = useCallback(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const installDate = new Date(piece.installDate);
-    installDate.setHours(0, 0, 0, 0);
-
-    const diffTime = Math.abs(today.getTime() - installDate.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 30) {
-      return t("age.days", { count: diffDays });
-    } else if (diffDays < 365) {
-      const months = Math.floor(diffDays / 30);
-      return t("age.months", { count: months });
-    } else {
-      const years = Math.floor(diffDays / 365);
-      return t("age.years", { count: years });
-    }
+  const formatDays = useCallback(() => {
+    return calculateAndFormatAge(piece.installDate, t);
   }, [piece.installDate, t]);
 
-  const capitalized = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  };
+  const calculateTraveledKm = useCallback(() => {
+    const currentBikeKm = currentBike?.totalKm;
+    const pieceInstalledKm = piece.installKm;
+    if (currentBikeKm != null && pieceInstalledKm != null) {
+      const traveledKm = currentBikeKm - pieceInstalledKm;
+      return traveledKm.toString();
+    }
+    return "-";
+  }, [currentBike?.totalKm, piece.installKm]);
 
   const formatTypeAndCategory = useCallback(() => {
     // Todo: get infos from the db instead of the initialData
@@ -150,10 +140,10 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
       <View style={styles.cardsContainer}>
         <View style={styles.column}>
           <View style={styles.row}>
-            <StatCard label={"Age"} value={calculateAge()} />
+            <StatCard label={"Age"} value={formatDays()} />
           </View>
           <View style={styles.row}>
-            <StatCard label={"km_traveled"} value={"TODO"} />
+            <StatCard label={"km_traveled"} value={calculateTraveledKm()} />
           </View>
         </View>
         <View style={styles.column}>
