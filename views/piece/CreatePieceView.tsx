@@ -3,7 +3,6 @@ import { Box } from "@/components/ui/box";
 import { theme } from "@/constants/theme";
 import CreatePieceForm from "@/components/forms/CreatePieceForm";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { usePiecesByBike } from "@/hooks/usePiecesByBike";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
 
 type Props =
@@ -12,13 +11,11 @@ type Props =
 
 export const CreatePieceView = ({ navigation, route }: Props) => {
   const { bikeId, bikeName } = route.params;
-  const { refreshPieces } = usePiecesByBike(bikeId);
 
   const isPiecePresent = route.params && "piece" in route.params;
   const piece = isPiecePresent ? route.params.piece : undefined;
 
   const onPieceCreated = async () => {
-    await refreshPieces();
     navigation.goBack();
   };
 

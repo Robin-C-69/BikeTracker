@@ -2,12 +2,15 @@ import { MaintenanceHistoryRepository } from "@/database/repositories/Maintenanc
 import { SQLiteDatabase } from "expo-sqlite";
 import { IResponseModel, ResponseModel } from "@/database/models/ResponseModel";
 import { CreateMaintenanceHistory } from "@/database/models/MaintenanceHistoryModel";
+import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTypeRepository";
 
 export class MaintenanceHistoryService {
   private maintenanceHistoryRepository: MaintenanceHistoryRepository;
+  private maintenanceTypeRepository: MaintenanceTypeRepository;
 
   constructor(db: SQLiteDatabase) {
     this.maintenanceHistoryRepository = new MaintenanceHistoryRepository(db);
+    this.maintenanceTypeRepository = new MaintenanceTypeRepository(db);
   }
 
   async createHistoryEntry(
@@ -17,6 +20,25 @@ export class MaintenanceHistoryService {
       const id = await this.maintenanceHistoryRepository.create(data);
       const newEntry = await this.maintenanceHistoryRepository.findById(id);
       return ResponseModel.createSuccess(newEntry);
+    } catch (e) {
+      return ResponseModel.createError(e);
+    }
+  }
+
+  async getHistoryByPiece(pieceId: number): Promise<IResponseModel> {
+    try {
+      const history =
+        await this.maintenanceHistoryRepository.findByPieceId(pieceId);
+
+      const historyWithTypes = await Promise.all(
+        history.map(async (entry) => {
+          const maintenanceType = await this.maintenanceTypeRepository.findById(
+            entry.maintenanceTypeId,
+          );
+          return { ...entry, maintenanceType: maintenanceType! };
+        }),
+      );
+      return ResponseModel.createSuccess(historyWithTypes);
     } catch (e) {
       return ResponseModel.createError(e);
     }

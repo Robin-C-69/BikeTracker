@@ -10,7 +10,7 @@ import { theme } from "@/constants/theme";
 import { Divider } from "@/components/common/Divider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { initialCategories, initialTypes } from "@/database/seeds/initialData";
 import { useTranslation } from "react-i18next";
 import { Button, ButtonText } from "@/components/ui/button";
@@ -19,6 +19,12 @@ import { PieceHistory } from "@/components/history/PieceHistory";
 import { usePieceMutations } from "@/hooks/usePieceMutations";
 import { PieceWithDetails } from "@/database/models/PieceModel";
 import { useBikeContext } from "@/context/BikeContext";
+import {
+  calculateAndFormatAge,
+  capitalized,
+  formatDateToHumanString,
+} from "@/components/utils";
+import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 
 type Props = NativeStackScreenProps<PieceStackParamList, "PieceDetails">;
 
@@ -27,36 +33,32 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 export const PieceDetailsView = ({ navigation, route }: Props) => {
   const { piece } = route.params;
   const { t } = useTranslation();
+
   const { deletePiece } = usePieceMutations();
-  const { bikes, refreshBikes } = useBikeContext();
+
+  const { bikes } = useBikeContext();
   const currentBike = bikes.find((bike) => bike.id === piece.bikeId);
+
+  const { historyByPiece } = useMaintenanceHistoryStore();
+  const maintenanceHistory = useMemo(() => {
+    return historyByPiece[piece.id] ?? piece.maintenanceHistory ?? [];
+  }, [historyByPiece, piece.id, piece.maintenanceHistory]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const calculateAge = useCallback(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const installDate = new Date(piece.installDate);
-    installDate.setHours(0, 0, 0, 0);
-
-    const diffTime = Math.abs(today.getTime() - installDate.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 30) {
-      return t("age.days", { count: diffDays });
-    } else if (diffDays < 365) {
-      const months = Math.floor(diffDays / 30);
-      return t("age.months", { count: months });
-    } else {
-      const years = Math.floor(diffDays / 365);
-      return t("age.years", { count: years });
-    }
+  const formatDays = useCallback(() => {
+    return calculateAndFormatAge(piece.installDate, t);
   }, [piece.installDate, t]);
 
-  const capitalized = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  };
+  const calculateTraveledKm = useCallback(() => {
+    const currentBikeKm = currentBike?.totalKm;
+    const pieceInstalledKm = piece.installKm;
+    if (currentBikeKm != null && pieceInstalledKm != null) {
+      const traveledKm = currentBikeKm - pieceInstalledKm;
+      return traveledKm.toString();
+    }
+    return "-";
+  }, [currentBike?.totalKm, piece.installKm]);
 
   const formatTypeAndCategory = useCallback(() => {
     // Todo: get infos from the db instead of the initialData
@@ -64,14 +66,17 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
     const categoryName = pieceCategory.name;
     const typeName = initialTypes[pieceCategory.typeId - 1].name;
 
-    return `${t(capitalized(typeName))} • ${t(capitalized(categoryName))}`;
+    return `${t(`types.${capitalized(typeName)}`)} • ${t(`categories.${capitalized(categoryName)}`)}`;
   }, [piece.categoryId, t]);
 
   const getLastMaintenanceDate = useCallback(() => {
-    const lastHistoryEntry = piece.maintenanceHistory[-1] ?? null;
-    if (!lastHistoryEntry) return "-";
-    return lastHistoryEntry.date;
-  }, [piece.maintenanceHistory]);
+    if (!maintenanceHistory || maintenanceHistory.length === 0) return "-";
+    const lastHistoryEntry = maintenanceHistory[maintenanceHistory.length - 1];
+    if (lastHistoryEntry.date) {
+      return formatDateToHumanString(lastHistoryEntry.date);
+    }
+    return "-";
+  }, [maintenanceHistory]);
 
   const navigateToCreateHistoryEntry = () => {
     navigation.navigate("CreateHistoryEntry", {
@@ -93,11 +98,10 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const onDeletePiece = useCallback(
     async (piece: PieceWithDetails) => {
       await deletePiece(piece.id);
-      await refreshBikes();
       setShowDeleteModal(false);
       navigation.goBack();
     },
-    [deletePiece, navigation, refreshBikes],
+    [deletePiece, navigation],
   );
 
   const StatCard = ({ label, value }: { label: string; value: string }) => {
@@ -149,10 +153,10 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
       <View style={styles.cardsContainer}>
         <View style={styles.column}>
           <View style={styles.row}>
-            <StatCard label={"Age"} value={calculateAge()} />
+            <StatCard label={"Age"} value={formatDays()} />
           </View>
           <View style={styles.row}>
-            <StatCard label={"km_traveled"} value={"TODO"} />
+            <StatCard label={"km_traveled"} value={calculateTraveledKm()} />
           </View>
         </View>
         <View style={styles.column}>
@@ -171,7 +175,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
         <View>
           <Text style={styles.historyLabel}>{t("History")}</Text>
           <Text style={styles.historySubLabel}>
-            {piece.maintenanceHistory.length} {t("interventions_carried")}
+            {maintenanceHistory.length} {t("interventions_carried")}
           </Text>
         </View>
         <Button
@@ -182,7 +186,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
           <ButtonText style={styles.actionText}>{t("Add")}</ButtonText>
         </Button>
       </View>
-      <PieceHistory pieceHistory={piece.maintenanceHistory} />
+      <PieceHistory pieceHistory={maintenanceHistory} />
       <Modal
         animationType="fade"
         transparent={true}

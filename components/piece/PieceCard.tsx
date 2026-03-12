@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { StyleSheet, Text } from "react-native";
 import { Divider } from "@/components/common/Divider";
 import { Box } from "@/components/ui/box";
@@ -6,45 +6,44 @@ import { theme } from "@/constants/theme";
 import { Piece } from "@/database/models/PieceModel";
 import { useTranslation } from "react-i18next";
 import { initialCategories, initialTypes } from "@/database/seeds/initialData";
+import {
+  calculateAndFormatAge,
+  capitalized,
+  formatDateToHumanString,
+} from "@/components/utils";
+import { useMaintenanceHistoryStore } from "@/stores/historyStore";
+import { MaintenanceHistoryService } from "@/database/services/MaintenanceHistoryService";
+import { useDatabase } from "@/context/DatabaseContext";
 
 export const PieceCard = ({ piece }: { piece: Piece }) => {
   const { t } = useTranslation();
+  const { db } = useDatabase();
+  const { historyByPiece, setHistoryForPiece } = useMaintenanceHistoryStore();
 
-  const dateOptions = {
-    weekday: undefined,
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  } as const;
-  const pieceInstalledDate = new Date(piece.installDate).toLocaleDateString(
-    "fr",
-    dateOptions,
-  );
+  const currentPieceHistory = useMemo(() => {
+    return historyByPiece[piece.id];
+  }, [historyByPiece, piece.id]);
 
-  const calculateAge = useCallback(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  const maintenanceHistoryService = useMemo(() => {
+    if (!db) return null;
+    return new MaintenanceHistoryService(db);
+  }, [db]);
 
-    const installDate = new Date(piece.installDate);
-    installDate.setHours(0, 0, 0, 0);
-
-    const diffTime = Math.abs(today.getTime() - installDate.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 30) {
-      return t("age.days", { count: diffDays });
-    } else if (diffDays < 365) {
-      const months = Math.floor(diffDays / 30);
-      return t("age.months", { count: months });
-    } else {
-      const years = Math.floor(diffDays / 365);
-      return t("age.years", { count: years });
+  const lastMaintenanceDate = () => {
+    const lastHistory = currentPieceHistory?.[0] ?? null;
+    if (lastHistory) {
+      return formatDateToHumanString(lastHistory.date);
     }
-  }, [piece.installDate, t]);
-
-  const capitalized = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
+    return "-";
   };
+
+  const pieceInstalledDate = useCallback(() => {
+    return formatDateToHumanString(piece.installDate);
+  }, [piece.installDate]);
+
+  const formatDays = useCallback(() => {
+    return calculateAndFormatAge(piece.installDate, t);
+  }, [piece.installDate, t]);
 
   const formatTypeAndCategory = useCallback(() => {
     // Todo: get infos from the db instead of the initialData
@@ -52,8 +51,21 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
     const categoryName = pieceCategory.name;
     const typeName = initialTypes[pieceCategory.typeId - 1].name;
 
-    return `${t(capitalized(typeName))} • ${t(capitalized(categoryName))}`;
+    return `${t(`types.${capitalized(typeName)}`)} • ${t(`categories.${capitalized(categoryName)}`)}`;
   }, [piece.categoryId, t]);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      if (!maintenanceHistoryService) return;
+      const { data, error } = await maintenanceHistoryService.getHistoryByPiece(
+        piece.id,
+      );
+      if (!error && data) {
+        setHistoryForPiece(piece.id, data);
+      }
+    };
+    loadHistory();
+  }, [maintenanceHistoryService, piece.id, setHistoryForPiece]);
 
   return (
     <Box style={styles.card}>
@@ -69,21 +81,21 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
         <Box style={styles.column}>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Installed date")}</Text>
-            <Text style={styles.infoValue}>{pieceInstalledDate}</Text>
+            <Text style={styles.infoValue}>{pieceInstalledDate()}</Text>
           </Box>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Last Maintenance")}</Text>
-            <Text style={styles.infoValue}>1 mois</Text>
+            <Text style={styles.infoValue}>{lastMaintenanceDate()}</Text>
           </Box>
         </Box>
         <Box style={styles.column}>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Age")}</Text>
-            <Text style={styles.infoValue}>{calculateAge()}</Text>
+            <Text style={styles.infoValue}>{formatDays()}</Text>
           </Box>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Next action")}</Text>
-            <Text style={styles.infoValue}>Mars 2026</Text>
+            <Text style={styles.infoValue}>TODO</Text>
           </Box>
         </Box>
       </Box>

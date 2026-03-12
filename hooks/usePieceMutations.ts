@@ -2,9 +2,17 @@ import { useDatabase } from "@/context/DatabaseContext";
 import { useCallback, useMemo } from "react";
 import { PieceService } from "@/database/services/PieceService";
 import { CreatePiece } from "@/database/models/PieceModel";
+import { usePieceStore } from "@/stores/pieceStore";
+import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 
 export const usePieceMutations = () => {
   const { db } = useDatabase();
+  const {
+    addPiece,
+    updatePiece: updatePieceInStore,
+    removePiece,
+  } = usePieceStore();
+  const { removeAllHistoryEntriesForAPiece } = useMaintenanceHistoryStore();
 
   const pieceService = useMemo(() => {
     if (!db) return null;
@@ -15,12 +23,15 @@ export const usePieceMutations = () => {
     async (piece: CreatePiece) => {
       if (!pieceService) return;
       const { error, data: newPiece } = await pieceService.createPiece(piece);
-      if (error) {
+      if (error || !newPiece) {
         return null;
       }
-      return newPiece;
+      const { data: newPieceWithDetails } =
+        await pieceService.getPieceWithDetails(newPiece.id);
+      if (newPieceWithDetails) addPiece(newPieceWithDetails);
+      return newPieceWithDetails;
     },
-    [pieceService],
+    [addPiece, pieceService],
   );
 
   const updatePiece = useCallback(
@@ -33,20 +44,25 @@ export const usePieceMutations = () => {
       if (error) {
         return null;
       }
-      return updatedPiece;
+      const { data: pieceWithDetails } = await pieceService.getPieceWithDetails(
+        updatedPiece.id,
+      );
+      if (pieceWithDetails) updatePieceInStore(id, pieceWithDetails);
+      return pieceWithDetails;
     },
-    [pieceService],
+    [pieceService, updatePieceInStore],
   );
 
   const deletePiece = useCallback(
     async (id: number) => {
       if (!pieceService) return;
       const { error } = await pieceService.deletePiece(id);
-      if (error) {
-        return;
+      if (!error) {
+        removePiece(id);
+        removeAllHistoryEntriesForAPiece(id);
       }
     },
-    [pieceService],
+    [pieceService, removeAllHistoryEntriesForAPiece, removePiece],
   );
 
   return {

@@ -63,8 +63,7 @@ export default function CreatePieceForm({
       .number()
       .int()
       .min(0, "Kilometers cannot be negative")
-      .optional()
-      .nullable(),
+      .optional(),
   });
 
   const {
@@ -93,7 +92,7 @@ export default function CreatePieceForm({
         categoryId: data.categoryId,
         description: data.description,
         installDate: data.installDate || undefined,
-        installKm: data.installKm || undefined,
+        installKm: data.installKm ?? undefined,
       };
 
       if (isUpdate) {
