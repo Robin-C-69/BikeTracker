@@ -10,7 +10,7 @@ import { theme } from "@/constants/theme";
 import { Divider } from "@/components/common/Divider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { initialCategories, initialTypes } from "@/database/seeds/initialData";
 import { useTranslation } from "react-i18next";
 import { Button, ButtonText } from "@/components/ui/button";
@@ -19,7 +19,12 @@ import { PieceHistory } from "@/components/history/PieceHistory";
 import { usePieceMutations } from "@/hooks/usePieceMutations";
 import { PieceWithDetails } from "@/database/models/PieceModel";
 import { useBikeContext } from "@/context/BikeContext";
-import { calculateAndFormatAge, capitalized } from "@/components/utils";
+import {
+  calculateAndFormatAge,
+  capitalized,
+  formatDateToHumanString,
+} from "@/components/utils";
+import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 
 type Props = NativeStackScreenProps<PieceStackParamList, "PieceDetails">;
 
@@ -28,9 +33,16 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 export const PieceDetailsView = ({ navigation, route }: Props) => {
   const { piece } = route.params;
   const { t } = useTranslation();
+
   const { deletePiece } = usePieceMutations();
+
   const { bikes } = useBikeContext();
   const currentBike = bikes.find((bike) => bike.id === piece.bikeId);
+
+  const { historyByPiece } = useMaintenanceHistoryStore();
+  const maintenanceHistory = useMemo(() => {
+    return historyByPiece[piece.id] ?? piece.maintenanceHistory ?? [];
+  }, [historyByPiece, piece.id, piece.maintenanceHistory]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -54,16 +66,17 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
     const categoryName = pieceCategory.name;
     const typeName = initialTypes[pieceCategory.typeId - 1].name;
 
-    return `${t(capitalized(typeName))} • ${t(capitalized(categoryName))}`;
+    return `${t(`types.${capitalized(typeName)}`)} • ${t(`categories.${capitalized(categoryName)}`)}`;
   }, [piece.categoryId, t]);
 
   const getLastMaintenanceDate = useCallback(() => {
-    if (!piece.maintenanceHistory || piece.maintenanceHistory.length === 0)
-      return "-";
-    const lastHistoryEntry =
-      piece.maintenanceHistory[piece.maintenanceHistory.length - 1];
-    return lastHistoryEntry.date;
-  }, [piece.maintenanceHistory]);
+    if (!maintenanceHistory || maintenanceHistory.length === 0) return "-";
+    const lastHistoryEntry = maintenanceHistory[maintenanceHistory.length - 1];
+    if (lastHistoryEntry.date) {
+      return formatDateToHumanString(lastHistoryEntry.date);
+    }
+    return "-";
+  }, [maintenanceHistory]);
 
   const navigateToCreateHistoryEntry = () => {
     navigation.navigate("CreateHistoryEntry", {
@@ -162,7 +175,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
         <View>
           <Text style={styles.historyLabel}>{t("History")}</Text>
           <Text style={styles.historySubLabel}>
-            {piece.maintenanceHistory.length} {t("interventions_carried")}
+            {maintenanceHistory.length} {t("interventions_carried")}
           </Text>
         </View>
         <Button
@@ -173,7 +186,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
           <ButtonText style={styles.actionText}>{t("Add")}</ButtonText>
         </Button>
       </View>
-      <PieceHistory pieceHistory={piece.maintenanceHistory} />
+      <PieceHistory pieceHistory={maintenanceHistory} />
       <Modal
         animationType="fade"
         transparent={true}

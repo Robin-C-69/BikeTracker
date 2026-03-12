@@ -48,7 +48,7 @@ export default function RootLayout() {
             }}
           />
           <Tabs.Screen
-            name="index"
+            name="next"
             options={{
               title: "Next",
               tabBarIcon: ({ color }) => (
@@ -59,9 +59,7 @@ export default function RootLayout() {
                 />
               ),
               headerShown: true,
-              header: () => (
-                <CustomHeader title={APP_TITLE} showBackButton={false} />
-              ),
+              header: () => <CustomHeader title={APP_TITLE} />,
             }}
           />
         </Tabs>

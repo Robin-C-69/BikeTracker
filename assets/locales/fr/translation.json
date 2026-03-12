@@ -54,6 +54,13 @@
     "years_other": "{{count}} ans"
   },
 
+  "types": {
+    "Transmission": "Transmission",
+    "Braking": "Freins",
+    "Wheels & Tires": "Roues & Pneus",
+    "Suspension": "Suspension"
+  },
+
   "categories": {
     "Chain": "Chaîne",
     "Brake Pads": "Plaquettes de frein",

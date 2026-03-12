@@ -54,6 +54,13 @@
     "years_other": "{{count}} years"
   },
 
+  "types": {
+    "Transmission": "Transmission",
+    "Braking": "Braking",
+    "Wheels & Tires": "Wheels & Tires",
+    "Suspension": "Suspension"
+  },
+
   "categories": {
     "Chain": "Chain",
     "Brake Pads": "Brake Pads",

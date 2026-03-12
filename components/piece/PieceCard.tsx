@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { StyleSheet, Text } from "react-native";
 import { Divider } from "@/components/common/Divider";
 import { Box } from "@/components/ui/box";
@@ -11,9 +11,31 @@ import {
   capitalized,
   formatDateToHumanString,
 } from "@/components/utils";
+import { useMaintenanceHistoryStore } from "@/stores/historyStore";
+import { MaintenanceHistoryService } from "@/database/services/MaintenanceHistoryService";
+import { useDatabase } from "@/context/DatabaseContext";
 
 export const PieceCard = ({ piece }: { piece: Piece }) => {
   const { t } = useTranslation();
+  const { db } = useDatabase();
+  const { historyByPiece, setHistoryForPiece } = useMaintenanceHistoryStore();
+
+  const currentPieceHistory = useMemo(() => {
+    return historyByPiece[piece.id];
+  }, [historyByPiece, piece.id]);
+
+  const maintenanceHistoryService = useMemo(() => {
+    if (!db) return null;
+    return new MaintenanceHistoryService(db);
+  }, [db]);
+
+  const lastMaintenanceDate = () => {
+    const lastHistory = currentPieceHistory?.[0] ?? null;
+    if (lastHistory) {
+      return formatDateToHumanString(lastHistory.date);
+    }
+    return "-";
+  };
 
   const pieceInstalledDate = useCallback(() => {
     return formatDateToHumanString(piece.installDate);
@@ -29,8 +51,21 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
     const categoryName = pieceCategory.name;
     const typeName = initialTypes[pieceCategory.typeId - 1].name;
 
-    return `${t(capitalized(typeName))} • ${t(capitalized(categoryName))}`;
+    return `${t(`types.${capitalized(typeName)}`)} • ${t(`categories.${capitalized(categoryName)}`)}`;
   }, [piece.categoryId, t]);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      if (!maintenanceHistoryService) return;
+      const { data, error } = await maintenanceHistoryService.getHistoryByPiece(
+        piece.id,
+      );
+      if (!error && data) {
+        setHistoryForPiece(piece.id, data);
+      }
+    };
+    loadHistory();
+  }, [maintenanceHistoryService, piece.id, setHistoryForPiece]);
 
   return (
     <Box style={styles.card}>
@@ -50,7 +85,7 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
           </Box>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Last Maintenance")}</Text>
-            <Text style={styles.infoValue}>1 mois</Text>
+            <Text style={styles.infoValue}>{lastMaintenanceDate()}</Text>
           </Box>
         </Box>
         <Box style={styles.column}>
@@ -60,7 +95,7 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
           </Box>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Next action")}</Text>
-            <Text style={styles.infoValue}>Mars 2026</Text>
+            <Text style={styles.infoValue}>TODO</Text>
           </Box>
         </Box>
       </Box>

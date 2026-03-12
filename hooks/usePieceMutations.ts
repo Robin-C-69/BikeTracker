@@ -3,6 +3,7 @@ import { useCallback, useMemo } from "react";
 import { PieceService } from "@/database/services/PieceService";
 import { CreatePiece } from "@/database/models/PieceModel";
 import { usePieceStore } from "@/stores/pieceStore";
+import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 
 export const usePieceMutations = () => {
   const { db } = useDatabase();
@@ -11,6 +12,7 @@ export const usePieceMutations = () => {
     updatePiece: updatePieceInStore,
     removePiece,
   } = usePieceStore();
+  const { removeAllHistoryEntriesForAPiece } = useMaintenanceHistoryStore();
 
   const pieceService = useMemo(() => {
     if (!db) return null;
@@ -55,9 +57,12 @@ export const usePieceMutations = () => {
     async (id: number) => {
       if (!pieceService) return;
       const { error } = await pieceService.deletePiece(id);
-      if (!error) removePiece(id);
+      if (!error) {
+        removePiece(id);
+        removeAllHistoryEntriesForAPiece(id);
+      }
     },
-    [pieceService, removePiece],
+    [pieceService, removeAllHistoryEntriesForAPiece, removePiece],
   );
 
   return {
