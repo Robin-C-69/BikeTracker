@@ -1,4 +1,6 @@
 import { TFunction } from "i18next";
+import { PieceType } from "@/database/models/PieceTypeModel";
+import { Category } from "@/database/models/PieceCategoryModel";
 
 export const capitalized = (word: string) => {
   return word.charAt(0).toUpperCase() + word.slice(1);
@@ -36,4 +38,19 @@ export const formatDateToHumanString = (date: any) => {
     day: "numeric",
   } as const;
   return new Date(date).toLocaleDateString("fr", dateOptions);
+};
+
+export const formatPieceTypeAndCategory = (
+  categoryId: number,
+  pieceCategories: Category[],
+  pieceTypes: PieceType[],
+  t: TFunction<"translation", undefined>,
+): string => {
+  const pieceCategory = pieceCategories.find((c) => c.id === categoryId);
+  if (!pieceCategory) return "";
+
+  const pieceType = pieceTypes.find((t) => t.id === pieceCategory.typeId);
+  if (!pieceType) return "";
+
+  return `${t(`types.${capitalized(pieceType.name)}`)} • ${t(`categories.${capitalized(pieceCategory.name)}`)}`;
 };

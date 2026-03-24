@@ -73,9 +73,9 @@ export default function CreateBikeForm({
           <FormField
             control={control}
             name={"name"}
-            label={"Name"}
+            label={t("Name")}
             placeholder={"My super bike"}
-            helperText={"An easy to remind name to identify your bike"}
+            helperText={t("An easy to remind name to identify your bike")}
             isRequired={true}
             rules={{ required: t("field_required") }}
             error={errors.name?.message}
@@ -83,23 +83,23 @@ export default function CreateBikeForm({
           <FormField
             control={control}
             name={"brand"}
-            label={"Brand"}
+            label={t("Brand")}
             placeholder={"Eg: Trek, Specialized, Giant..."}
           />
           <FormField
             control={control}
             name={"model"}
-            label={"Model"}
+            label={t("Model")}
             placeholder={"Eg: Slash, Stumpjumper, Trance..."}
           />
           <FormField
             control={control}
             name={"totalKm"}
-            label={"Mileage"}
+            label={t("Mileage")}
             placeholder={"Eg: 0, 1500, 30000..."}
-            helperText={
-              "If you don't know the exact one, an estimation is enough"
-            }
+            helperText={t(
+              "If you don't know the exact one, an estimation is enough",
+            )}
             type={"numeric"}
             endText={"km"}
             rules={{

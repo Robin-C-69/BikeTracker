@@ -9,10 +9,19 @@ import { useEffect } from "react";
 import { Platform, StatusBar } from "react-native";
 import * as NavigationBar from "expo-navigation-bar";
 import CustomHeader from "@/components/common/CustomHeader";
+import * as SplashScreen from "expo-splash-screen";
+import { useTranslation } from "react-i18next";
 
 const APP_TITLE = "BikeTracker";
 
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
 export default function RootLayout() {
+  const { t } = useTranslation();
+
   useEffect(() => {
     const setupFullScreen = async () => {
       if (Platform.OS === "android") {
@@ -41,7 +50,7 @@ export default function RootLayout() {
           <Tabs.Screen
             name="bikes"
             options={{
-              title: "Bikes",
+              title: `${t("Bikes")}`,
               tabBarIcon: ({ color }) => (
                 <Ionicons name="bicycle" size={24} color={color} />
               ),
