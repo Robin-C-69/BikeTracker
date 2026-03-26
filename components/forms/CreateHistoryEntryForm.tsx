@@ -25,12 +25,12 @@ import {
 } from "@/components/ui/form-control";
 import { useEffect, useState } from "react";
 import { MaintenanceType } from "@/database/models/MaintenanceTypeModel";
-import { PieceTypeRepository } from "@/database/repositories/PieceTypeRepository";
 import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTypeRepository";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, ButtonText } from "@/components/ui/button";
 import { CreateMaintenanceHistory } from "@/database/models/MaintenanceHistoryModel";
 import { useMaintenanceHistory } from "@/hooks/useMaintenanceHistory";
+import { NotificationBar } from "@/components/common/NotificationBar";
 
 type Props = {
   pieceId: number;
@@ -123,10 +123,10 @@ export const CreateHistoryEntryForm = ({
     <Box style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <VStack space="md" style={styles.form}>
-          <View style={styles.header}>
+          <NotificationBar type="success">
             <Text style={styles.addTo}>{t("Add to")}</Text>
             <Text style={styles.pieceName}>{pieceName}</Text>
-          </View>
+          </NotificationBar>
           <FormControl isRequired={true}>
             <FormControlLabel>
               <FormControlLabelText style={styles.labelText}>
@@ -221,17 +221,6 @@ const styles = StyleSheet.create({
   },
   form: {
     margin: 25,
-  },
-  header: {
-    display: "flex",
-    padding: 10,
-    backgroundColor: theme.colors.greenHint,
-    borderRadius: 14,
-    borderLeftWidth: 5,
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-    borderTopWidth: 1,
-    borderColor: theme.colors.primaryDark,
   },
   addTo: {
     color: theme.colors.text.secondary,

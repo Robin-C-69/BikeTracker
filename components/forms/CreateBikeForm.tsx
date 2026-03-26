@@ -14,6 +14,7 @@ import FormField from "@/components/forms/fields/FormField";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { useBikeContext } from "@/context/BikeContext";
+import { NotificationBar } from "@/components/common/NotificationBar";
 
 export default function CreateBikeForm({
   onSuccess,
@@ -108,14 +109,14 @@ export default function CreateBikeForm({
             }}
             error={errors.totalKm?.message}
           />
-          <View style={styles.kmHint}>
+          <NotificationBar type="success" style={styles.kmHint}>
             <Ionicons
               name={"bulb-outline"}
               size={25}
               style={styles.kmHintIcon}
             />
             <Text style={styles.kmHintText}>{t("mileage_hint")}</Text>
-          </View>
+          </NotificationBar>
           <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
             <Text style={styles.buttonText}>
               {isUpdate ? t("Update") : t("Create")}
@@ -147,15 +148,9 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing(1),
   },
   kmHint: {
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
     marginTop: theme.spacing(-1),
-    backgroundColor: theme.colors.greenHint,
-    borderRadius: 14,
-    borderLeftWidth: 5,
-    borderLeftColor: theme.colors.primaryDark,
   },
   kmHintIcon: {
     color: theme.colors.warning,

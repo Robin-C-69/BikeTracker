@@ -30,6 +30,7 @@ import FormField from "@/components/forms/fields/FormField";
 import { theme } from "@/constants/theme";
 import { useTranslation } from "react-i18next";
 import { usePieceMutations } from "@/hooks/usePieceMutations";
+import { NotificationBar } from "@/components/common/NotificationBar";
 
 type Props = {
   bikeId: number;
@@ -113,7 +114,7 @@ export default function CreatePieceForm({
       try {
         if (!db) return;
         const categoryRepo = new PieceCategoryRepository(db);
-        const categoriesData = await categoryRepo.findAllCategories();
+        const categoriesData = await categoryRepo.findAll();
 
         setCategories(categoriesData);
       } catch (e) {
@@ -138,10 +139,10 @@ export default function CreatePieceForm({
     <Box style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <VStack space="md" style={styles.form}>
-          <View style={styles.header}>
+          <NotificationBar type="success">
             <Text style={styles.addTo}>{t("Add to")}</Text>
             <Text style={styles.bikeName}>{bikeName}</Text>
-          </View>
+          </NotificationBar>
           <FormField
             control={control}
             name={"name"}
@@ -252,17 +253,6 @@ const styles = StyleSheet.create({
   },
   form: {
     margin: 25,
-  },
-  header: {
-    display: "flex",
-    padding: 10,
-    backgroundColor: theme.colors.greenHint,
-    borderRadius: 14,
-    borderLeftWidth: 5,
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-    borderTopWidth: 1,
-    borderColor: theme.colors.primaryDark,
   },
   addTo: {
     color: theme.colors.text.secondary,
