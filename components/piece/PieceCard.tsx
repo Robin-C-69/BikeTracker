@@ -9,12 +9,13 @@ import {
   calculateAndFormatAge,
   formatDateToHumanString,
   formatPieceTypeAndCategory,
-} from "@/components/utils";
+} from "@/components/utils/stringFormatting";
 import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 import { MaintenanceHistoryService } from "@/database/services/MaintenanceHistoryService";
 import { useDatabase } from "@/context/DatabaseContext";
 import { usePieceCategory } from "@/hooks/usePieceCategory";
 import { usePieceType } from "@/hooks/usePieceType";
+import { nextMaintenanceAction } from "@/components/utils/typesCategoriesFunctions";
 
 export const PieceCard = ({ piece }: { piece: Piece }) => {
   const { t } = useTranslation();
@@ -31,6 +32,15 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
     if (!db) return null;
     return new MaintenanceHistoryService(db);
   }, [db]);
+
+  const nextAction = useMemo(() => {
+    if (!currentPieceHistory) return null;
+    return nextMaintenanceAction(currentPieceHistory, piece);
+  }, [currentPieceHistory, piece]);
+
+  const nextActionName = nextAction?.maintenanceName
+    ? `maintenance_type.${nextAction?.maintenanceName}`
+    : "-";
 
   const lastMaintenanceDate = () => {
     const lastHistory = currentPieceHistory?.[0] ?? null;
@@ -98,7 +108,7 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
           </Box>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Next action")}</Text>
-            <Text style={styles.infoValue}>TODO</Text>
+            <Text style={styles.infoValue}>{t(nextActionName)}</Text>
           </Box>
         </Box>
       </Box>

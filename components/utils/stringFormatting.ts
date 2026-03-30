@@ -6,18 +6,28 @@ export const capitalized = (word: string) => {
   return word.charAt(0).toUpperCase() + word.slice(1);
 };
 
+export const calculateDiffDays = (firstDate: any, lastDate?: any) => {
+  let secondDate: any;
+  if (lastDate) {
+    secondDate = lastDate;
+  } else {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    secondDate = today;
+  }
+  const installDate = new Date(firstDate);
+  installDate.setHours(0, 0, 0, 0);
+
+  const diffTime = Math.abs(secondDate.getTime() - installDate.getTime());
+
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+};
+
 export const calculateAndFormatAge = (
   startDate: any,
   t: TFunction<"translation", undefined>,
 ) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const installDate = new Date(startDate);
-  installDate.setHours(0, 0, 0, 0);
-
-  const diffTime = Math.abs(today.getTime() - installDate.getTime());
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const diffDays = calculateDiffDays(startDate);
 
   if (diffDays < 30) {
     return t("age.days", { count: diffDays });

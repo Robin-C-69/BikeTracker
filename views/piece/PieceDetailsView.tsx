@@ -22,10 +22,11 @@ import {
   calculateAndFormatAge,
   formatDateToHumanString,
   formatPieceTypeAndCategory,
-} from "@/components/utils";
+} from "@/components/utils/stringFormatting";
 import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 import { usePieceType } from "@/hooks/usePieceType";
 import { usePieceCategory } from "@/hooks/usePieceCategory";
+import { nextMaintenanceAction } from "@/components/utils/typesCategoriesFunctions";
 
 type Props = NativeStackScreenProps<PieceStackParamList, "PieceDetails">;
 
@@ -47,6 +48,11 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const maintenanceHistory = useMemo(() => {
     return historyByPiece[piece.id] ?? piece.maintenanceHistory ?? [];
   }, [historyByPiece, piece.id, piece.maintenanceHistory]);
+
+  const nextAction = nextMaintenanceAction(maintenanceHistory, piece);
+  const nextActionName = nextAction?.maintenanceName
+    ? `maintenance_type.${nextAction?.maintenanceName}`
+    : "-";
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -171,7 +177,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
             />
           </View>
           <View style={styles.row}>
-            <StatCard label={"Next action"} value={"TODO"} />
+            <StatCard label={"Next action"} value={nextActionName} />
           </View>
         </View>
       </View>
