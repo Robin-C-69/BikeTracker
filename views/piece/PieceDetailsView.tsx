@@ -81,8 +81,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
 
   const navigateToCreateHistoryEntry = () => {
     navigation.navigate("CreateHistoryEntry", {
-      pieceId: piece.id,
-      pieceName: piece.name,
+      pieceWithDetails: piece,
     });
   };
 

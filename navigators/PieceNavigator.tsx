@@ -10,7 +10,7 @@ export type PieceStackParamList = {
   CreatePiece: { bikeId: number; bikeName?: string };
   PieceDetails: { piece: PieceWithDetails; bikeName?: string };
   UpdatePiece: { bikeId: number; bikeName?: string; piece: PieceWithDetails };
-  CreateHistoryEntry: { pieceId: number; pieceName: string };
+  CreateHistoryEntry: { pieceWithDetails: PieceWithDetails };
 };
 
 const Stack = createNativeStackNavigator<PieceStackParamList>();

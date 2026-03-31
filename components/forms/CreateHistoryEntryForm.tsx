@@ -23,7 +23,7 @@ import {
   FormControlLabel,
   FormControlLabelText,
 } from "@/components/ui/form-control";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MaintenanceType } from "@/database/models/MaintenanceTypeModel";
 import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTypeRepository";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -31,20 +31,21 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { CreateMaintenanceHistory } from "@/database/models/MaintenanceHistoryModel";
 import { useMaintenanceHistory } from "@/hooks/useMaintenanceHistory";
 import { NotificationBar } from "@/components/common/NotificationBar";
+import { PieceWithDetails } from "@/database/models/PieceModel";
+import { initialCategoryMaintenanceLinks } from "@/database/seeds/initialData";
 
 type Props = {
-  pieceId: number;
-  pieceName: string;
+  piece: PieceWithDetails;
   onSuccess: () => void;
   onCancel: () => void;
 };
 
 export const CreateHistoryEntryForm = ({
-  pieceId,
-  pieceName,
+  piece,
   onSuccess,
   onCancel,
 }: Props) => {
+  const { id: pieceId, name: pieceName, categoryId: pieceCategoryId } = piece;
   const { db } = useDatabase();
   const { t } = useTranslation();
   const { createHistoryEntry } = useMaintenanceHistory();
@@ -75,6 +76,19 @@ export const CreateHistoryEntryForm = ({
     },
   });
 
+  const filterTypesForPiece = useCallback(
+    (types: MaintenanceType[], pieceCategoryId: number) => {
+      const maintenanceLinks = initialCategoryMaintenanceLinks.filter(
+        (link) => link.categoryId === pieceCategoryId,
+      );
+      const linkedTypeIds = maintenanceLinks.map(
+        (link) => link.maintenanceTypeId,
+      );
+      return types.filter((type) => linkedTypeIds.includes(type.id));
+    },
+    [],
+  );
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (!db) return;
 
@@ -100,7 +114,8 @@ export const CreateHistoryEntryForm = ({
         if (!db) return;
         const typeRepo = new MaintenanceTypeRepository(db);
         const typeData = await typeRepo.findAll();
-        setMaintenanceTypes(typeData);
+        const typesForPiece = filterTypesForPiece(typeData, pieceCategoryId);
+        setMaintenanceTypes(typesForPiece);
       } catch (e) {
         console.error("Failed to load types or categories", e);
         Alert.alert("Error", "Failed to load types or categories");
@@ -109,7 +124,7 @@ export const CreateHistoryEntryForm = ({
       }
     };
     loadData();
-  }, [db]);
+  }, [db, filterTypesForPiece, pieceCategoryId]);
 
   if (isLoading) {
     return (
