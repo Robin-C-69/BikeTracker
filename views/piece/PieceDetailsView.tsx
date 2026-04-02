@@ -11,7 +11,6 @@ import { Divider } from "@/components/common/Divider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
 import React, { useCallback, useMemo, useState } from "react";
-import { initialCategories, initialTypes } from "@/database/seeds/initialData";
 import { useTranslation } from "react-i18next";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,10 +20,13 @@ import { PieceWithDetails } from "@/database/models/PieceModel";
 import { useBikeContext } from "@/context/BikeContext";
 import {
   calculateAndFormatAge,
-  capitalized,
   formatDateToHumanString,
-} from "@/components/utils";
+  formatPieceTypeAndCategory,
+} from "@/components/utils/stringFormatting";
 import { useMaintenanceHistoryStore } from "@/stores/historyStore";
+import { usePieceType } from "@/hooks/usePieceType";
+import { usePieceCategory } from "@/hooks/usePieceCategory";
+import { nextMaintenanceAction } from "@/components/utils/typesCategoriesFunctions";
 
 type Props = NativeStackScreenProps<PieceStackParamList, "PieceDetails">;
 
@@ -39,10 +41,18 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const { bikes } = useBikeContext();
   const currentBike = bikes.find((bike) => bike.id === piece.bikeId);
 
+  const { pieceCategories, loading: pieceCategoryLoading } = usePieceCategory();
+  const { pieceTypes, loading: pieceTypesLoading } = usePieceType();
+
   const { historyByPiece } = useMaintenanceHistoryStore();
   const maintenanceHistory = useMemo(() => {
     return historyByPiece[piece.id] ?? piece.maintenanceHistory ?? [];
   }, [historyByPiece, piece.id, piece.maintenanceHistory]);
+
+  const nextAction = nextMaintenanceAction(maintenanceHistory, piece);
+  const nextActionName = nextAction?.maintenanceName
+    ? `maintenance_type.${nextAction?.maintenanceName}`
+    : "-";
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -60,15 +70,6 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
     return "-";
   }, [currentBike?.totalKm, piece.installKm]);
 
-  const formatTypeAndCategory = useCallback(() => {
-    // Todo: get infos from the db instead of the initialData
-    const pieceCategory = initialCategories[piece.categoryId - 1];
-    const categoryName = pieceCategory.name;
-    const typeName = initialTypes[pieceCategory.typeId - 1].name;
-
-    return `${t(`types.${capitalized(typeName)}`)} • ${t(`categories.${capitalized(categoryName)}`)}`;
-  }, [piece.categoryId, t]);
-
   const getLastMaintenanceDate = useCallback(() => {
     if (!maintenanceHistory || maintenanceHistory.length === 0) return "-";
     const lastHistoryEntry = maintenanceHistory[maintenanceHistory.length - 1];
@@ -80,8 +81,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
 
   const navigateToCreateHistoryEntry = () => {
     navigation.navigate("CreateHistoryEntry", {
-      pieceId: piece.id,
-      pieceName: piece.name,
+      pieceWithDetails: piece,
     });
   };
 
@@ -118,9 +118,18 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
       <View style={styles.headerContainer}>
         <View style={styles.headerDetails}>
           <Text style={styles.pieceName}>{piece.name}</Text>
-          <View style={styles.chipContainer}>
-            <Text style={styles.chip}>{formatTypeAndCategory()}</Text>
-          </View>
+          {!pieceTypesLoading && !pieceCategoryLoading && (
+            <View style={styles.chipContainer}>
+              <Text style={styles.chip}>
+                {formatPieceTypeAndCategory(
+                  piece.categoryId,
+                  pieceCategories,
+                  pieceTypes,
+                  t,
+                )}
+              </Text>
+            </View>
+          )}
           {piece.description && (
             <Text style={styles.pieceDescription}>{piece.description}</Text>
           )}
@@ -167,7 +176,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
             />
           </View>
           <View style={styles.row}>
-            <StatCard label={"Next action"} value={"TODO"} />
+            <StatCard label={"Next action"} value={nextActionName} />
           </View>
         </View>
       </View>

@@ -1,52 +1,85 @@
 # BikeTracker
 
-# Welcome to your Expo app 👋
+<div style="text-align: center">
+  <img src="assets/images/logo.png" alt="BikeTracker icon" width="300" />
+</div>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+---
 
-## Get started
+<!-- TABLE OF CONTENTS -->
+## Table of Contents
+1. [About The Project](#about-the-project)
+2. [Getting Started](#getting-started)
 
-1. Install dependencies
+<!-- ABOUT THE PROJECT -->
+<br/>
 
-   ```bash
-   npm install
-   ```
+## About The Project
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+This project aims to help you to manage your bike lifecycle.
+It gives you the opportunity to add a bike, its pieces and the maintenance history.
 
-In the output, you'll find options to open the app in a
+No more need to remember when was the last bleeding or chain replacement, just check the app.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Built With
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+The app is built using Expo framework and currently only works on local
 
-## Get a fresh project
+* [![Expo][Expo]][Expo-url]
+* [![React][React-Native]][React-Native-url]
+* [![Typescript][Typescript]][Typescript-url]
+* [![Sqlite][Sqlite]][Sqlite-url]
 
-When you're ready, run:
+<!-- GETTING STARTED -->
+<br/>
+
+## Getting Started
+
+---
+
+### Prerequisites
+
+Having a computer, an Android or iOS mobile.
+
+_P.S.: If you want to use an iOS device, you need to compile it yourself since it's not free and I don't want to spend money for this_
+
+
+### Installation
+**On Android**
+1. Follow this link: https://expo.dev/accounts/coincoin628/projects/BikeTracker/builds/9339c728-8844-4284-bd7d-0292bf6f2ecd
+2. Click on the latest build
+3. Click on `Install`
+4. Scan the QR code with your device to download the apk
+5. Install the apk (maybe you will need to allow the installation from unknown sources)
+
+**On computer**
+1. Clone the project
 
 ```bash
-npm run reset-project
+git clone https://github.com/Robin-C-69/BikeTracker.git
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Install the dependencies
 
-## Learn more
+```bash
+npm i
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+3. Run it !
+```shell
+npx expo start
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Warning: I didn't optimize the project for pc usage, so it can less clean as the android version
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<!-- MARKDOWN LINKS & IMAGES -->
+[Expo]: https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=fff
+[Expo-url]: https://expo.dev/
+[React-Native]: https://img.shields.io/badge/React_Native-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB
+[React-Native-url]: https://reactnative.dev/
+[Typescript]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=fff
+[Typescript-url]: https://www.typescriptlang.org/
+[Sqlite]: https://img.shields.io/badge/SQLite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white
+[Sqlite-url]: https://sqlite.org/index.html

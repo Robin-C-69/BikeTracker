@@ -97,16 +97,14 @@ export class PieceService implements IPieceService {
         return ResponseModel.createError(`Piece with id ${id} not found`);
       }
 
-      const category = await this.categoryRepository.findCategoryById(
-        piece.categoryId,
-      );
+      const category = await this.categoryRepository.findById(piece.categoryId);
       if (!category) {
         return ResponseModel.createError(
           `Category with ${piece.categoryId} not found`,
         );
       }
 
-      const type = await this.typeRepository.findTypeById(category.typeId);
+      const type = await this.typeRepository.findById(category.typeId);
       if (!type) {
         return ResponseModel.createError(
           `Type with ${category.typeId} not found`,

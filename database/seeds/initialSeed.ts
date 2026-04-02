@@ -53,9 +53,9 @@ export const seedInitialData = (): void => {
 
     initialMaintenanceTypes.forEach((type) => {
       db.runSync(
-        `INSERT INTO ${MAINTENANCE_TYPE_TABLE_NAME} (name, description, recommendedKm, recommendedDays) 
-         VALUES (?, ?, ?, ?)`,
-        [type.name, type.description, type.recommendedKm, type.recommendedDays],
+        `INSERT INTO ${MAINTENANCE_TYPE_TABLE_NAME} (name, description, isCritical) 
+         VALUES (?, ?, ?)`,
+        [type.name, type.description, type.isCritical],
       );
     });
 
@@ -65,8 +65,13 @@ export const seedInitialData = (): void => {
 
     initialCategoryMaintenanceLinks.forEach((cat) => {
       db.runSync(
-        `INSERT INTO ${CATEGORY_MAINTENANCE_TYPE_TABLE_NAME} (categoryId, maintenanceTypeId) VALUES (?, ?)`,
-        [cat.categoryId, cat.maintenanceTypeId],
+        `INSERT INTO ${CATEGORY_MAINTENANCE_TYPE_TABLE_NAME} (categoryId, maintenanceTypeId, recommendedKm, recommendedDays) VALUES (?, ?, ?, ?)`,
+        [
+          cat.categoryId,
+          cat.maintenanceTypeId,
+          cat.recommendedKm,
+          cat.recommendedDays,
+        ],
       );
     });
     console.log(

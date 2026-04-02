@@ -6,9 +6,9 @@ export const colors = {
   surface: "#22272e",
   surfaceVariant: "#3b3f46",
   error: "#ff4444",
-  errorDark: "#cc0000",
-  warning: "#fbbf24",
-  warningDark: "#f59e0b",
+  errorDark: "rgba(211, 47, 47, 0.08)",
+  warning: "#ff9800",
+  warningDark: "rgba(255, 193, 7, 0.08)",
   success: "#22c55e",
   greenHint: "rgba(34, 179, 131, 0.08)",
   text: {

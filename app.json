@@ -27,7 +27,7 @@
           "image": "./assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#0B1924"
         }
       ],
       "expo-sqlite"
@@ -40,6 +40,12 @@
       "eas": {
         "projectId": "29eda9d7-03a7-47a2-a81a-3ac668904f1c"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/29eda9d7-03a7-47a2-a81a-3ac668904f1c"
     }
   }
 }

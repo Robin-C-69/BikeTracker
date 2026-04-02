@@ -8,7 +8,7 @@ import { theme } from "@/constants/theme";
 type Props = NativeStackScreenProps<PieceStackParamList, "CreateHistoryEntry">;
 
 export const CreateHistoryEntryView = ({ navigation, route }: Props) => {
-  const { pieceId, pieceName } = route.params;
+  const { pieceWithDetails } = route.params;
 
   const onHistoryAdded = () => {
     navigation.goBack();
@@ -21,8 +21,7 @@ export const CreateHistoryEntryView = ({ navigation, route }: Props) => {
   return (
     <Box style={styles.container}>
       <CreateHistoryEntryForm
-        pieceId={pieceId}
-        pieceName={pieceName}
+        piece={pieceWithDetails}
         onSuccess={onHistoryAdded}
         onCancel={onCancel}
       />

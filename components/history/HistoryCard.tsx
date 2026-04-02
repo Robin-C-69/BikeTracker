@@ -4,7 +4,7 @@ import { Divider } from "@/components/common/Divider";
 import { theme } from "@/constants/theme";
 import { useTranslation } from "react-i18next";
 import { useCallback } from "react";
-import { formatDateToHumanString } from "@/components/utils";
+import { formatDateToHumanString } from "@/components/utils/stringFormatting";
 
 export const HistoryCard = ({
   historyEntry,

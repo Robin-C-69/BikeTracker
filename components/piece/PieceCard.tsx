@@ -5,20 +5,24 @@ import { Box } from "@/components/ui/box";
 import { theme } from "@/constants/theme";
 import { Piece } from "@/database/models/PieceModel";
 import { useTranslation } from "react-i18next";
-import { initialCategories, initialTypes } from "@/database/seeds/initialData";
 import {
   calculateAndFormatAge,
-  capitalized,
   formatDateToHumanString,
-} from "@/components/utils";
+  formatPieceTypeAndCategory,
+} from "@/components/utils/stringFormatting";
 import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 import { MaintenanceHistoryService } from "@/database/services/MaintenanceHistoryService";
 import { useDatabase } from "@/context/DatabaseContext";
+import { usePieceCategory } from "@/hooks/usePieceCategory";
+import { usePieceType } from "@/hooks/usePieceType";
+import { nextMaintenanceAction } from "@/components/utils/typesCategoriesFunctions";
 
 export const PieceCard = ({ piece }: { piece: Piece }) => {
   const { t } = useTranslation();
   const { db } = useDatabase();
   const { historyByPiece, setHistoryForPiece } = useMaintenanceHistoryStore();
+  const { pieceCategories, loading: pieceCategoryLoading } = usePieceCategory();
+  const { pieceTypes, loading: pieceTypesLoading } = usePieceType();
 
   const currentPieceHistory = useMemo(() => {
     return historyByPiece[piece.id];
@@ -28,6 +32,15 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
     if (!db) return null;
     return new MaintenanceHistoryService(db);
   }, [db]);
+
+  const nextAction = useMemo(() => {
+    if (!currentPieceHistory) return null;
+    return nextMaintenanceAction(currentPieceHistory, piece);
+  }, [currentPieceHistory, piece]);
+
+  const nextActionName = nextAction?.maintenanceName
+    ? `maintenance_type.${nextAction?.maintenanceName}`
+    : "-";
 
   const lastMaintenanceDate = () => {
     const lastHistory = currentPieceHistory?.[0] ?? null;
@@ -44,15 +57,6 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
   const formatDays = useCallback(() => {
     return calculateAndFormatAge(piece.installDate, t);
   }, [piece.installDate, t]);
-
-  const formatTypeAndCategory = useCallback(() => {
-    // Todo: get infos from the db instead of the initialData
-    const pieceCategory = initialCategories[piece.categoryId - 1];
-    const categoryName = pieceCategory.name;
-    const typeName = initialTypes[pieceCategory.typeId - 1].name;
-
-    return `${t(`types.${capitalized(typeName)}`)} • ${t(`categories.${capitalized(categoryName)}`)}`;
-  }, [piece.categoryId, t]);
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -72,7 +76,16 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
       <Box style={styles.headerRow}>
         <Box>
           <Text style={styles.name}>{piece.name}</Text>
-          <Text style={styles.typeAndCategory}>{formatTypeAndCategory()}</Text>
+          {!pieceTypesLoading && !pieceCategoryLoading && (
+            <Text style={styles.typeAndCategory}>
+              {formatPieceTypeAndCategory(
+                piece.categoryId,
+                pieceCategories,
+                pieceTypes,
+                t,
+              )}
+            </Text>
+          )}
           <Text style={styles.description}>{piece.description}</Text>
         </Box>
       </Box>
@@ -95,7 +108,7 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
           </Box>
           <Box style={styles.row}>
             <Text style={styles.infoLabel}>{t("Next action")}</Text>
-            <Text style={styles.infoValue}>TODO</Text>
+            <Text style={styles.infoValue}>{t(nextActionName)}</Text>
           </Box>
         </Box>
       </Box>

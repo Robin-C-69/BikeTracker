@@ -1,6 +1,6 @@
 import { useDatabase } from "@/context/DatabaseContext";
 import { useTranslation } from "react-i18next";
-import z from "zod";
+import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box } from "@/components/ui/box";
@@ -23,28 +23,29 @@ import {
   FormControlLabel,
   FormControlLabelText,
 } from "@/components/ui/form-control";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MaintenanceType } from "@/database/models/MaintenanceTypeModel";
-import { PieceTypeRepository } from "@/database/repositories/PieceTypeRepository";
 import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTypeRepository";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, ButtonText } from "@/components/ui/button";
 import { CreateMaintenanceHistory } from "@/database/models/MaintenanceHistoryModel";
 import { useMaintenanceHistory } from "@/hooks/useMaintenanceHistory";
+import { NotificationBar } from "@/components/common/NotificationBar";
+import { PieceWithDetails } from "@/database/models/PieceModel";
+import { initialCategoryMaintenanceLinks } from "@/database/seeds/initialData";
 
 type Props = {
-  pieceId: number;
-  pieceName: string;
+  piece: PieceWithDetails;
   onSuccess: () => void;
   onCancel: () => void;
 };
 
 export const CreateHistoryEntryForm = ({
-  pieceId,
-  pieceName,
+  piece,
   onSuccess,
   onCancel,
 }: Props) => {
+  const { id: pieceId, name: pieceName, categoryId: pieceCategoryId } = piece;
   const { db } = useDatabase();
   const { t } = useTranslation();
   const { createHistoryEntry } = useMaintenanceHistory();
@@ -75,6 +76,19 @@ export const CreateHistoryEntryForm = ({
     },
   });
 
+  const filterTypesForPiece = useCallback(
+    (types: MaintenanceType[], pieceCategoryId: number) => {
+      const maintenanceLinks = initialCategoryMaintenanceLinks.filter(
+        (link) => link.categoryId === pieceCategoryId,
+      );
+      const linkedTypeIds = maintenanceLinks.map(
+        (link) => link.maintenanceTypeId,
+      );
+      return types.filter((type) => linkedTypeIds.includes(type.id));
+    },
+    [],
+  );
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (!db) return;
 
@@ -100,7 +114,8 @@ export const CreateHistoryEntryForm = ({
         if (!db) return;
         const typeRepo = new MaintenanceTypeRepository(db);
         const typeData = await typeRepo.findAll();
-        setMaintenanceTypes(typeData);
+        const typesForPiece = filterTypesForPiece(typeData, pieceCategoryId);
+        setMaintenanceTypes(typesForPiece);
       } catch (e) {
         console.error("Failed to load types or categories", e);
         Alert.alert("Error", "Failed to load types or categories");
@@ -109,7 +124,7 @@ export const CreateHistoryEntryForm = ({
       }
     };
     loadData();
-  }, [db]);
+  }, [db, filterTypesForPiece, pieceCategoryId]);
 
   if (isLoading) {
     return (
@@ -123,10 +138,10 @@ export const CreateHistoryEntryForm = ({
     <Box style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <VStack space="md" style={styles.form}>
-          <View style={styles.header}>
+          <NotificationBar type="success">
             <Text style={styles.addTo}>{t("Add to")}</Text>
             <Text style={styles.pieceName}>{pieceName}</Text>
-          </View>
+          </NotificationBar>
           <FormControl isRequired={true}>
             <FormControlLabel>
               <FormControlLabelText style={styles.labelText}>
@@ -221,17 +236,6 @@ const styles = StyleSheet.create({
   },
   form: {
     margin: 25,
-  },
-  header: {
-    display: "flex",
-    padding: 10,
-    backgroundColor: theme.colors.greenHint,
-    borderRadius: 14,
-    borderLeftWidth: 5,
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-    borderTopWidth: 1,
-    borderColor: theme.colors.primaryDark,
   },
   addTo: {
     color: theme.colors.text.secondary,

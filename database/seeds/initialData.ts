@@ -48,89 +48,224 @@ const initialMaintenanceTypes: CreateMaintenanceType[] = [
   {
     name: "Replace",
     description: "Replace worn or damaged component",
-    recommendedKm: -1,
-    recommendedDays: -1,
+    isCritical: true,
   },
   {
     name: "Bleed",
     description: "Bleed hydraulic system",
-    recommendedKm: -1,
-    recommendedDays: 365,
+    isCritical: true,
   },
   {
     name: "Revision",
     description: "General maintenance",
-    recommendedKm: -1,
-    recommendedDays: 365,
+    isCritical: true,
   },
   {
     name: "Tubeless",
     description: "Add sealant in the tire",
-    recommendedKm: -1,
-    recommendedDays: 180,
+    isCritical: false,
   },
   {
     name: "Inspection",
     description: "Visual inspection for wear and damage",
-    recommendedKm: 500,
-    recommendedDays: 30,
+    isCritical: false,
   },
   {
     name: "Adjustment",
     description: "Adjust tension, alignment, or settings",
-    recommendedKm: -1,
-    recommendedDays: -1,
+    isCritical: false,
   },
 ];
 
 const initialCategoryMaintenanceLinks = [
-  // Chain (1): Replace, Inspection, Adjustment
-  { categoryId: 1, maintenanceTypeId: 1 },
-  { categoryId: 1, maintenanceTypeId: 5 },
-  { categoryId: 1, maintenanceTypeId: 6 },
+  // ── Chain (1) ──────────────────────────────────────────────────────────────
+  // Chains wear fast; replace yearly or ~2000 km, inspect every 500 km
+  {
+    categoryId: 1,
+    maintenanceTypeId: 1,
+    recommendedKm: 2000,
+    recommendedDays: 365,
+  }, // Replace
+  {
+    categoryId: 1,
+    maintenanceTypeId: 5,
+    recommendedKm: 500,
+    recommendedDays: null,
+  }, // Inspection
+  {
+    categoryId: 1,
+    maintenanceTypeId: 6,
+    recommendedKm: null,
+    recommendedDays: null,
+  }, // Adjustment (on demand)
 
-  // Cassette (2): Replace, Inspection
-  { categoryId: 2, maintenanceTypeId: 1 },
-  { categoryId: 2, maintenanceTypeId: 5 },
+  // ── Cassette (2) ───────────────────────────────────────────────────────────
+  // Cassettes last ~2–3 chains; replace every ~2 years or 4000 km
+  {
+    categoryId: 2,
+    maintenanceTypeId: 1,
+    recommendedKm: 4000,
+    recommendedDays: 728,
+  }, // Replace
+  {
+    categoryId: 2,
+    maintenanceTypeId: 5,
+    recommendedKm: 500,
+    recommendedDays: null,
+  }, // Inspection
 
-  // Chainring (3): Replace, Inspection
-  { categoryId: 3, maintenanceTypeId: 1 },
-  { categoryId: 3, maintenanceTypeId: 5 },
+  // ── Chainring (3) ──────────────────────────────────────────────────────────
+  // Chainrings wear slower; replace every ~3 years or 6000 km
+  {
+    categoryId: 3,
+    maintenanceTypeId: 1,
+    recommendedKm: 6000,
+    recommendedDays: null,
+  }, // Replace
+  {
+    categoryId: 3,
+    maintenanceTypeId: 5,
+    recommendedKm: 1000,
+    recommendedDays: null,
+  }, // Inspection
 
-  // Derailleur (4): Replace, Adjustment
-  { categoryId: 4, maintenanceTypeId: 1 },
-  { categoryId: 4, maintenanceTypeId: 6 },
+  // ── Derailleur (4) ─────────────────────────────────────────────────────────
+  // No fixed lifespan; replace on damage, adjust regularly
+  {
+    categoryId: 4,
+    maintenanceTypeId: 1,
+    recommendedKm: null,
+    recommendedDays: null,
+  }, // Replace (on demand)
+  {
+    categoryId: 4,
+    maintenanceTypeId: 6,
+    recommendedKm: 500,
+    recommendedDays: null,
+  }, // Adjustment
 
-  // Shifters (5): Replace, Adjustment
-  { categoryId: 5, maintenanceTypeId: 1 },
-  { categoryId: 5, maintenanceTypeId: 6 },
+  // ── Shifters (5) ───────────────────────────────────────────────────────────
+  // No fixed lifespan; replace on damage, adjust regularly
+  {
+    categoryId: 5,
+    maintenanceTypeId: 1,
+    recommendedKm: null,
+    recommendedDays: null,
+  }, // Replace (on demand)
+  {
+    categoryId: 5,
+    maintenanceTypeId: 6,
+    recommendedKm: 500,
+    recommendedDays: null,
+  }, // Adjustment
 
-  // Brake Pads (6): Replace, Inspection
-  { categoryId: 6, maintenanceTypeId: 1 },
-  { categoryId: 6, maintenanceTypeId: 5 },
+  // ── Brake Pads (6) ─────────────────────────────────────────────────────────
+  // Highly dependent on conditions; inspect every 500 km
+  {
+    categoryId: 6,
+    maintenanceTypeId: 1,
+    recommendedKm: null,
+    recommendedDays: null,
+  }, // Replace (wear-based)
+  {
+    categoryId: 6,
+    maintenanceTypeId: 5,
+    recommendedKm: 500,
+    recommendedDays: null,
+  }, // Inspection
 
-  // Brake Rotors (7): Replace, Inspection
-  { categoryId: 7, maintenanceTypeId: 1 },
-  { categoryId: 7, maintenanceTypeId: 5 },
+  // ── Brake Rotors (7) ───────────────────────────────────────────────────────
+  // Long lifespan; replace every ~3 years or 5000 km
+  {
+    categoryId: 7,
+    maintenanceTypeId: 1,
+    recommendedKm: 5000,
+    recommendedDays: null,
+  }, // Replace
+  {
+    categoryId: 7,
+    maintenanceTypeId: 5,
+    recommendedKm: 1000,
+    recommendedDays: null,
+  }, // Inspection
 
-  // Brake System (8): Bleed, Inspection, Adjustment
-  { categoryId: 8, maintenanceTypeId: 2 },
-  { categoryId: 8, maintenanceTypeId: 5 },
-  { categoryId: 8, maintenanceTypeId: 6 },
+  // ── Brake System (8) ───────────────────────────────────────────────────────
+  // Bleed hydraulics yearly; inspect regularly
+  {
+    categoryId: 8,
+    maintenanceTypeId: 2,
+    recommendedKm: null,
+    recommendedDays: 365,
+  }, // Bleed
+  {
+    categoryId: 8,
+    maintenanceTypeId: 5,
+    recommendedKm: 500,
+    recommendedDays: null,
+  }, // Inspection
+  {
+    categoryId: 8,
+    maintenanceTypeId: 6,
+    recommendedKm: null,
+    recommendedDays: null,
+  }, // Adjustment (on demand)
 
-  // Tires (9): Tubeless, Inspection
-  { categoryId: 9, maintenanceTypeId: 4 },
-  { categoryId: 9, maintenanceTypeId: 5 },
+  // ── Tires (9) ──────────────────────────────────────────────────────────────
+  // Refresh tubeless sealant every 6 months; inspect every ride / 200 km
+  {
+    categoryId: 9,
+    maintenanceTypeId: 4,
+    recommendedKm: null,
+    recommendedDays: 180,
+  }, // Tubeless
+  {
+    categoryId: 9,
+    maintenanceTypeId: 5,
+    recommendedKm: 200,
+    recommendedDays: null,
+  }, // Inspection
 
-  // Front Fork (10): Revision, Inspection, Adjustment
-  { categoryId: 10, maintenanceTypeId: 3 },
-  { categoryId: 10, maintenanceTypeId: 5 },
-  { categoryId: 10, maintenanceTypeId: 6 },
+  // ── Front Fork (10) ────────────────────────────────────────────────────────
+  // Full service (lowers + damper) every year or 125 h riding
+  {
+    categoryId: 10,
+    maintenanceTypeId: 3,
+    recommendedKm: null,
+    recommendedDays: 365,
+  }, // Revision
+  {
+    categoryId: 10,
+    maintenanceTypeId: 5,
+    recommendedKm: 500,
+    recommendedDays: null,
+  }, // Inspection
+  {
+    categoryId: 10,
+    maintenanceTypeId: 6,
+    recommendedKm: null,
+    recommendedDays: null,
+  }, // Adjustment (on demand)
 
-  // Rear Shock (11): Revision, Inspection, Adjustment
-  { categoryId: 11, maintenanceTypeId: 3 },
-  { categoryId: 11, maintenanceTypeId: 5 },
-  { categoryId: 11, maintenanceTypeId: 6 },
+  // ── Rear Shock (11) ────────────────────────────────────────────────────────
+  // Full service every year or 125 h riding
+  {
+    categoryId: 11,
+    maintenanceTypeId: 3,
+    recommendedKm: null,
+    recommendedDays: 365,
+  }, // Revision
+  {
+    categoryId: 11,
+    maintenanceTypeId: 5,
+    recommendedKm: 500,
+    recommendedDays: null,
+  }, // Inspection
+  {
+    categoryId: 11,
+    maintenanceTypeId: 6,
+    recommendedKm: null,
+    recommendedDays: null,
+  }, // Adjustment (on demand)
 ];
 
 export {
