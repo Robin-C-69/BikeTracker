@@ -48,7 +48,7 @@ _P.S.: If you want to use an iOS device, you need to compile it yourself since i
 
 ### Installation
 **On Android**
-1. Follow this link: https://expo.dev/accounts/coincoin628/projects/BikeTracker/builds
+1. Follow this link: https://expo.dev/accounts/coincoin628/projects/BikeTracker/builds/9339c728-8844-4284-bd7d-0292bf6f2ecd
 2. Click on the latest build
 3. Click on `Install`
 4. Scan the QR code with your device to download the apk
