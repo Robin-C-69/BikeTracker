@@ -11,6 +11,13 @@ import PieceNavigator, {
   PieceStackParamList,
 } from "@/navigators/PieceNavigator";
 import { NavigatorScreenParams } from "@react-navigation/core";
+import {
+  BIKE_DETAIL,
+  BIKE_LIST,
+  CREATE_BIKE,
+  PIECE_NAVIGATOR,
+  UPDATE_BIKE,
+} from "@/constants/tabNames";
 
 export type BikesStackParamList = {
   BikeList: undefined;
@@ -38,17 +45,17 @@ export default function BikesNavigator() {
         }}
       >
         <Stack.Screen
-          name="BikeList"
+          name={BIKE_LIST}
           component={BikeListView}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="BikeDetail"
+          name={BIKE_DETAIL}
           component={BikeDetailView}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="CreateBike"
+          name={CREATE_BIKE}
           component={CreateBikeView}
           options={{
             headerShown: true,
@@ -61,7 +68,7 @@ export default function BikesNavigator() {
           }}
         />
         <Stack.Screen
-          name="UpdateBike"
+          name={UPDATE_BIKE}
           component={CreateBikeView}
           options={{
             headerShown: true,
@@ -69,7 +76,7 @@ export default function BikesNavigator() {
           }}
         />
         <Stack.Screen
-          name="PieceNavigator"
+          name={PIECE_NAVIGATOR}
           component={PieceNavigator}
           options={{ headerShown: false }}
         />

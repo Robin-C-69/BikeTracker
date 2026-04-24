@@ -63,4 +63,18 @@ export class MaintenanceHistoryService {
       return ResponseModel.createError(error);
     }
   }
+
+  async deleteHistoryEntry({ id }: { id: number }): Promise<IResponseModel> {
+    const historyToDelete = this.maintenanceHistoryRepository.findById(id);
+    if (!historyToDelete) {
+      return ResponseModel.createError(`History entry with id ${id} not found`);
+    }
+
+    try {
+      await this.maintenanceHistoryRepository.deleteById(id);
+      return ResponseModel.createSuccess(null);
+    } catch (e) {
+      return ResponseModel.createError(e);
+    }
+  }
 }

@@ -4,11 +4,22 @@ import { StyleSheet } from "react-native";
 import { Box } from "@/components/ui/box";
 import { CreateHistoryEntryForm } from "@/components/forms/CreateHistoryEntryForm";
 import { theme } from "@/constants/theme";
+import {
+  CREATE_HISTORY_ENTRY,
+  UPDATE_HISTORY_ENTRY,
+} from "@/constants/tabNames";
 
-type Props = NativeStackScreenProps<PieceStackParamList, "CreateHistoryEntry">;
+type Props =
+  | NativeStackScreenProps<PieceStackParamList, typeof CREATE_HISTORY_ENTRY>
+  | NativeStackScreenProps<PieceStackParamList, typeof UPDATE_HISTORY_ENTRY>;
 
 export const CreateHistoryEntryView = ({ navigation, route }: Props) => {
   const { pieceWithDetails } = route.params;
+
+  const isHistoryEntryPresent = route.params && "historyEntry" in route.params;
+  const historyEntry = isHistoryEntryPresent
+    ? route.params.historyEntry
+    : undefined;
 
   const onHistoryAdded = () => {
     navigation.goBack();
@@ -22,6 +33,7 @@ export const CreateHistoryEntryView = ({ navigation, route }: Props) => {
     <Box style={styles.container}>
       <CreateHistoryEntryForm
         piece={pieceWithDetails}
+        historyEntry={historyEntry}
         onSuccess={onHistoryAdded}
         onCancel={onCancel}
       />

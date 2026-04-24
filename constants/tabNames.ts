@@ -1,0 +1,10 @@
+export const BIKE_LIST = "BikeList";
+export const BIKE_DETAIL = "BikeDetail";
+export const CREATE_BIKE = "CreateBike";
+export const UPDATE_BIKE = "UpdateBike";
+export const PIECE_NAVIGATOR = "PieceNavigator";
+export const CREATE_PIECE = "CreatePiece";
+export const PIECE_DETAILS = "PieceDetails";
+export const UPDATE_PIECE = "UpdatePiece";
+export const CREATE_HISTORY_ENTRY = "CreateHistoryEntry";
+export const UPDATE_HISTORY_ENTRY = "UpdateHistoryEntry";

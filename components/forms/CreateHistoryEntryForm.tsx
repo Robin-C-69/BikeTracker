@@ -28,32 +28,42 @@ import { MaintenanceType } from "@/database/models/MaintenanceTypeModel";
 import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTypeRepository";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, ButtonText } from "@/components/ui/button";
-import { CreateMaintenanceHistory } from "@/database/models/MaintenanceHistoryModel";
+import {
+  CreateMaintenanceHistory,
+  MaintenanceHistoryWithType,
+} from "@/database/models/MaintenanceHistoryModel";
 import { useMaintenanceHistory } from "@/hooks/useMaintenanceHistory";
 import { NotificationBar } from "@/components/common/NotificationBar";
 import { PieceWithDetails } from "@/database/models/PieceModel";
 import { initialCategoryMaintenanceLinks } from "@/database/seeds/initialData";
+import { DeleteModal } from "@/components/common/DeleteModal";
 
 type Props = {
   piece: PieceWithDetails;
+  historyEntry: MaintenanceHistoryWithType | undefined;
   onSuccess: () => void;
   onCancel: () => void;
 };
 
 export const CreateHistoryEntryForm = ({
   piece,
+  historyEntry,
   onSuccess,
   onCancel,
 }: Props) => {
   const { id: pieceId, name: pieceName, categoryId: pieceCategoryId } = piece;
   const { db } = useDatabase();
   const { t } = useTranslation();
-  const { createHistoryEntry } = useMaintenanceHistory();
+  const { createHistoryEntry, updateHistoryEntry, deleteHistoryEntry } =
+    useMaintenanceHistory();
 
   const [maintenanceTypes, setMaintenanceTypes] = useState<MaintenanceType[]>(
     [],
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const isUpdate = !!historyEntry;
 
   const formSchema = z.object({
     maintenanceTypeId: z.number({ error: "Category is required" }).int(),
@@ -69,10 +79,10 @@ export const CreateHistoryEntryForm = ({
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      maintenanceTypeId: undefined,
-      date: "",
-      kmAtMaintenance: undefined,
-      notes: "",
+      maintenanceTypeId: historyEntry?.maintenanceTypeId ?? undefined,
+      date: historyEntry?.date ?? "",
+      kmAtMaintenance: historyEntry?.kmAtMaintenance ?? undefined,
+      notes: historyEntry?.notes ?? "",
     },
   });
 
@@ -89,8 +99,18 @@ export const CreateHistoryEntryForm = ({
     [],
   );
 
+  const validateDate = useCallback(
+    (maintenanceDate: any) => {
+      return maintenanceDate >= piece.installDate;
+    },
+    [piece.installDate],
+  );
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (!db) return;
+
+    const validate = validateDate(data.date);
+    if (!validate) return;
 
     try {
       const historyData: CreateMaintenanceHistory = {
@@ -100,13 +120,25 @@ export const CreateHistoryEntryForm = ({
         kmAtMaintenance: data.kmAtMaintenance,
         notes: data.notes,
       };
-      await createHistoryEntry(historyData);
+      if (isUpdate) {
+        await updateHistoryEntry(historyEntry.id, historyData);
+      } else {
+        await createHistoryEntry(historyData);
+      }
       onSuccess?.();
     } catch (e) {
-      console.error("Failed to add history entry:", e);
       Alert.alert("Error", "Failed to add history entry");
     }
   };
+
+  const onDelete = useCallback(
+    async (id: number) => {
+      await deleteHistoryEntry(pieceId, id);
+      setShowDeleteModal(false);
+      onSuccess?.();
+    },
+    [deleteHistoryEntry, onSuccess, pieceId],
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -206,13 +238,26 @@ export const CreateHistoryEntryForm = ({
         </VStack>
       </ScrollView>
       <View style={styles.buttonsWrapper}>
-        <Button
-          size="lg"
-          onPress={handleSubmit(onSubmit)}
-          style={styles.deleteButton}
-        >
-          <ButtonText style={styles.deleteText}>{t("Create")}</ButtonText>
-        </Button>
+        <View style={styles.actionButtons}>
+          <Button
+            size="lg"
+            onPress={handleSubmit(onSubmit)}
+            style={styles.saveButton}
+          >
+            <ButtonText style={styles.saveText}>
+              {isUpdate ? t("Update") : t("Create")}
+            </ButtonText>
+          </Button>
+          {isUpdate && (
+            <Button
+              size="lg"
+              onPress={() => setShowDeleteModal(true)}
+              style={styles.deleteButton}
+            >
+              <ButtonText style={styles.deleteText}>{t("Delete")}</ButtonText>
+            </Button>
+          )}
+        </View>
         <Button
           variant="outline"
           size="lg"
@@ -222,6 +267,14 @@ export const CreateHistoryEntryForm = ({
           <ButtonText>{t("Cancel")}</ButtonText>
         </Button>
       </View>
+      {historyEntry && (
+        <DeleteModal
+          text={t("delete_history_entry_confirmation")}
+          onClick={() => onDelete(historyEntry.id)}
+          showDeleteModal={showDeleteModal}
+          setShowDeleteModal={setShowDeleteModal}
+        />
+      )}
     </Box>
   );
 };
@@ -274,12 +327,24 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
   },
+  actionButtons: { flexDirection: "row", gap: theme.spacing(1) },
   cancelButton: {
     borderRadius: 20,
   },
-  deleteButton: {
+  saveButton: {
+    flex: 2,
     borderRadius: 20,
     backgroundColor: theme.colors.primary,
+  },
+  saveText: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.typography.weights.bold,
+    fontSize: theme.typography.sizes.md,
+  },
+  deleteButton: {
+    flex: 1,
+    borderRadius: 20,
+    backgroundColor: theme.colors.error,
   },
   deleteText: {
     color: theme.colors.text.primary,

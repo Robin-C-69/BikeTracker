@@ -27,8 +27,13 @@ import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 import { usePieceType } from "@/hooks/usePieceType";
 import { usePieceCategory } from "@/hooks/usePieceCategory";
 import { nextMaintenanceAction } from "@/components/utils/typesCategoriesFunctions";
+import {
+  CREATE_HISTORY_ENTRY,
+  PIECE_DETAILS,
+  UPDATE_PIECE,
+} from "@/constants/tabNames";
 
-type Props = NativeStackScreenProps<PieceStackParamList, "PieceDetails">;
+type Props = NativeStackScreenProps<PieceStackParamList, typeof PIECE_DETAILS>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -80,7 +85,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   }, [maintenanceHistory]);
 
   const navigateToCreateHistoryEntry = () => {
-    navigation.navigate("CreateHistoryEntry", {
+    navigation.navigate(CREATE_HISTORY_ENTRY, {
       pieceWithDetails: piece,
     });
   };
@@ -88,7 +93,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const onEditPiece = () => {
     piece &&
       currentBike &&
-      navigation.navigate("UpdatePiece", {
+      navigation.navigate(UPDATE_PIECE, {
         bikeId: currentBike.id,
         bikeName: currentBike.name,
         piece: piece,
@@ -195,7 +200,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
           <ButtonText style={styles.actionText}>{t("Add")}</ButtonText>
         </Button>
       </View>
-      <PieceHistory pieceHistory={maintenanceHistory} />
+      <PieceHistory piece={piece} navigation={navigation} />
       <Modal
         animationType="fade"
         transparent={true}

@@ -21,8 +21,15 @@ import React, { useCallback, useState } from "react";
 import { Bike } from "@/database/models/BikeModel";
 import { useTranslation } from "react-i18next";
 import { useBikeContext } from "@/context/BikeContext";
+import {
+  BIKE_DETAIL,
+  CREATE_PIECE,
+  PIECE_DETAILS,
+  PIECE_NAVIGATOR,
+  UPDATE_BIKE,
+} from "@/constants/tabNames";
 
-type Props = NativeStackScreenProps<BikesStackParamList, "BikeDetail">;
+type Props = NativeStackScreenProps<BikesStackParamList, typeof BIKE_DETAIL>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -49,8 +56,8 @@ export default function BikeDetailView({ navigation, route }: Props) {
   }, []);
 
   const onAddPiece = () => {
-    navigation.navigate("PieceNavigator", {
-      screen: "CreatePiece",
+    navigation.navigate(PIECE_NAVIGATOR, {
+      screen: CREATE_PIECE,
       params: {
         bikeId,
         bikeName: bike?.name,
@@ -59,7 +66,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
   };
 
   const onEditBike = () => {
-    bike && navigation.navigate("UpdateBike", { bike });
+    bike && navigation.navigate(UPDATE_BIKE, { bike });
   };
 
   const navigateBack = () => {
@@ -69,8 +76,8 @@ export default function BikeDetailView({ navigation, route }: Props) {
   const navigateToPieceDetails = (pieceId: number) => {
     const selectedPiece = pieces.find((piece) => piece.id === pieceId);
     if (!selectedPiece) return;
-    navigation.navigate("PieceNavigator", {
-      screen: "PieceDetails",
+    navigation.navigate(PIECE_NAVIGATOR, {
+      screen: PIECE_DETAILS,
       params: { piece: selectedPiece, bikeName: bike?.name },
     });
   };

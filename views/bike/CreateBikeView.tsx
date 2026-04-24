@@ -3,10 +3,11 @@ import CreateBikeForm from "@/components/forms/CreateBikeForm";
 import { theme } from "@/constants/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
+import { CREATE_BIKE, UPDATE_BIKE } from "@/constants/tabNames";
 
 type Props =
-  | NativeStackScreenProps<BikesStackParamList, "CreateBike">
-  | NativeStackScreenProps<BikesStackParamList, "UpdateBike">;
+  | NativeStackScreenProps<BikesStackParamList, typeof CREATE_BIKE>
+  | NativeStackScreenProps<BikesStackParamList, typeof UPDATE_BIKE>;
 
 export default function CreateBikeView({ navigation, route }: Props) {
   const isBikePresent = route.params && "bike" in route.params;

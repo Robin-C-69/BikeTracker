@@ -56,7 +56,7 @@ export class MaintenanceHistoryRepository
     const values = [...Object.values(data), id];
 
     const sql = `UPDATE ${MAINTENANCE_HISTORY_TABLE_NAME} SET ${setClause} WHERE id = ?`;
-    const result = await this.db.runAsync(sql, values);
-    return result.lastInsertRowId;
+    await this.db.runAsync(sql, values);
+    return id;
   }
 }

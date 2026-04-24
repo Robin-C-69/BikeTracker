@@ -12,8 +12,9 @@ import { theme } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { useBikeContext } from "@/context/BikeContext";
+import { BIKE_DETAIL, BIKE_LIST, CREATE_BIKE } from "@/constants/tabNames";
 
-type Props = NativeStackScreenProps<BikesStackParamList, "BikeList">;
+type Props = NativeStackScreenProps<BikesStackParamList, typeof BIKE_LIST>;
 
 export const AddIconComponent = () => <Ionicons name="add" />;
 
@@ -51,13 +52,13 @@ export default function BikeListView({ navigation }: Props) {
             key={bike.id}
             bike={bike}
             onPress={() =>
-              navigation.navigate("BikeDetail", { bikeId: bike.id })
+              navigation.navigate(BIKE_DETAIL, { bikeId: bike.id })
             }
           />
         ))}
       </ScrollView>
 
-      <Fab style={styles.fab} onPress={() => navigation.navigate("CreateBike")}>
+      <Fab style={styles.fab} onPress={() => navigation.navigate(CREATE_BIKE)}>
         <FabIcon as={AddIconComponent} />
       </Fab>
     </View>

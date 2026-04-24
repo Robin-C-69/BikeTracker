@@ -18,6 +18,7 @@
   "Category": "Catégorie",
   "Delete": "Supprimer",
   "delete_bike_confirmation": "Etes-vous sur de supprimer le vélo: {{bike}} ?",
+  "delete_history_entry_confirmation": "Etes-vous sur de supprimer cette entrée d'historique ?",
   "delete_piece_confirmation": "Etes-vous sur de supprimer la pièce: {{piece}} ?",
   "field_required": "Ce champ est requis",
   "History": "Historique",

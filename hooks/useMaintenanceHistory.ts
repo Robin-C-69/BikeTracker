@@ -7,7 +7,11 @@ import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTy
 
 export const useMaintenanceHistory = () => {
   const { db } = useDatabase();
-  const { addHistoryEntry } = useMaintenanceHistoryStore();
+  const {
+    addHistoryEntry,
+    updateHistoryEntry: updateHistoryEntryInStore,
+    removeOneHistoryEntryForAPiece,
+  } = useMaintenanceHistoryStore();
 
   const maintenanceHistoryService = useMemo(() => {
     if (!db) return;
@@ -39,18 +43,36 @@ export const useMaintenanceHistory = () => {
   const updateHistoryEntry = useCallback(
     async (id: number, data: CreateMaintenanceHistory) => {
       if (!maintenanceHistoryService) return null;
-      const { error, data: newHistoryEntry } =
+      const { error, data: updatedHistoryEntry } =
         await maintenanceHistoryService.updateHistoryEntry({ id, data });
       if (error) {
         return null;
       }
-      return newHistoryEntry;
+
+      updateHistoryEntryInStore(data.pieceId, updatedHistoryEntry);
+
+      return updatedHistoryEntry;
     },
-    [maintenanceHistoryService],
+    [maintenanceHistoryService, updateHistoryEntryInStore],
+  );
+
+  const deleteHistoryEntry = useCallback(
+    async (pieceId: number, historyEntryId: number) => {
+      if (!maintenanceHistoryService) return;
+      const { error } = await maintenanceHistoryService.deleteHistoryEntry({
+        id: historyEntryId,
+      });
+
+      if (!error) {
+        removeOneHistoryEntryForAPiece(pieceId, historyEntryId);
+      }
+    },
+    [maintenanceHistoryService, removeOneHistoryEntryForAPiece],
   );
 
   return {
     createHistoryEntry,
     updateHistoryEntry,
+    deleteHistoryEntry,
   };
 };

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { MaintenanceHistoryWithType } from "@/database/models/MaintenanceHistoryModel";
 import { Divider } from "@/components/common/Divider";
 import { theme } from "@/constants/theme";
@@ -8,8 +8,10 @@ import { formatDateToHumanString } from "@/components/utils/stringFormatting";
 
 export const HistoryCard = ({
   historyEntry,
+  onClick,
 }: {
   historyEntry: MaintenanceHistoryWithType;
+  onClick?: () => void;
 }) => {
   const { t } = useTranslation();
 
@@ -31,23 +33,25 @@ export const HistoryCard = ({
         </View>
         <View style={styles.verticalLine} />
       </View>
-      <View style={styles.cardContainer}>
-        <View style={styles.cardHeader}>
-          <View style={styles.headerInfos}>
-            <Text style={styles.name}>
-              {t(`maintenance_type.${historyEntry.maintenanceType.name}`)}
-            </Text>
-            <Text style={styles.notes}>{historyEntry.notes}</Text>
-          </View>
-          <View>
-            <Text style={styles.date}>{dateDone()}</Text>
-          </View>
-        </View>
-        <Divider />
+      <TouchableOpacity style={styles.cardContainer} onPress={onClick}>
         <View>
-          <Text style={styles.bikeKm}>{formatBikeKm()}</Text>
+          <View style={styles.cardHeader}>
+            <View style={styles.headerInfos}>
+              <Text style={styles.name}>
+                {t(`maintenance_type.${historyEntry.maintenanceType.name}`)}
+              </Text>
+              <Text style={styles.notes}>{historyEntry.notes}</Text>
+            </View>
+            <View>
+              <Text style={styles.date}>{dateDone()}</Text>
+            </View>
+          </View>
+          <Divider />
+          <View>
+            <Text style={styles.bikeKm}>{formatBikeKm()}</Text>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };
