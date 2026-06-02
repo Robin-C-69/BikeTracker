@@ -4,6 +4,7 @@ export type Bike = {
   brand?: string;
   model?: string;
   totalKm?: number;
+  imageUri?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -13,6 +14,7 @@ export type CreateBikeRequest = {
   brand?: string;
   model?: string;
   totalKm?: number;
+  imageUri?: string;
 };
 
 export class BikeModel {

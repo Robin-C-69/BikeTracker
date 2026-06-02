@@ -19,12 +19,13 @@ export class BikeRepository
 
   async create(bikeData: CreateBikeRequest): Promise<number> {
     const result = await this.db.runAsync(
-      `INSERT INTO ${BIKES_TABLE_NAME} (name, brand, model, totalKm, createdAt, updatedAt) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))`,
+      `INSERT INTO ${BIKES_TABLE_NAME} (name, brand, model, totalKm, imageUri, createdAt, updatedAt) VALUES (?, ?, ?, ?,?, datetime('now'), datetime('now'))`,
       [
         bikeData.name,
         bikeData.brand ?? null,
         bikeData.model ?? null,
         bikeData.totalKm ?? 0,
+        bikeData.imageUri ?? null,
       ],
     );
     return result.lastInsertRowId;

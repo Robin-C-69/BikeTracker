@@ -2,6 +2,7 @@ import { BikeRepository } from "@/database/repositories/BikeRepository";
 import { SQLiteDatabase } from "expo-sqlite";
 import { BikeModel, CreateBikeRequest } from "@/database/models/BikeModel";
 import { IResponseModel, ResponseModel } from "@/database/models/ResponseModel";
+import { File } from "expo-file-system/next";
 
 export class BikeService {
   private bikeRepository: BikeRepository;
@@ -73,6 +74,13 @@ export class BikeService {
       return ResponseModel.createError(`Bike with id ${id} not found.`);
     }
     try {
+      if (bikeToUpdate.imageUri && bikeToUpdate.imageUri !== bike.imageUri) {
+        const oldImage = new File(bikeToUpdate.imageUri);
+        if (oldImage.exists) {
+          oldImage.delete();
+        }
+      }
+
       const bikeId = await this.bikeRepository.update(id, bike);
       const updatedBike = await this.bikeRepository.findById(bikeId);
       return ResponseModel.createSuccess(updatedBike);
@@ -87,6 +95,12 @@ export class BikeService {
       return ResponseModel.createError(`Bike with id ${id} not found.`);
     }
     try {
+      if (bikeToDelete.imageUri) {
+        const imageFile = new File(bikeToDelete.imageUri);
+        if (imageFile.exists) {
+          imageFile.delete();
+        }
+      }
       await this.bikeRepository.deleteById(id);
       return ResponseModel.createSuccess(null);
     } catch (error) {

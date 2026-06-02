@@ -1,9 +1,12 @@
 import {
+  Alert,
+  Image,
   KeyboardAvoidingView,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { theme } from "@/constants/theme";
@@ -15,6 +18,11 @@ import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { useBikeContext } from "@/context/BikeContext";
 import { NotificationBar } from "@/components/common/NotificationBar";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
+import { Directory, File, Paths } from "expo-file-system";
 
 export default function CreateBikeForm({
   onSuccess,
@@ -27,26 +35,83 @@ export default function CreateBikeForm({
   const { error, loading, createBike, updateBike } = useBikeContext();
   const isUpdate = !!bike;
 
+  const [localImageUri, setLocalImageUri] = useState<string | undefined>(
+    bike?.imageUri,
+  );
+
+  const formSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    brand: z.string().optional(),
+    model: z.string().optional(),
+    totalKm: z.number().min(0, "Mileage must be a positive number").optional(),
+    imageUri: z.string().optional(),
+  });
+
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<CreateBikeRequest>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: bike?.name ?? "",
       brand: bike?.brand ?? "",
       model: bike?.model ?? "",
       totalKm: bike?.totalKm ?? 0,
+      imageUri: bike?.imageUri ?? "",
     },
   });
 
-  const onSubmit = async (data: CreateBikeRequest) => {
-    if (isUpdate) {
-      await updateBike(bike.id, data);
-    } else {
-      await createBike(data);
+  const pickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      return;
     }
-    onSuccess?.();
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets[0].uri) {
+      const selectedImageUri = result.assets[0].uri;
+      const fileName = selectedImageUri.split("/").pop() ?? "image.jpg";
+      const destDir = new Directory(Paths.document, "bikes");
+      if (!destDir.exists) {
+        destDir.create();
+      }
+
+      const sourceFile = new File(selectedImageUri);
+      const destFile = new File(destDir, fileName);
+      sourceFile.copy(destFile);
+
+      setLocalImageUri(destFile.uri);
+      setValue("imageUri", destFile.uri, { shouldDirty: true });
+    }
+  };
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const bikeData: CreateBikeRequest = {
+        name: data.name,
+        brand: data.brand,
+        model: data.model,
+        totalKm: data.totalKm,
+        imageUri: data.imageUri,
+      };
+
+      if (isUpdate) {
+        await updateBike(bike.id, bikeData);
+      } else {
+        await createBike(bikeData);
+      }
+      onSuccess?.();
+    } catch (e) {
+      console.error("Failed to create piece", e);
+      Alert.alert("Error", "Failed to create piece");
+    }
   };
 
   if (loading) {
@@ -71,6 +136,35 @@ export default function CreateBikeForm({
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
+          <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+            {localImageUri ? (
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{ uri: localImageUri }}
+                  style={styles.imagePreview}
+                  resizeMode="cover"
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    setLocalImageUri(undefined);
+                    setValue("imageUri", "");
+                  }}
+                  style={styles.removeImageBtn}
+                >
+                  <Ionicons name={"close-circle"} size={24} />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <>
+                <Ionicons
+                  name="camera-outline"
+                  size={32}
+                  style={styles.cameraIcon}
+                />
+                <Text style={styles.imagePickerText}>{t("Add a photo")}</Text>
+              </>
+            )}
+          </TouchableOpacity>
           <FormField
             control={control}
             name={"name"}
@@ -139,13 +233,40 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.lg,
     marginBottom: theme.spacing(1.5),
   },
-  textField: {
-    color: theme.colors.text.primary,
+  imagePicker: {
+    height: 180,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: "#333",
-    padding: 10,
-    borderRadius: 6,
+    borderStyle: "dashed",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: theme.spacing(1),
+  },
+  imageContainer: {
+    width: "100%",
+    height: "100%",
+  },
+  imagePreview: {
+    width: "100%",
+    height: "100%",
+  },
+  removeImageBtn: {
+    position: "absolute",
+    top: theme.spacing(-1),
+    right: theme.spacing(-1),
+    zIndex: 10,
+  },
+  cameraIcon: {
+    color: theme.colors.text.secondary,
+  },
+  imagePickerText: {
+    color: theme.colors.text.secondary,
+    marginTop: theme.spacing(0.5),
+  },
+  removeImageText: {
+    color: theme.colors.error,
+    fontSize: theme.typography.sizes.sm,
   },
   kmHint: {
     flexDirection: "row",

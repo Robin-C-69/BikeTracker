@@ -19,15 +19,12 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 interface BikeCardProps {
   bike: Bike;
-  image?: ImageSourcePropType | ReactNode;
   onPress?: () => void;
 }
 
-export default function BikeCard({ bike, image, onPress }: BikeCardProps) {
+export default function BikeCard({ bike, onPress }: BikeCardProps) {
   const { t } = useTranslation();
   const { pieces } = usePiecesByBike(bike.id);
-
-  const isReactElement = image && typeof image === "object" && "type" in image;
 
   const brandAndModel = useCallback((bike: Bike) => {
     if (bike.brand && bike.model) {
@@ -43,14 +40,10 @@ export default function BikeCard({ bike, image, onPress }: BikeCardProps) {
 
   return (
     <View style={styles.card} onTouchEnd={onPress}>
-      {isReactElement ? (
-        <View style={styles.image}>{image}</View>
-      ) : (
-        <ImageViewer
-          imgSource={(image as ImageSourcePropType) ?? PlaceholderImage}
-          style={styles.image}
-        />
-      )}
+      <ImageViewer
+        imgSource={bike.imageUri ? { uri: bike.imageUri } : PlaceholderImage}
+        style={styles.image}
+      />
       <View style={styles.nameBanner}>
         <Text style={styles.name}>{bike.name}</Text>
         <Text style={styles.modelBrand}>{brandAndModel(bike)}</Text>

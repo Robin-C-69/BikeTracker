@@ -14,6 +14,7 @@ export const CREATE_BIKE_TABLE = `
       brand TEXT,
       model TEXT,
       totalKm INTEGER DEFAULT 0,
+      imageUri TEXT,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
     );

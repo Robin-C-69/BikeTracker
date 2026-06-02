@@ -118,14 +118,14 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#22272e",
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderStyle: "solid",
-    borderColor: "#2d333a",
-    padding: 12,
-    borderRadius: 16,
+    borderColor: theme.colors.border.default,
+    padding: theme.spacing(1.5),
+    borderRadius: theme.spacing(1),
     justifyContent: "space-between",
-    marginVertical: 8,
+    marginVertical: theme.spacing(1),
   },
   headerRow: {
     flexDirection: "row",
