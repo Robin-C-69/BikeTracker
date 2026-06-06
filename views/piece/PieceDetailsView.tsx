@@ -200,7 +200,11 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
           <ButtonText style={styles.actionText}>{t("Add")}</ButtonText>
         </Button>
       </View>
-      <PieceHistory piece={piece} navigation={navigation} />
+      <PieceHistory
+        piece={piece}
+        history={maintenanceHistory}
+        navigation={navigation}
+      />
       <Modal
         animationType="fade"
         transparent={true}

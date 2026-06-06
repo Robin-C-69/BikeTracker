@@ -38,6 +38,7 @@ export class BikeRepository
            brand      = ?,
            model      = ?,
            totalKm   = ?,
+           imageUri    = ?,
            updatedAt = datetime('now')
        WHERE id = ?`,
       [
@@ -45,9 +46,14 @@ export class BikeRepository
         bikeData.brand ?? null,
         bikeData.model ?? null,
         bikeData.totalKm ?? 0,
+        bikeData.imageUri ?? null,
         id,
       ],
     );
-    return result.lastInsertRowId;
+    if (result.changes === 0) {
+      throw new Error(`No bike found with id ${id}`);
+    }
+
+    return id;
   }
 }

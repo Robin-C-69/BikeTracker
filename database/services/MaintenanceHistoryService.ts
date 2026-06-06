@@ -58,14 +58,36 @@ export class MaintenanceHistoryService {
       );
       const updatedEntry =
         await this.maintenanceHistoryRepository.findById(updatedId);
-      return ResponseModel.createSuccess(updatedEntry);
+
+      if (!updatedEntry) {
+        return ResponseModel.createError(
+          `History entry with id ${id} not found after update`,
+        );
+      }
+
+      // Fetch the maintenanceType to satisfy MaintenanceHistoryWithType
+      const maintenanceType = await this.maintenanceTypeRepository.findById(
+        updatedEntry.maintenanceTypeId,
+      );
+
+      if (!maintenanceType) {
+        return ResponseModel.createError(
+          `Maintenance type not found for entry ${id}`,
+        );
+      }
+
+      return ResponseModel.createSuccess({
+        ...updatedEntry,
+        maintenanceType: maintenanceType!,
+      });
     } catch (error) {
       return ResponseModel.createError(error);
     }
   }
 
   async deleteHistoryEntry({ id }: { id: number }): Promise<IResponseModel> {
-    const historyToDelete = this.maintenanceHistoryRepository.findById(id);
+    const historyToDelete =
+      await this.maintenanceHistoryRepository.findById(id);
     if (!historyToDelete) {
       return ResponseModel.createError(`History entry with id ${id} not found`);
     }

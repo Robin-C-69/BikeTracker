@@ -6,13 +6,13 @@ import { MaintenanceHistoryWithType } from "@/database/models/MaintenanceHistory
 
 export const PieceHistory = ({
   piece,
+  history,
   navigation,
 }: {
   piece: PieceWithDetails;
+  history: MaintenanceHistoryWithType[];
   navigation?: any;
 }) => {
-  const pieceHistory = piece.maintenanceHistory;
-
   const onClick = (historyEntry: MaintenanceHistoryWithType) => {
     if (!navigation) return;
     navigation.navigate(UPDATE_HISTORY_ENTRY, {
@@ -23,7 +23,7 @@ export const PieceHistory = ({
 
   return (
     <View style={styles.historyContainer}>
-      {pieceHistory.map((pieceHistory) => (
+      {history.map((pieceHistory) => (
         <HistoryCard
           key={pieceHistory.id}
           historyEntry={pieceHistory}

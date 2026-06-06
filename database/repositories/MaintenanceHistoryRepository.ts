@@ -56,7 +56,12 @@ export class MaintenanceHistoryRepository
     const values = [...Object.values(data), id];
 
     const sql = `UPDATE ${MAINTENANCE_HISTORY_TABLE_NAME} SET ${setClause} WHERE id = ?`;
-    await this.db.runAsync(sql, values);
+    const result = await this.db.runAsync(sql, values);
+
+    if (result.changes === 0) {
+      throw new Error(`No maintenance history found with id ${id}`);
+    }
+
     return id;
   }
 }
