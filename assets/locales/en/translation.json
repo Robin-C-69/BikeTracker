@@ -1,6 +1,7 @@
 {
   "Add": "Add",
   "Add a maintenance": "Add a maintenance",
+  "Add a new bike": "Add a new bike",
   "Add to": "Add to",
   "Add your bike to BikeTracker": "Add your bike to BikeTracker",
   "Age": "Age",
@@ -20,6 +21,7 @@
   "delete_bike_confirmation": "Are you sure to delete the bike: {{bike}} ?",
   "delete_piece_confirmation": "Are you sure to delete the piece: {{piece}} ?",
   "field_required": "This field is required",
+  "Follow your bikes lifecycle": "Follow your bikes lifecycle",
   "History": "History",
   "If you don't know the exact one, an estimation is enough": "If you don't know the exact one, an estimation is enough",
   "interventions_carried": "Interventions carried out",
@@ -40,6 +42,7 @@
   "New bike": "New bike",
   "New piece": "New piece",
   "Notes": "Notes",
+  "Traveled distance": "Traveled distance",
   "Pieces": "Pieces",
   "Piece details": "Piece details",
   "Update": "Update",

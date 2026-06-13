@@ -3,23 +3,28 @@ import { BikesStackParamList } from "@/navigators/BikesNavigator";
 import BikeCard from "@/components/bike/BikeCard";
 import {
   ActivityIndicator,
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { theme } from "@/constants/theme";
-import { Ionicons } from "@expo/vector-icons";
-import { Fab, FabIcon } from "@/components/ui/fab";
 import { useBikeContext } from "@/context/BikeContext";
 import { BIKE_DETAIL, BIKE_LIST, CREATE_BIKE } from "@/constants/tabNames";
+import CustomHeader from "@/components/common/CustomHeader";
+import { Image } from "expo-image";
+import { useTranslation } from "react-i18next";
+import { Ionicons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<BikesStackParamList, typeof BIKE_LIST>;
 
-export const AddIconComponent = () => <Ionicons name="add" />;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function BikeListView({ navigation }: Props) {
   const { bikes, loading, error } = useBikeContext();
+  const { t } = useTranslation();
 
   if (loading) {
     return (
@@ -39,10 +44,18 @@ export default function BikeListView({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>BikeTracker</Text>
-        <Text style={styles.subTitle}>Suivez le cycle de vie de vos vélos</Text>
-      </View>
+      <CustomHeader>
+        <Image
+          source={require("@/assets/images/logo.png")}
+          style={styles.logo}
+        />
+        <View>
+          <Text style={styles.title}>BikeTracker</Text>
+          <Text style={styles.subTitle}>
+            {t("Follow your bikes lifecycle")}
+          </Text>
+        </View>
+      </CustomHeader>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -56,11 +69,18 @@ export default function BikeListView({ navigation }: Props) {
             }
           />
         ))}
+        <TouchableOpacity
+          style={styles.addCard}
+          onPress={() => navigation.navigate(CREATE_BIKE)}
+        >
+          <Ionicons
+            name={"add-circle-outline"}
+            size={25}
+            color={theme.colors.primary}
+          />
+          <Text style={styles.addCardTitle}>{t("Add a new bike")}</Text>
+        </TouchableOpacity>
       </ScrollView>
-
-      <Fab style={styles.fab} onPress={() => navigation.navigate(CREATE_BIKE)}>
-        <FabIcon as={AddIconComponent} />
-      </Fab>
     </View>
   );
 }
@@ -70,21 +90,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
-  header: {
-    backgroundColor: theme.colors.surface,
-    padding: 20,
-    borderBottomColor: "#2d333a",
-    borderWidth: 1,
-  },
+  logo: { width: 40, height: 40, marginRight: theme.spacing(1) },
   title: {
-    color: theme.colors.text.lighting,
+    color: theme.colors.primaryLight,
     fontSize: 26,
     marginBottom: theme.spacing(0.5),
     fontWeight: "bold",
   },
   subTitle: {
     fontSize: 15,
-    color: theme.colors.text.tertiary,
+    color: theme.colors.text.secondary,
   },
   scrollContent: {
     alignItems: "center",
@@ -98,12 +113,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
-  fab: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: theme.colors.primary,
-    height: 50,
-    width: 50,
+  addCard: {
+    width: "100%",
+    height: SCREEN_WIDTH * 0.3,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: theme.spacing(1.5),
+    marginTop: theme.spacing(1.5),
+    borderColor: theme.colors.border.default,
+    borderRadius: theme.spacing(0.5),
+    borderWidth: 1,
+    borderStyle: "dashed",
+  },
+  addCardTitle: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.md,
+    marginTop: theme.spacing(0.5),
   },
 });

@@ -52,7 +52,9 @@ export default function BikesNavigator() {
         <Stack.Screen
           name={BIKE_DETAIL}
           component={BikeDetailView}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name={CREATE_BIKE}

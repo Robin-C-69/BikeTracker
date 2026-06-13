@@ -1,6 +1,7 @@
 {
   "Add": "Ajouter",
   "Add a maintenance": "Ajouter une maintenance",
+  "Add a new bike": "Ajouter un nouveau vélo",
   "Add to": "Ajouter à",
   "Add your bike to BikeTracker": "Ajoutez votre vélo à BikeTracker",
   "Age": "Age",
@@ -21,6 +22,7 @@
   "delete_history_entry_confirmation": "Etes-vous sur de supprimer cette entrée d'historique ?",
   "delete_piece_confirmation": "Etes-vous sur de supprimer la pièce: {{piece}} ?",
   "field_required": "Ce champ est requis",
+  "Follow your bikes lifecycle": "Suivez le cycle de vie de vos vélos",
   "History": "Historique",
   "If you don't know the exact one, an estimation is enough": "Si vous ne connaissez pas le kilométrage exact, une estimation suffit",
   "interventions_carried": "Interventions effectuées",
@@ -41,6 +43,7 @@
   "New bike": "Nouveau vélo",
   "New piece": "Nouvelle pièce",
   "Notes": "Notes",
+  "Traveled distance": "Distance parcourue",
   "Pieces": "Pièces",
   "Piece details": "Détails de la pièce",
   "Update": "Modifier",

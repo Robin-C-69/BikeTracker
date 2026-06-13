@@ -28,6 +28,7 @@ import {
   PIECE_NAVIGATOR,
   UPDATE_BIKE,
 } from "@/constants/tabNames";
+import CustomHeader from "@/components/common/CustomHeader";
 
 type Props = NativeStackScreenProps<BikesStackParamList, typeof BIKE_DETAIL>;
 
@@ -69,10 +70,6 @@ export default function BikeDetailView({ navigation, route }: Props) {
     bike && navigation.navigate(UPDATE_BIKE, { bike });
   };
 
-  const navigateBack = () => {
-    navigation.goBack();
-  };
-
   const navigateToPieceDetails = (pieceId: number) => {
     const selectedPiece = pieces.find((piece) => piece.id === pieceId);
     if (!selectedPiece) return;
@@ -111,19 +108,11 @@ export default function BikeDetailView({ navigation, route }: Props) {
 
   return (
     <View style={styles.container}>
+      <CustomHeader
+        title={t("Bike profile")}
+        actionButton={{ label: t("Edit"), onPress: onEditBike, visible: true }}
+      />
       <Box style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={navigateBack}
-          accessibilityLabel="Go Back"
-          style={styles.backButton}
-        >
-          <Ionicons
-            name={"chevron-back"}
-            size={24}
-            style={styles.backButtonIcon}
-          />
-          <Text style={styles.backButtonText}>{t("Back")}</Text>
-        </TouchableOpacity>
         <Text style={styles.bikeName}>{bike?.name}</Text>
         <View style={styles.brandKm}>
           <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>

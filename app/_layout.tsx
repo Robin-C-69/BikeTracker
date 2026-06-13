@@ -16,7 +16,6 @@ const APP_TITLE = "BikeTracker";
 
 SplashScreen.setOptions({
   duration: 1000,
-  fade: true,
 });
 
 export default function RootLayout() {
@@ -28,7 +27,7 @@ export default function RootLayout() {
         await NavigationBar.setVisibilityAsync("hidden");
       }
     };
-    setupFullScreen();
+    setupFullScreen().then(() => SplashScreen.hideAsync());
   }, []);
 
   return (
@@ -38,10 +37,11 @@ export default function RootLayout() {
         <Tabs
           screenOptions={{
             headerShown: false,
-            tabBarActiveTintColor: theme.colors.primary,
+            tabBarActiveTintColor: theme.colors.primaryLight,
             tabBarStyle: {
-              backgroundColor: theme.colors.surface,
-              borderTopWidth: 0,
+              backgroundColor: theme.colors.background,
+              borderTopWidth: 1,
+              borderTopColor: theme.colors.border.default,
               height: "8%",
             },
           }}
