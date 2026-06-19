@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing(2),
     backgroundColor: theme.colors.surfaceVariant,
     borderWidth: 1,
-    borderColor: theme.colors.border.default,
+    borderColor: theme.colors.border.lighting,
   },
   actionButtonText: {
     color: theme.colors.text.lighting,

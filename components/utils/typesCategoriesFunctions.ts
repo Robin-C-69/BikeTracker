@@ -27,3 +27,11 @@ export const nextMaintenanceAction = (
     dueDate,
   };
 };
+
+export const getCategoryNameById = (
+  categoryId: number,
+  pieceCategories: { id: number; name: string }[],
+): string => {
+  const category = pieceCategories.find((c) => c.id === categoryId);
+  return category ? category.name : "";
+};

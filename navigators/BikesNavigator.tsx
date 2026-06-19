@@ -38,9 +38,11 @@ export default function BikesNavigator() {
           headerStyle: {
             backgroundColor: theme.colors.primary,
           },
-          headerTintColor: "#fff",
           headerTitleStyle: {
             fontWeight: "bold",
+          },
+          contentStyle: {
+            backgroundColor: theme.colors.background,
           },
         }}
       >

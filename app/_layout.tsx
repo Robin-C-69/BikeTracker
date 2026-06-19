@@ -44,6 +44,7 @@ export default function RootLayout() {
               borderTopColor: theme.colors.border.default,
               height: "8%",
             },
+            sceneStyle: { backgroundColor: theme.colors.background },
           }}
         >
           <Tabs.Screen name="index" options={{ href: null }} />

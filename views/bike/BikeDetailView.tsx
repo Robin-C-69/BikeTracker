@@ -1,8 +1,9 @@
 import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   ActivityIndicator,
   Dimensions,
+  Image,
   Modal,
   ScrollView,
   StyleSheet,
@@ -11,7 +12,6 @@ import {
   View,
 } from "react-native";
 import { theme } from "@/constants/theme";
-import { Divider } from "@/components/common/Divider";
 import { PieceCard } from "@/components/piece/PieceCard";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
@@ -29,6 +29,8 @@ import {
   UPDATE_BIKE,
 } from "@/constants/tabNames";
 import CustomHeader from "@/components/common/CustomHeader";
+
+const PlaceholderImage = require("@/assets/images/bike.png");
 
 type Props = NativeStackScreenProps<BikesStackParamList, typeof BIKE_DETAIL>;
 
@@ -113,49 +115,25 @@ export default function BikeDetailView({ navigation, route }: Props) {
         actionButton={{ label: t("Edit"), onPress: onEditBike, visible: true }}
       />
       <Box style={styles.headerContainer}>
-        <Text style={styles.bikeName}>{bike?.name}</Text>
-        <View style={styles.brandKm}>
-          <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
-          <Text style={styles.bikeModel}>
-            {bike.totalKm} {t("km")}
-          </Text>
+        <Image
+          source={bike.imageUri ? { uri: bike.imageUri } : PlaceholderImage}
+          style={styles.bikeImage}
+        />
+        <View style={styles.bikeInfos}>
+          <View style={styles.bikeLabels}>
+            <Text style={styles.bikeName}>{bike?.name}</Text>
+            <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
+          </View>
+          <View style={styles.bikeStats}>
+            <Box>
+              <Text style={styles.statName}>{t("Odometer")}</Text>
+              <Text style={styles.statValue}>
+                {bike.totalKm}
+                {t(" km")}
+              </Text>
+            </Box>
+          </View>
         </View>
-        <Box style={styles.headerButtons}>
-          <Button
-            variant="solid"
-            style={styles.updateButton}
-            onPress={onEditBike}
-          >
-            <Ionicons
-              name={"construct-outline"}
-              size={20}
-              style={styles.buttonIcon}
-            />
-            <ButtonText style={styles.updateText}>{t("Update")}</ButtonText>
-          </Button>
-          <Button
-            style={styles.deleteButton}
-            onPress={() => {
-              setShowDeleteModal(true);
-            }}
-          >
-            <Ionicons
-              name={"trash-bin-outline"}
-              size={25}
-              style={styles.buttonIcon}
-            />
-          </Button>
-        </Box>
-      </Box>
-      <Divider />
-      <Box>
-        <Box style={styles.piecesHeader}>
-          <Text style={styles.pieceText}>{t("Pieces")}</Text>
-          <Button onPress={onAddPiece} style={styles.addButton}>
-            <Ionicons name={"add-outline"} size={20} style={styles.addIcon} />
-            <ButtonText style={styles.addText}>{t("Add")}</ButtonText>
-          </Button>
-        </Box>
       </Box>
       <ScrollView showsVerticalScrollIndicator={false}>
         {pieces.map((piece) => {
@@ -168,6 +146,30 @@ export default function BikeDetailView({ navigation, route }: Props) {
             </TouchableOpacity>
           );
         })}
+        <TouchableOpacity
+          style={[styles.actionCard, styles.addButton]}
+          onPress={onAddPiece}
+        >
+          <Ionicons
+            name={"add-circle-outline"}
+            size={25}
+            style={styles.addIcon}
+          />
+          <Text style={styles.addText}>{t("Add piece")}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.actionCard, styles.deleteButton]}
+          onPress={() => {
+            setShowDeleteModal(true);
+          }}
+        >
+          <Ionicons
+            name={"trash-bin-outline"}
+            size={20}
+            style={styles.deleteIcon}
+          />
+          <Text style={styles.deleteButtonTitle}>{t("Delete bike")}</Text>
+        </TouchableOpacity>
       </ScrollView>
       <Modal
         animationType="fade"
@@ -190,13 +192,13 @@ export default function BikeDetailView({ navigation, route }: Props) {
                 style={styles.modalCancel}
                 onPress={() => setShowDeleteModal(false)}
               >
-                <Text style={styles.modalButtonText}>{t("Cancel")}</Text>
+                <Text style={styles.modalCancelText}>{t("Cancel")}</Text>
               </Button>
               <Button
                 style={styles.modalDelete}
                 onPress={() => onDeleteBike(bike)}
               >
-                <Text style={styles.modalButtonText}>{t("Delete")}</Text>
+                <Text style={styles.modalDeleteText}>{t("Delete")}</Text>
               </Button>
             </View>
           </View>
@@ -214,86 +216,46 @@ const styles = StyleSheet.create({
     paddingRight: theme.spacing(1),
   },
   headerContainer: {
-    marginBottom: theme.spacing(1),
-  },
-  backButton: {
     display: "flex",
     flexDirection: "row",
+    gap: theme.spacing(2),
+    justifyContent: "flex-start",
     alignItems: "center",
-    width: 100,
-    height: 40,
-    backgroundColor: "#2d333a",
-    borderRadius: 12,
-    margin: 20,
-    marginLeft: 10,
-    padding: 5,
+    backgroundColor: theme.colors.surface,
+    marginBottom: theme.spacing(1),
+    borderBottomColor: theme.colors.border.default,
+    borderBottomWidth: 1,
+    padding: theme.spacing(2),
   },
-  backButtonIcon: {
-    color: theme.colors.primaryLight,
-    marginRight: theme.spacing(1),
+  bikeImage: {
+    width: "20%",
+    height: "70%",
+    resizeMode: "cover",
   },
-  backButtonText: {
-    color: theme.colors.primaryLight,
-    fontSize: theme.typography.sizes.md,
+  bikeInfos: {
+    gap: theme.spacing(1),
+  },
+  bikeLabels: {
+    marginBottom: theme.spacing(1),
   },
   bikeName: {
     fontSize: theme.typography.sizes.xl,
     fontWeight: theme.typography.weights.semibold,
-    marginBottom: theme.spacing(2),
-    color: theme.colors.text.primary,
-  },
-  brandKm: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    color: theme.colors.text.lighting,
   },
   bikeModel: {
     fontSize: theme.typography.sizes.md,
-    fontWeight: theme.typography.weights.regular,
     color: theme.colors.text.secondary,
   },
-  headerButtons: {
-    display: "flex",
+  bikeStats: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    gap: theme.spacing(2),
-    marginTop: theme.spacing(2),
+    gap: theme.spacing(1),
   },
-  updateButton: {
-    flex: 3,
+  statName: {
+    color: theme.colors.text.secondary,
+  },
+  statValue: {
     color: theme.colors.text.primary,
-    backgroundColor: theme.colors.primary,
-  },
-  buttonIcon: { color: theme.colors.text.primary },
-  updateText: {
-    color: theme.colors.text.primary,
-    fontSize: theme.typography.sizes.md,
-  },
-  deleteButton: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: theme.colors.error,
-  },
-  piecesHeader: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginLeft: 10,
-  },
-  pieceText: {
-    color: theme.colors.text.primary,
-    fontSize: theme.typography.sizes.lg,
-    fontWeight: theme.typography.weights.bold,
-  },
-  addButton: {
-    backgroundColor: theme.colors.primary,
-  },
-  addIcon: {
-    color: theme.colors.text.primary,
-  },
-  addText: {
-    color: theme.colors.text.primary,
-    fontSize: theme.typography.sizes.md,
   },
   loading: {
     justifyContent: "center",
@@ -303,6 +265,43 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
+  actionCard: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: theme.spacing(1.5),
+    borderRadius: theme.spacing(0.5),
+    borderWidth: 1,
+    borderStyle: "dashed",
+  },
+  addButton: {
+    height: SCREEN_WIDTH * 0.3,
+    marginBottom: theme.spacing(1.5),
+    borderColor: theme.colors.border.default,
+  },
+  addText: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.md,
+    marginTop: theme.spacing(0.5),
+  },
+  addIcon: {
+    color: theme.colors.primary,
+  },
+  deleteButton: {
+    backgroundColor: theme.colors.errorDark,
+    marginTop: theme.spacing(1.5),
+    borderColor: theme.colors.border.error,
+  },
+  deleteButtonTitle: {
+    color: theme.colors.text.error,
+    fontSize: theme.typography.sizes.sm,
+    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
+  },
+  deleteIcon: {
+    color: theme.colors.error,
+    marginTop: theme.spacing(0.5),
+  },
   modalWrapper: {
     flex: 1,
     justifyContent: "center",
@@ -311,11 +310,13 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     padding: 10,
-    backgroundColor: theme.colors.surfaceVariant,
+    backgroundColor: theme.colors.surface,
+    justifyContent: "center",
     width: SCREEN_WIDTH * 0.8,
     height: SCREEN_WIDTH * 0.5,
-    borderRadius: theme.spacing(1.5),
-    justifyContent: "center",
+    borderRadius: theme.spacing(0.5),
+    borderColor: theme.colors.border.default,
+    borderWidth: 1,
   },
   deleteTextWrapper: {
     justifyContent: "center",
@@ -324,6 +325,7 @@ const styles = StyleSheet.create({
   deleteText: {
     color: theme.colors.text.primary,
     fontSize: theme.typography.sizes.md,
+    textAlign: "center",
   },
   modalButtonsWrapper: {
     display: "flex",
@@ -332,20 +334,28 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   modalCancel: {
-    width: 130,
-    height: 50,
+    width: "45%",
+    height: theme.spacing(7),
     backgroundColor: "transparent",
-    borderRadius: theme.spacing(1.5),
+    borderRadius: theme.spacing(0.5),
     borderWidth: 1,
+    borderColor: theme.colors.border.disabled,
+  },
+  modalCancelText: {
+    color: theme.colors.text.tertiary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
   },
   modalDelete: {
-    width: 130,
-    height: 50,
-    backgroundColor: theme.colors.error,
-    borderRadius: theme.spacing(1.5),
+    width: "45%",
+    height: theme.spacing(7),
+    backgroundColor: theme.colors.errorDark,
+    borderRadius: theme.spacing(0.5),
+    borderColor: theme.colors.border.error,
+    borderWidth: 1,
   },
-  modalButtonText: {
-    color: theme.colors.text.primary,
+  modalDeleteText: {
+    color: theme.colors.text.error,
     fontSize: theme.typography.sizes.md,
     fontWeight: theme.typography.weights.bold,
   },
