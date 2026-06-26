@@ -29,10 +29,28 @@ import {
   UPDATE_BIKE,
 } from "@/constants/tabNames";
 import CustomHeader from "@/components/common/CustomHeader";
+import { PieceWithDetails } from "@/database/models/PieceModel";
+import { PieceCategoryWithType } from "@/database/models/PieceCategoryModel";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionHeader,
+  AccordionItem,
+  AccordionTitleText,
+  AccordionTrigger,
+} from "@/components/common/Accordion";
 
 const PlaceholderImage = require("@/assets/images/bike.png");
 
 type Props = NativeStackScreenProps<BikesStackParamList, typeof BIKE_DETAIL>;
+
+type PiecesByCategory = Record<
+  number,
+  {
+    category: PieceCategoryWithType;
+    pieces: PieceWithDetails[];
+  }
+>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -45,6 +63,23 @@ export default function BikeDetailView({ navigation, route }: Props) {
   const { t } = useTranslation();
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const sortedByCategory = (pieces: PieceWithDetails[]): PiecesByCategory => {
+    const grouped = pieces.reduce<PiecesByCategory>((acc, piece) => {
+      const categoryId = piece.categoryId;
+      if (!acc[categoryId]) {
+        acc[categoryId] = { category: piece.category, pieces: [] };
+      }
+      acc[categoryId].pieces.push(piece);
+      return acc;
+    }, {});
+
+    return Object.fromEntries(
+      Object.entries(grouped).sort(([a], [b]) => Number(a) - Number(b)),
+    );
+  };
+
+  const sortedPieces = pieces ? sortedByCategory(pieces) : null;
 
   const brandAndModel = useCallback((bike: Bike) => {
     if (bike.brand && bike.model) {
@@ -136,16 +171,36 @@ export default function BikeDetailView({ navigation, route }: Props) {
         </View>
       </Box>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {pieces.map((piece) => {
-          return (
-            <TouchableOpacity
-              key={piece.id}
-              onPress={() => navigateToPieceDetails(piece.id)}
-            >
-              <PieceCard piece={piece} />
-            </TouchableOpacity>
-          );
-        })}
+        {sortedPieces && (
+          <Accordion
+            type="multiple"
+            defaultValue={Object.values(sortedPieces).map(
+              (cat) => cat.category.name,
+            )}
+          >
+            {Object.values(sortedPieces).map((cat) => (
+              <AccordionItem key={cat.category.id} value={cat.category.name}>
+                <AccordionHeader>
+                  <AccordionTrigger>
+                    <AccordionTitleText>
+                      {t(`categories.${cat.category.name}`)}
+                    </AccordionTitleText>
+                  </AccordionTrigger>
+                </AccordionHeader>
+                <AccordionContent>
+                  {cat.pieces.map((piece) => (
+                    <TouchableOpacity
+                      key={piece.id}
+                      onPress={() => navigateToPieceDetails(piece.id)}
+                    >
+                      <PieceCard key={piece.id} piece={piece} />
+                    </TouchableOpacity>
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
         <TouchableOpacity
           style={[styles.actionCard, styles.addButton]}
           onPress={onAddPiece}
