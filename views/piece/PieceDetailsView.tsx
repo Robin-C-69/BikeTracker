@@ -7,7 +7,6 @@ import {
   View,
 } from "react-native";
 import { theme } from "@/constants/theme";
-import { Divider } from "@/components/common/Divider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
 import React, { useCallback, useMemo, useState } from "react";
@@ -19,19 +18,16 @@ import { usePieceMutations } from "@/hooks/usePieceMutations";
 import { PieceWithDetails } from "@/database/models/PieceModel";
 import { useBikeContext } from "@/context/BikeContext";
 import {
-  calculateAndFormatAge,
   formatDateToHumanString,
   formatPieceTypeAndCategory,
 } from "@/components/utils/stringFormatting";
 import { useMaintenanceHistoryStore } from "@/stores/historyStore";
-import { usePieceType } from "@/hooks/usePieceType";
-import { usePieceCategory } from "@/hooks/usePieceCategory";
-import { nextMaintenanceAction } from "@/components/utils/typesCategoriesFunctions";
 import {
   CREATE_HISTORY_ENTRY,
   PIECE_DETAILS,
   UPDATE_PIECE,
 } from "@/constants/tabNames";
+import CustomHeader from "@/components/common/CustomHeader";
 
 type Props = NativeStackScreenProps<PieceStackParamList, typeof PIECE_DETAILS>;
 
@@ -46,43 +42,20 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   const { bikes } = useBikeContext();
   const currentBike = bikes.find((bike) => bike.id === piece.bikeId);
 
-  const { pieceCategories, loading: pieceCategoryLoading } = usePieceCategory();
-  const { pieceTypes, loading: pieceTypesLoading } = usePieceType();
-
   const { historyByPiece } = useMaintenanceHistoryStore();
   const maintenanceHistory = useMemo(() => {
     return historyByPiece[piece.id] ?? piece.maintenanceHistory ?? [];
   }, [historyByPiece, piece.id, piece.maintenanceHistory]);
 
-  const nextAction = nextMaintenanceAction(maintenanceHistory, piece);
-  const nextActionName = nextAction?.maintenanceName
-    ? `maintenance_type.${nextAction?.maintenanceName}`
-    : "-";
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const formatDays = useCallback(() => {
-    return calculateAndFormatAge(piece.installDate, t);
-  }, [piece.installDate, t]);
+  const nameAndCategory = useMemo(() => {
+    return formatPieceTypeAndCategory(piece.category, t);
+  }, [piece.category, t]);
 
-  const calculateTraveledKm = useCallback(() => {
-    const currentBikeKm = currentBike?.totalKm;
-    const pieceInstalledKm = piece.installKm;
-    if (currentBikeKm != null && pieceInstalledKm != null) {
-      const traveledKm = currentBikeKm - pieceInstalledKm;
-      return traveledKm.toString();
-    }
-    return "-";
-  }, [currentBike?.totalKm, piece.installKm]);
-
-  const getLastMaintenanceDate = useCallback(() => {
-    if (!maintenanceHistory || maintenanceHistory.length === 0) return "-";
-    const lastHistoryEntry = maintenanceHistory[maintenanceHistory.length - 1];
-    if (lastHistoryEntry.date) {
-      return formatDateToHumanString(lastHistoryEntry.date);
-    }
-    return "-";
-  }, [maintenanceHistory]);
+  const pieceInstalledDate = useCallback(() => {
+    return formatDateToHumanString(piece.installDate) ?? "-";
+  }, [piece.installDate]);
 
   const navigateToCreateHistoryEntry = () => {
     navigation.navigate(CREATE_HISTORY_ENTRY, {
@@ -109,136 +82,101 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
     [deletePiece, navigation],
   );
 
-  const StatCard = ({ label, value }: { label: string; value: string }) => {
+  const HeaderSpec = ({ label, value }: { label: string; value: string }) => {
     return (
-      <View style={styles.statCardContainer}>
-        <Text style={styles.statCardLabel}>{t(label)}</Text>
-        <Text style={styles.statCardValue}>{t(value)}</Text>
+      <View style={styles.headerDetailsItem}>
+        <View>
+          <Text style={styles.hdLabel}>{label}</Text>
+        </View>
+        <View>
+          <Text style={styles.hdValue}>{value}</Text>
+        </View>
       </View>
     );
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.headerDetails}>
-          <Text style={styles.pieceName}>{piece.name}</Text>
-          {!pieceTypesLoading && !pieceCategoryLoading && (
-            <View style={styles.chipContainer}>
-              <Text style={styles.chip}>
-                {formatPieceTypeAndCategory(
-                  piece.categoryId,
-                  pieceCategories,
-                  pieceTypes,
-                  t,
-                )}
-              </Text>
-            </View>
-          )}
-          {piece.description && (
-            <Text style={styles.pieceDescription}>{piece.description}</Text>
-          )}
-        </View>
-        <View style={styles.pieceButtons}>
-          <Button style={styles.addHistoryButton} onPress={onEditPiece}>
-            <Ionicons
-              name={"construct-outline"}
-              size={20}
-              style={styles.addIcon}
-            />
-            <ButtonText style={styles.actionText}>{t("Update")}</ButtonText>
-          </Button>
-          <Button
-            style={styles.deletePieceButton}
-            onPress={() => {
-              setShowDeleteModal(true);
-            }}
-          >
-            <Ionicons
-              name={"trash-bin-outline"}
-              size={20}
-              style={styles.addIcon}
-            />
-            <ButtonText style={styles.actionText}>{t("Delete")}</ButtonText>
-          </Button>
-        </View>
-      </View>
-      <Divider />
-      <View style={styles.cardsContainer}>
-        <View style={styles.column}>
-          <View style={styles.row}>
-            <StatCard label={"Age"} value={formatDays()} />
-          </View>
-          <View style={styles.row}>
-            <StatCard label={"km_traveled"} value={calculateTraveledKm()} />
-          </View>
-        </View>
-        <View style={styles.column}>
-          <View style={styles.row}>
-            <StatCard
-              label={"Last Maintenance"}
-              value={getLastMaintenanceDate()}
-            />
-          </View>
-          <View style={styles.row}>
-            <StatCard label={"Next action"} value={nextActionName} />
-          </View>
-        </View>
-      </View>
-      <View style={styles.historyContainer}>
-        <View>
-          <Text style={styles.historyLabel}>{t("History")}</Text>
-          <Text style={styles.historySubLabel}>
-            {maintenanceHistory.length} {t("interventions_carried")}
-          </Text>
-        </View>
-        <Button
-          style={styles.addHistoryButton}
-          onPress={navigateToCreateHistoryEntry}
-        >
-          <Ionicons name={"add-outline"} size={20} style={styles.addIcon} />
-          <ButtonText style={styles.actionText}>{t("Add")}</ButtonText>
-        </Button>
-      </View>
-      <PieceHistory
-        piece={piece}
-        history={maintenanceHistory}
-        navigation={navigation}
+    <View style={styles.container}>
+      <CustomHeader
+        title={t("Piece details")}
+        actionButton={{ label: t("Edit"), onPress: onEditPiece, visible: true }}
       />
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={showDeleteModal}
-        onRequestClose={() => {
-          setShowDeleteModal(false);
-        }}
-      >
-        <View style={styles.modalWrapper}>
-          <View style={styles.modalContainer}>
-            <View style={styles.deleteTextWrapper}>
-              <Text style={styles.deleteText}>
-                {t("delete_piece_confirmation", { piece: piece.name })}
-              </Text>
-              <Text style={styles.deleteText}>{t("irreversible_action")}</Text>
-            </View>
-            <View style={styles.modalButtonsWrapper}>
-              <Button
-                style={styles.modalCancel}
-                onPress={() => setShowDeleteModal(false)}
-              >
-                <Text style={styles.modalButtonText}>{t("Cancel")}</Text>
-              </Button>
-              <Button
-                style={styles.modalDelete}
-                onPress={() => onDeletePiece(piece)}
-              >
-                <Text style={styles.modalButtonText}>{t("Delete")}</Text>
-              </Button>
-            </View>
+      <ScrollView>
+        <View style={styles.headerContainer}>
+          <View style={styles.headerNames}>
+            <Text style={styles.pieceName}>{piece.name}</Text>
+            {nameAndCategory && (
+              <Text style={styles.modelCategory}>{nameAndCategory}</Text>
+            )}
+            {piece.description && (
+              <Text style={styles.pieceDescription}>{piece.description}</Text>
+            )}
+          </View>
+          <View style={styles.headerDetails}>
+            <HeaderSpec label={t("Bike")} value={currentBike?.name ?? "-"} />
+            <HeaderSpec
+              label={t("Installed date")}
+              value={pieceInstalledDate()}
+            />
           </View>
         </View>
-      </Modal>
-    </ScrollView>
+        <View style={styles.historyContainer}>
+          <View>
+            <Text style={styles.historyLabel}>{t("History")}</Text>
+            <Text style={styles.historySubLabel}>
+              {maintenanceHistory.length} {t("Interventions")}
+            </Text>
+          </View>
+          <Button
+            style={styles.addHistoryButton}
+            onPress={navigateToCreateHistoryEntry}
+          >
+            <Ionicons name={"add-outline"} size={20} style={styles.addIcon} />
+            <ButtonText style={styles.actionText}>{t("Add")}</ButtonText>
+          </Button>
+        </View>
+        <PieceHistory
+          piece={piece}
+          history={maintenanceHistory}
+          navigation={navigation}
+        />
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={showDeleteModal}
+          onRequestClose={() => {
+            setShowDeleteModal(false);
+          }}
+        >
+          <View style={styles.modalWrapper}>
+            <View style={styles.modalContainer}>
+              <View style={styles.deleteTextWrapper}>
+                <Text style={styles.deleteText}>
+                  {t("delete_piece_confirmation", { piece: piece.name })}
+                </Text>
+                <Text style={styles.deleteText}>
+                  {t("irreversible_action")}
+                </Text>
+              </View>
+              <View style={styles.modalButtonsWrapper}>
+                <Button
+                  style={styles.modalCancel}
+                  onPress={() => setShowDeleteModal(false)}
+                >
+                  <Text style={styles.modalButtonText}>{t("Cancel")}</Text>
+                </Button>
+                <Button
+                  style={styles.modalDelete}
+                  onPress={() => onDeletePiece(piece)}
+                >
+                  <Text style={styles.modalButtonText}>{t("Delete")}</Text>
+                </Button>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -246,38 +184,47 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.background,
     height: "100%",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
   headerContainer: {
+    display: "flex",
+    flexDirection: "column",
     padding: theme.spacing(1),
-    flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    // alignItems: "center",
+    gap: theme.spacing(2),
+    backgroundColor: theme.colors.surface,
+    marginBottom: theme.spacing(1),
+    borderBottomColor: theme.colors.border.default,
+    borderBottomWidth: 1,
   },
-  headerDetails: { gap: theme.spacing(1) },
+  headerNames: { gap: theme.spacing(1) },
   pieceName: {
     color: theme.colors.text.primary,
     fontSize: theme.typography.sizes.xl,
     fontWeight: theme.typography.weights.bold,
   },
-  chipContainer: {
-    alignSelf: "flex-start",
-    backgroundColor: theme.colors.greenHint,
-    padding: 5,
-    borderRadius: 8,
-    borderLeftWidth: 1,
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-    borderTopWidth: 1,
-    borderColor: theme.colors.primaryDark,
-  },
-  chip: {
-    color: theme.colors.primaryLight,
-    fontSize: theme.typography.sizes.sm,
-    fontWeight: theme.typography.weights.semibold,
+  modelCategory: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.md,
   },
   pieceDescription: {
     color: theme.colors.text.primary,
   },
+  headerDetails: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing(1),
+  },
+  headerDetailsItem: {
+    width: "48%",
+  },
+  headerDetailsLabel: {},
+  headerDetailsValue: {},
+  hdLabel: { color: theme.colors.text.secondary },
+  hdValue: { color: theme.colors.text.primary },
   pieceButtons: { flexDirection: "column", gap: theme.spacing(1) },
   cardsContainer: {
     padding: theme.spacing(1),
@@ -317,6 +264,9 @@ const styles = StyleSheet.create({
   },
   addHistoryButton: {
     backgroundColor: theme.colors.primary,
+    borderRadius: 0,
+    borderWidth: 1,
+    borderColor: theme.colors.border.lighting,
   },
   addIcon: {
     color: theme.colors.text.primary,

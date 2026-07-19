@@ -10,6 +10,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { theme } from "@/constants/theme";
+import { Ionicons } from "@expo/vector-icons";
 
 // ─── Context ────────────────────────────────────────────────────────────────
 
@@ -164,7 +165,7 @@ export function AccordionTrigger({
         <Animated.Text
           style={[styles.defaultChevron, { transform: [{ rotate }] }]}
         >
-          ▾
+          <Ionicons name={"chevron-down"} />
         </Animated.Text>
       )}
     </TouchableOpacity>

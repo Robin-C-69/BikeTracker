@@ -146,7 +146,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
   return (
     <View style={styles.container}>
       <CustomHeader
-        title={t("Bike profile")}
+        title={t("Bike details")}
         actionButton={{ label: t("Edit"), onPress: onEditBike, visible: true }}
       />
       <Box style={styles.headerContainer}>
@@ -161,7 +161,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
           </View>
           <View style={styles.bikeStats}>
             <Box>
-              <Text style={styles.statName}>{t("Odometer")}</Text>
+              <Text style={styles.statName}>{t("Traveled distance")}</Text>
               <Text style={styles.statValue}>
                 {bike.totalKm}
                 {t(" km")}
@@ -178,12 +178,12 @@ export default function BikeDetailView({ navigation, route }: Props) {
               (cat) => cat.category.name,
             )}
           >
-            {Object.values(sortedPieces).map((cat) => (
+            {Object.values(sortedPieces).map((cat, idx) => (
               <AccordionItem key={cat.category.id} value={cat.category.name}>
                 <AccordionHeader>
                   <AccordionTrigger>
                     <AccordionTitleText>
-                      {t(`categories.${cat.category.name}`)}
+                      {`${String(idx + 1).padStart(2, "0")} // ${t(`categories.${cat.category.name}`)}`}
                     </AccordionTitleText>
                   </AccordionTrigger>
                 </AccordionHeader>
@@ -345,6 +345,7 @@ const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: theme.colors.errorDark,
     marginTop: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
     borderColor: theme.colors.border.error,
   },
   deleteButtonTitle: {

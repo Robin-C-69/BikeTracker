@@ -43,14 +43,8 @@ export default function PieceNavigator() {
       <Stack.Screen
         name={PIECE_DETAILS}
         component={PieceDetailsView}
-        options={({ route }) => ({
-          headerShown: true,
-          header: () => (
-            <CustomHeader
-              title={t("Piece details")}
-              subtitle={route.params.bikeName}
-            />
-          ),
+        options={() => ({
+          headerShown: false,
         })}
       />
       <Stack.Screen

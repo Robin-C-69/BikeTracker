@@ -5,9 +5,7 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "@/constants/theme";
-import { useEffect } from "react";
-import { Platform, StatusBar } from "react-native";
-import * as NavigationBar from "expo-navigation-bar";
+import { StatusBar } from "react-native";
 import CustomHeader from "@/components/common/CustomHeader";
 import * as SplashScreen from "expo-splash-screen";
 import { useTranslation } from "react-i18next";
@@ -21,15 +19,6 @@ SplashScreen.setOptions({
 export default function RootLayout() {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const setupFullScreen = async () => {
-      if (Platform.OS === "android") {
-        await NavigationBar.setVisibilityAsync("hidden");
-      }
-    };
-    setupFullScreen().then(() => SplashScreen.hideAsync());
-  }, []);
-
   return (
     <GluestackUIProvider mode="dark">
       <DatabaseProvider>
@@ -42,9 +31,11 @@ export default function RootLayout() {
               backgroundColor: theme.colors.background,
               borderTopWidth: 1,
               borderTopColor: theme.colors.border.default,
-              height: "8%",
+              height: "10%",
             },
-            sceneStyle: { backgroundColor: theme.colors.background },
+            sceneStyle: {
+              backgroundColor: theme.colors.background,
+            },
           }}
         >
           <Tabs.Screen name="index" options={{ href: null }} />
