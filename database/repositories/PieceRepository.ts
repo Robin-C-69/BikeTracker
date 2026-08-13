@@ -45,4 +45,12 @@ export class PieceRepository extends BaseRepository<Piece> {
     );
     return results as Piece[];
   }
+
+  async countByBikeId(bikeId: number): Promise<number> {
+    const result = await this.db.getFirstAsync<{ count: number }>(
+      `SELECT count(*) as count FROM ${PIECES_TABLE_NAME} WHERE bikeId = ?`,
+      bikeId,
+    );
+    return result?.count ?? 0;
+  }
 }

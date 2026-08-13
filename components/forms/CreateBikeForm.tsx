@@ -203,14 +203,14 @@ export default function CreateBikeForm({
             }}
             error={errors.totalKm?.message}
           />
-          <NotificationBar type="success" style={styles.kmHint}>
-            <Ionicons
-              name={"bulb-outline"}
-              size={25}
-              style={styles.kmHintIcon}
-            />
-            <Text style={styles.kmHintText}>{t("mileage_hint")}</Text>
-          </NotificationBar>
+          {/*<NotificationBar type="success" style={styles.kmHint}>*/}
+          {/*  <Ionicons*/}
+          {/*    name={"bulb-outline"}*/}
+          {/*    size={25}*/}
+          {/*    style={styles.kmHintIcon}*/}
+          {/*  />*/}
+          {/*  <Text style={styles.kmHintText}>{t("mileage_hint")}</Text>*/}
+          {/*</NotificationBar>*/}
           <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
             <Text style={styles.buttonText}>
               {isUpdate ? t("Update") : t("Create")}

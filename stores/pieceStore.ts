@@ -2,29 +2,74 @@ import { create } from "zustand";
 import { PieceWithDetails } from "@/database/models/PieceModel";
 
 interface PieceStore {
-  pieces: PieceWithDetails[];
-  loading: boolean;
-  error: string | null;
-  setPieces: (pieces: PieceWithDetails[]) => void;
-  addPiece: (piece: PieceWithDetails) => void;
-  removePiece: (id: number) => void;
-  updatePiece: (id: number, piece: PieceWithDetails) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
+  pieces: Record<number, PieceWithDetails[]>;
+  count: Record<number, number>;
+  loading: Record<number, boolean>;
+  error: Record<number, string | null>;
+
+  setPieces: (bikeId: number, pieces: PieceWithDetails[]) => void;
+  addPiece: (bikeId: number, piece: PieceWithDetails) => void;
+  removePiece: (bikeId: number, id: number) => void;
+  updatePiece: (bikeId: number, id: number, piece: PieceWithDetails) => void;
+  setCount: (bikeId: number, count: number) => void;
+  setLoading: (bikeId: number, loading: boolean) => void;
+  setError: (bikeId: number, error: string | null) => void;
 }
 
 export const usePieceStore = create<PieceStore>((set) => ({
-  pieces: [],
-  loading: false,
-  error: null,
-  setPieces: (pieces) => set({ pieces }),
-  addPiece: (piece) => set((prev) => ({ pieces: [piece, ...prev.pieces] })),
-  removePiece: (id) =>
-    set((prev) => ({ pieces: prev.pieces.filter((p) => p.id !== id) })),
-  updatePiece: (id, piece) =>
+  pieces: {},
+  count: {},
+  loading: {},
+  error: {},
+
+  setPieces: (bikeId, pieces) =>
     set((prev) => ({
-      pieces: prev.pieces.map((p) => (p.id === id ? piece : p)),
+      pieces: {
+        ...prev,
+        [bikeId]: pieces,
+      },
     })),
-  setLoading: (loading) => set({ loading }),
-  setError: (error) => set({ error }),
+  addPiece: (bikeId, piece) =>
+    set((prev) => {
+      const updatedPieces = [piece, ...(prev.pieces[bikeId] ?? [])];
+      return {
+        pieces: { ...prev.pieces, [bikeId]: updatedPieces },
+        count: { ...prev.count, [bikeId]: updatedPieces.length },
+      };
+    }),
+  removePiece: (bikeId, id) =>
+    set((prev) => {
+      const updatedPieces = (prev.pieces[bikeId] ?? []).filter(
+        (p) => p.id !== id,
+      );
+      return {
+        pieces: { ...prev.pieces, [bikeId]: updatedPieces },
+        count: { ...prev.count, [bikeId]: updatedPieces.length },
+      };
+    }),
+  updatePiece: (bikeId, id, piece) =>
+    set((prev) => ({
+      pieces: {
+        ...prev.pieces,
+        [bikeId]: (prev.pieces[bikeId] ?? []).map((p) =>
+          p.id === id ? piece : p,
+        ),
+      },
+    })),
+  setCount: (bikeId, count) =>
+    set((prev) => ({
+      count: {
+        ...prev.count,
+        [bikeId]: count,
+      },
+    })),
+  setLoading: (bikeId, loading) =>
+    set((prev) => ({
+      loading: { ...prev.loading, [bikeId]: loading },
+    })),
+
+  setError: (bikeId, error) =>
+    set((prev) => ({
+      error: { ...prev.error, [bikeId]: error },
+    })),
 }));

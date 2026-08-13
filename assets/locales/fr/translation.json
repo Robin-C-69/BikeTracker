@@ -25,6 +25,7 @@
   "delete_bike_confirmation": "Etes-vous sur de supprimer le vélo: {{bike}} ?",
   "delete_history_entry_confirmation": "Etes-vous sur de supprimer cette entrée d'historique ?",
   "delete_piece_confirmation": "Etes-vous sur de supprimer la pièce: {{piece}} ?",
+  "Edit": "Modifier",
   "field_required": "Ce champ est requis",
   "Follow your bikes lifecycle": "Suivez le cycle de vie de vos vélos",
   "History": "Historique",

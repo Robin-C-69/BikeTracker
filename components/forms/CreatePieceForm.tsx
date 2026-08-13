@@ -97,9 +97,9 @@ export default function CreatePieceForm({
       };
 
       if (isUpdate) {
-        await updatePiece(piece.id, pieceData);
+        await updatePiece(bikeId, piece.id, pieceData);
       } else {
-        await createPiece(pieceData);
+        await createPiece(bikeId, pieceData);
       }
       onSuccess?.();
     } catch (e) {

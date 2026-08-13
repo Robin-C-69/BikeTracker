@@ -2,9 +2,9 @@ import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useCallback } from "react";
 import { Bike } from "@/database/models/BikeModel";
 import { theme } from "@/constants/theme";
-import { usePiecesByBike } from "@/hooks/usePiecesByBike";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
+import { usePieceCount } from "@/hooks/usePieceCount";
 
 const PlaceholderImage = require("@/assets/images/bike.png");
 
@@ -17,7 +17,7 @@ interface BikeCardProps {
 
 export default function BikeCard({ bike, onPress }: BikeCardProps) {
   const { t } = useTranslation();
-  const { pieces } = usePiecesByBike(bike.id);
+  const pieceCount = usePieceCount(bike.id);
 
   const brandAndModel = useCallback((bike: Bike) => {
     if (bike.brand && bike.model) {
@@ -59,7 +59,8 @@ export default function BikeCard({ bike, onPress }: BikeCardProps) {
         </View>
         <View>
           <Text style={styles.detailsName}>{t("Pieces")}</Text>
-          <Text style={styles.detailsValue}>{pieces.length}</Text>
+          {/*<Text style={styles.detailsValue}>{pieces.length}</Text>*/}
+          <Text style={styles.detailsValue}>{pieceCount}</Text>
         </View>
       </View>
     </View>

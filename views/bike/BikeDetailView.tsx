@@ -59,7 +59,11 @@ export default function BikeDetailView({ navigation, route }: Props) {
   const { bikes, loading, error, deleteBike } = useBikeContext();
 
   const bike = bikes.find((b) => b.id === bikeId);
-  const { pieces } = usePiecesByBike(bikeId);
+  const {
+    pieces,
+    loading: piecesLoading,
+    error: piecesError,
+  } = usePiecesByBike(bikeId);
   const { t } = useTranslation();
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -127,7 +131,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
     [deleteBike, error, navigation],
   );
 
-  if (loading) {
+  if (loading || piecesLoading || !sortedPieces) {
     return (
       <View style={[styles.container, styles.loading]}>
         <ActivityIndicator size="large" />
@@ -135,7 +139,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
     );
   }
 
-  if (error || !bike) {
+  if (error || !bike || piecesError) {
     return (
       <View style={styles.container}>
         <Text style={styles.error}>{error || "Bike not found"}</Text>
@@ -227,7 +231,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
         </TouchableOpacity>
       </ScrollView>
       <Modal
-        animationType="fade"
+        animationType="none"
         transparent={true}
         visible={showDeleteModal}
         onRequestClose={() => {

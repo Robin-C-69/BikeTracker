@@ -220,4 +220,13 @@ export class PieceService implements IPieceService {
       return ResponseModel.createError(e);
     }
   }
+
+  async getPieceCountByBike(bikeId: number): Promise<IResponseModel> {
+    try {
+      const piecesCount = await this.pieceRepository.countByBikeId(bikeId);
+      return ResponseModel.createSuccess(piecesCount);
+    } catch (e) {
+      return ResponseModel.createError(e);
+    }
+  }
 }
