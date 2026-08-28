@@ -56,15 +56,11 @@ export default function CreatePieceForm({
   const isUpdate = !!piece;
 
   const formSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    categoryId: z.number({ error: "Category is required" }).int(),
+    name: z.string().min(1, t("Name is required")),
+    categoryId: z.number({ error: t("Category is required") }).int(),
     description: z.string().optional(),
     installDate: z.string().optional(),
-    installKm: z
-      .number()
-      .int()
-      .min(0, "Kilometers cannot be negative")
-      .optional(),
+    installKm: z.number().int().min(0, t("mileage_hint")).optional(),
   });
 
   const {
@@ -127,6 +123,8 @@ export default function CreatePieceForm({
     loadData();
   }, [db]);
 
+  console.log("errorCategory:", errors.categoryId);
+
   if (isLoading) {
     return (
       <SafeAreaView>
@@ -157,7 +155,7 @@ export default function CreatePieceForm({
             label={t("Description")}
             placeholder={t("Description")}
           />
-          <FormControl isRequired={true}>
+          <FormControl isRequired={true} isInvalid={!!errors.categoryId}>
             <FormControlLabel>
               <FormControlLabelText style={styles.labelText}>
                 {t("Category")}
@@ -166,7 +164,6 @@ export default function CreatePieceForm({
             <Controller
               control={control}
               name={"categoryId"}
-              rules={{ required: true }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={styles.chipsContainer}>
                   {categories.map((category) => {
@@ -196,7 +193,7 @@ export default function CreatePieceForm({
             />
             {errors.categoryId && (
               <FormControlError>
-                <FormControlErrorText>
+                <FormControlErrorText style={styles.error}>
                   {errors.categoryId.message}
                 </FormControlErrorText>
               </FormControlError>
@@ -207,14 +204,13 @@ export default function CreatePieceForm({
             name={"installDate"}
             label={t("Installed date")}
             type={"date"}
-            isRequired={true}
             error={errors.installDate?.message}
           />
           <FormField
             control={control}
             name={"installKm"}
             label={t("bike_mileage_at_install")}
-            placeholder={"1000"}
+            placeholder={"Eg: 0, 1500, 30000..."}
             endText={"km"}
             type={"numeric"}
           />
@@ -274,18 +270,22 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   chip: {
-    paddingVertical: 8,
+    paddingVertical: theme.spacing(1),
     paddingHorizontal: 12,
     borderRadius: 16,
     backgroundColor: "#2d333a",
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   chipSelected: {
-    backgroundColor: "#22b383",
+    backgroundColor: theme.colors.primary,
   },
   chipText: {
     color: "white",
+  },
+  error: {
+    color: theme.colors.error,
+    marginBottom: theme.spacing(1),
   },
   dateInputWrapper: {
     position: "relative",

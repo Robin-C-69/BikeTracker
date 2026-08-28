@@ -22,7 +22,7 @@ export const colors = {
   border: {
     default: "#233323",
     lighting: "#00ff6630",
-    error: "#ff453a33",
+    error: "#ff4444",
     disabled: "#888888",
   },
 };

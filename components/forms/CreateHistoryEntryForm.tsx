@@ -66,9 +66,9 @@ export const CreateHistoryEntryForm = ({
   const isUpdate = !!historyEntry;
 
   const formSchema = z.object({
-    maintenanceTypeId: z.number({ error: "Category is required" }).int(),
-    date: z.string(),
-    kmAtMaintenance: z.number(),
+    maintenanceTypeId: z.number({ error: t("Category is required") }).int(),
+    date: z.string().min(1, t("date_required")),
+    kmAtMaintenance: z.number({ error: t("mileage_required") }),
     notes: z.string().optional(),
   });
 
@@ -127,7 +127,7 @@ export const CreateHistoryEntryForm = ({
       }
       onSuccess?.();
     } catch (e) {
-      Alert.alert("Error", "Failed to add history entry");
+      Alert.alert("Error", `Failed to add history entry: ${e}`);
     }
   };
 
@@ -174,7 +174,7 @@ export const CreateHistoryEntryForm = ({
             <Text style={styles.addTo}>{t("Add to")}</Text>
             <Text style={styles.pieceName}>{pieceName}</Text>
           </NotificationBar>
-          <FormControl isRequired={true}>
+          <FormControl isRequired={true} isInvalid={!!errors.maintenanceTypeId}>
             <FormControlLabel>
               <FormControlLabelText style={styles.labelText}>
                 {t("Maintenance type")}
@@ -211,7 +211,7 @@ export const CreateHistoryEntryForm = ({
             />
             {errors.maintenanceTypeId && (
               <FormControlError>
-                <FormControlErrorText>
+                <FormControlErrorText style={styles.error}>
                   {errors.maintenanceTypeId.message}
                 </FormControlErrorText>
               </FormControlError>
@@ -231,6 +231,7 @@ export const CreateHistoryEntryForm = ({
             label={t("bike_mileage_at_maintenance")}
             type={"numeric"}
             isRequired={true}
+            placeholder={"Eg: 0, 1500, 30000..."}
             error={errors.kmAtMaintenance?.message}
             endText={"km"}
           />
@@ -322,6 +323,10 @@ const styles = StyleSheet.create({
   },
   chipText: {
     color: "white",
+  },
+  error: {
+    color: theme.colors.error,
+    marginBottom: theme.spacing(1),
   },
   buttonsWrapper: {
     gap: 12,

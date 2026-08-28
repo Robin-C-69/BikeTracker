@@ -80,6 +80,7 @@ export default function DateFormField<T extends FieldValues>({
               style={[
                 styles.inputContainer,
                 isFocused && styles.inputContainerFocused,
+                error && styles.inputContainerError,
               ]}
             >
               <TextInput
@@ -102,7 +103,7 @@ export default function DateFormField<T extends FieldValues>({
                 value={pickerDate}
                 mode="date"
                 display="default"
-                onChange={(event, selectedDate) => {
+                onChange={(_, selectedDate) => {
                   setIsOpen(false);
                   if (selectedDate) {
                     setPickerDate(selectedDate);
@@ -111,23 +112,22 @@ export default function DateFormField<T extends FieldValues>({
                 }}
               />
             )}
-
-            {error && (
-              <FormControlError>
-                <FormControlErrorText style={styles.error}>
-                  {error ?? `${label} est obligatoire`}
-                </FormControlErrorText>
-              </FormControlError>
-            )}
           </>
         )}
       />
+      {error && (
+        <FormControlError>
+          <FormControlErrorText style={styles.error}>
+            {error}
+          </FormControlErrorText>
+        </FormControlError>
+      )}
     </FormControl>
   );
 }
 
 const styles = StyleSheet.create({
-  formControl: { marginBottom: theme.spacing(3) },
+  formControl: { marginBottom: theme.spacing(2) },
   labelText: {
     color: theme.colors.text.primary,
     fontWeight: theme.typography.weights.semibold,
@@ -149,7 +149,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing(1.5),
   },
   inputContainerFocused: {
-    borderColor: theme.colors.border.focus,
+    borderColor: theme.colors.border.lighting,
+  },
+  inputContainerError: {
+    borderColor: theme.colors.border.error,
   },
   textField: {
     flex: 1,

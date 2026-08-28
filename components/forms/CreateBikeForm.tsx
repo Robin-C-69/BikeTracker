@@ -1,9 +1,7 @@
 import {
   Alert,
   Image,
-  KeyboardAvoidingView,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,12 +15,12 @@ import FormField from "@/components/forms/fields/FormField";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { useBikeContext } from "@/context/BikeContext";
-import { NotificationBar } from "@/components/common/NotificationBar";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Directory, File, Paths } from "expo-file-system";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 export default function CreateBikeForm({
   onSuccess,
@@ -40,10 +38,10 @@ export default function CreateBikeForm({
   );
 
   const formSchema = z.object({
-    name: z.string().min(1, "Name is required"),
+    name: z.string().min(1, t("Name is required")),
     brand: z.string().optional(),
     model: z.string().optional(),
-    totalKm: z.number().min(0, "Mileage must be a positive number").optional(),
+    totalKm: z.number().min(0, t("mileage_min")).optional(),
     imageUri: z.string().optional(),
   });
 
@@ -58,7 +56,7 @@ export default function CreateBikeForm({
       name: bike?.name ?? "",
       brand: bike?.brand ?? "",
       model: bike?.model ?? "",
-      totalKm: bike?.totalKm ?? 0,
+      totalKm: bike?.totalKm ?? undefined,
       imageUri: bike?.imageUri ?? "",
     },
   });
@@ -98,7 +96,7 @@ export default function CreateBikeForm({
         name: data.name,
         brand: data.brand,
         model: data.model,
-        totalKm: data.totalKm,
+        totalKm: data.totalKm ?? 0,
         imageUri: data.imageUri,
       };
 
@@ -134,90 +132,84 @@ export default function CreateBikeForm({
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.content}>
-          <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-            {localImageUri ? (
-              <View style={styles.imageContainer}>
-                <Image
-                  source={{ uri: localImageUri }}
-                  style={styles.imagePreview}
-                  resizeMode="cover"
-                />
-                <TouchableOpacity
-                  onPress={() => {
-                    setLocalImageUri(undefined);
-                    setValue("imageUri", "");
-                  }}
-                  style={styles.removeImageBtn}
-                >
-                  <Ionicons name={"close-circle"} size={24} />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <>
-                <Ionicons
-                  name="camera-outline"
-                  size={32}
-                  style={styles.cameraIcon}
-                />
-                <Text style={styles.imagePickerText}>{t("Add a photo")}</Text>
-              </>
-            )}
-          </TouchableOpacity>
-          <FormField
-            control={control}
-            name={"name"}
-            label={t("Name")}
-            placeholder={"My super bike"}
-            helperText={t("An easy to remind name to identify your bike")}
-            isRequired={true}
-            rules={{ required: t("field_required") }}
-            error={errors.name?.message}
-          />
-          <FormField
-            control={control}
-            name={"brand"}
-            label={t("Brand")}
-            placeholder={"Eg: Trek, Specialized, Giant..."}
-          />
-          <FormField
-            control={control}
-            name={"model"}
-            label={t("Model")}
-            placeholder={"Eg: Slash, Stumpjumper, Trance..."}
-          />
-          <FormField
-            control={control}
-            name={"totalKm"}
-            label={t("Mileage")}
-            placeholder={"Eg: 0, 1500, 30000..."}
-            helperText={t(
-              "If you don't know the exact one, an estimation is enough",
-            )}
-            type={"numeric"}
-            endText={"km"}
-            rules={{
-              min: { value: 0, message: t("mileage_min") },
-              valueAsNumber: true,
-            }}
-            error={errors.totalKm?.message}
-          />
-          {/*<NotificationBar type="success" style={styles.kmHint}>*/}
-          {/*  <Ionicons*/}
-          {/*    name={"bulb-outline"}*/}
-          {/*    size={25}*/}
-          {/*    style={styles.kmHintIcon}*/}
-          {/*  />*/}
-          {/*  <Text style={styles.kmHintText}>{t("mileage_hint")}</Text>*/}
-          {/*</NotificationBar>*/}
-          <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.buttonText}>
-              {isUpdate ? t("Update") : t("Create")}
-            </Text>
-          </Pressable>
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <KeyboardAwareScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        bottomOffset={theme.spacing(2)}
+      >
+        <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+          {localImageUri ? (
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: localImageUri }}
+                style={styles.imagePreview}
+                resizeMode="cover"
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  setLocalImageUri(undefined);
+                  setValue("imageUri", "");
+                }}
+                style={styles.removeImageBtn}
+              >
+                <Ionicons name={"close-circle"} size={24} />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <>
+              <Ionicons
+                name="camera-outline"
+                size={32}
+                style={styles.cameraIcon}
+              />
+              <Text style={styles.imagePickerText}>{t("Add a photo")}</Text>
+            </>
+          )}
+        </TouchableOpacity>
+        <FormField
+          control={control}
+          name={"name"}
+          label={t("Name")}
+          placeholder={"My super bike"}
+          helperText={t("An easy to remind name to identify your bike")}
+          isRequired={true}
+          rules={{ required: t("field_required") }}
+          error={errors.name?.message}
+        />
+        <FormField
+          control={control}
+          name={"brand"}
+          label={t("Brand")}
+          placeholder={"Eg: Trek, Specialized, Giant..."}
+        />
+        <FormField
+          control={control}
+          name={"model"}
+          label={t("Model")}
+          placeholder={"Eg: Slash, Stumpjumper, Trance..."}
+        />
+        <FormField
+          control={control}
+          name={"totalKm"}
+          label={t("Mileage")}
+          placeholder={"Eg: 0, 1500, 30000..."}
+          helperText={t(
+            "If you don't know the exact one, an estimation is enough",
+          )}
+          type={"numeric"}
+          endText={"km"}
+          rules={{
+            min: { value: 0, message: t("mileage_min") },
+          }}
+          error={errors.totalKm?.message}
+        />
+        <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
+          <Text style={styles.buttonText}>
+            {isUpdate ? t("Update") : t("Create")}
+          </Text>
+        </Pressable>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }
