@@ -9,6 +9,10 @@ interface MaintenanceHistoryStore {
     pieceId: number,
     entries: MaintenanceHistoryWithType[],
   ) => void;
+  updateHistoryEntry: (
+    pieceId: number,
+    updatedEntry: MaintenanceHistoryWithType,
+  ) => void;
   removeOneHistoryEntryForAPiece: (pieceId: number, entryId: number) => void;
   removeAllHistoryEntriesForAPiece: (pieceId: number) => void;
 }
@@ -25,6 +29,15 @@ export const useMaintenanceHistoryStore = create<MaintenanceHistoryStore>(
         historyByPiece: {
           ...state.historyByPiece,
           [pieceId]: [entry, ...(state.historyByPiece[pieceId] ?? [])],
+        },
+      })),
+    updateHistoryEntry: (pieceId, updatedEntry) =>
+      set((state) => ({
+        historyByPiece: {
+          ...state.historyByPiece,
+          [pieceId]: (state.historyByPiece[pieceId] ?? []).map((e) =>
+            e.id === updatedEntry.id ? updatedEntry : e,
+          ),
         },
       })),
     removeOneHistoryEntryForAPiece: (pieceId, entryId) =>

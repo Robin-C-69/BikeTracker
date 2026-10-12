@@ -20,7 +20,7 @@ export const usePieceMutations = () => {
   }, [db]);
 
   const createPiece = useCallback(
-    async (piece: CreatePiece) => {
+    async (bikeId: number, piece: CreatePiece) => {
       if (!pieceService) return;
       const { error, data: newPiece } = await pieceService.createPiece(piece);
       if (error || !newPiece) {
@@ -28,14 +28,14 @@ export const usePieceMutations = () => {
       }
       const { data: newPieceWithDetails } =
         await pieceService.getPieceWithDetails(newPiece.id);
-      if (newPieceWithDetails) addPiece(newPieceWithDetails);
+      if (newPieceWithDetails) addPiece(bikeId, newPieceWithDetails);
       return newPieceWithDetails;
     },
     [addPiece, pieceService],
   );
 
   const updatePiece = useCallback(
-    async (id: number, piece: CreatePiece) => {
+    async (bikeId: number, id: number, piece: CreatePiece) => {
       if (!pieceService) return;
       const { error, data: updatedPiece } = await pieceService.updatePiece({
         id,
@@ -47,18 +47,18 @@ export const usePieceMutations = () => {
       const { data: pieceWithDetails } = await pieceService.getPieceWithDetails(
         updatedPiece.id,
       );
-      if (pieceWithDetails) updatePieceInStore(id, pieceWithDetails);
+      if (pieceWithDetails) updatePieceInStore(bikeId, id, pieceWithDetails);
       return pieceWithDetails;
     },
     [pieceService, updatePieceInStore],
   );
 
   const deletePiece = useCallback(
-    async (id: number) => {
+    async (bikeId: number, id: number) => {
       if (!pieceService) return;
       const { error } = await pieceService.deletePiece(id);
       if (!error) {
-        removePiece(id);
+        removePiece(bikeId, id);
         removeAllHistoryEntriesForAPiece(id);
       }
     },

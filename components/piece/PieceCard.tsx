@@ -1,28 +1,24 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { StyleSheet, Text } from "react-native";
-import { Divider } from "@/components/common/Divider";
+import { StyleSheet, Text, View } from "react-native";
 import { Box } from "@/components/ui/box";
 import { theme } from "@/constants/theme";
 import { Piece } from "@/database/models/PieceModel";
 import { useTranslation } from "react-i18next";
 import {
-  calculateAndFormatAge,
+  capitalized,
   formatDateToHumanString,
-  formatPieceTypeAndCategory,
 } from "@/components/utils/stringFormatting";
 import { useMaintenanceHistoryStore } from "@/stores/historyStore";
 import { MaintenanceHistoryService } from "@/database/services/MaintenanceHistoryService";
 import { useDatabase } from "@/context/DatabaseContext";
 import { usePieceCategory } from "@/hooks/usePieceCategory";
-import { usePieceType } from "@/hooks/usePieceType";
-import { nextMaintenanceAction } from "@/components/utils/typesCategoriesFunctions";
+import { getCategoryNameById } from "@/components/utils/typesCategoriesFunctions";
 
 export const PieceCard = ({ piece }: { piece: Piece }) => {
   const { t } = useTranslation();
   const { db } = useDatabase();
   const { historyByPiece, setHistoryForPiece } = useMaintenanceHistoryStore();
-  const { pieceCategories, loading: pieceCategoryLoading } = usePieceCategory();
-  const { pieceTypes, loading: pieceTypesLoading } = usePieceType();
+  const { pieceCategories } = usePieceCategory();
 
   const currentPieceHistory = useMemo(() => {
     return historyByPiece[piece.id];
@@ -33,14 +29,18 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
     return new MaintenanceHistoryService(db);
   }, [db]);
 
-  const nextAction = useMemo(() => {
-    if (!currentPieceHistory) return null;
-    return nextMaintenanceAction(currentPieceHistory, piece);
-  }, [currentPieceHistory, piece]);
+  // const nextAction = useMemo(() => {
+  //   if (!currentPieceHistory) return null;
+  //   return nextMaintenanceAction(currentPieceHistory, piece);
+  // }, [currentPieceHistory, piece]);
 
-  const nextActionName = nextAction?.maintenanceName
-    ? `maintenance_type.${nextAction?.maintenanceName}`
-    : "-";
+  const categoryName = useMemo(() => {
+    return getCategoryNameById(piece.categoryId, pieceCategories);
+  }, [piece.categoryId, pieceCategories]);
+
+  // const nextActionName = nextAction?.maintenanceName
+  //   ? `maintenance_type.${nextAction?.maintenanceName}`
+  //   : "-";
 
   const lastMaintenanceDate = () => {
     const lastHistory = currentPieceHistory?.[0] ?? null;
@@ -51,12 +51,8 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
   };
 
   const pieceInstalledDate = useCallback(() => {
-    return formatDateToHumanString(piece.installDate);
+    return formatDateToHumanString(piece.installDate) ?? "-";
   }, [piece.installDate]);
-
-  const formatDays = useCallback(() => {
-    return calculateAndFormatAge(piece.installDate, t);
-  }, [piece.installDate, t]);
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -73,44 +69,27 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
 
   return (
     <Box style={styles.card}>
-      <Box style={styles.headerRow}>
+      <Box style={styles.leftRow}>
         <Box>
           <Text style={styles.name}>{piece.name}</Text>
-          {!pieceTypesLoading && !pieceCategoryLoading && (
-            <Text style={styles.typeAndCategory}>
-              {formatPieceTypeAndCategory(
-                piece.categoryId,
-                pieceCategories,
-                pieceTypes,
-                t,
-              )}
-            </Text>
-          )}
+          <Text style={styles.category}>
+            {t(`categories.${capitalized(categoryName)}`)}
+          </Text>
           <Text style={styles.description}>{piece.description}</Text>
         </Box>
       </Box>
-      <Divider />
-      <Box style={styles.infos}>
-        <Box style={styles.column}>
-          <Box style={styles.row}>
-            <Text style={styles.infoLabel}>{t("Installed date")}</Text>
-            <Text style={styles.infoValue}>{pieceInstalledDate()}</Text>
-          </Box>
-          <Box style={styles.row}>
-            <Text style={styles.infoLabel}>{t("Last Maintenance")}</Text>
-            <Text style={styles.infoValue}>{lastMaintenanceDate()}</Text>
-          </Box>
-        </Box>
-        <Box style={styles.column}>
-          <Box style={styles.row}>
-            <Text style={styles.infoLabel}>{t("Age")}</Text>
-            <Text style={styles.infoValue}>{formatDays()}</Text>
-          </Box>
-          <Box style={styles.row}>
-            <Text style={styles.infoLabel}>{t("Next action")}</Text>
-            <Text style={styles.infoValue}>{t(nextActionName)}</Text>
-          </Box>
-        </Box>
+      <Box style={styles.rightRow}>
+        {/*<Box style={[styles.stateBox, styles.statusGood]}>*/}
+        {/*  <Text>{t(nextActionName)}</Text>*/}
+        {/*</Box>*/}
+        <View style={styles.infos}>
+          <Text style={styles.infoLabel}>{t("Installed")}:</Text>
+          <Text style={styles.infoValue}>{pieceInstalledDate()}</Text>
+        </View>
+        <View style={styles.infos}>
+          <Text style={styles.infoLabel}>{t("Last Maintenance")}:</Text>
+          <Text style={styles.infoValue}>{lastMaintenanceDate()}</Text>
+        </View>
       </Box>
     </Box>
   );
@@ -118,50 +97,61 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#22272e",
+    flexDirection: "row",
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderStyle: "solid",
-    borderColor: "#2d333a",
-    padding: 12,
-    borderRadius: 16,
+    borderColor: theme.colors.border.default,
+    padding: theme.spacing(1.5),
+    borderRadius: theme.spacing(0.5),
     justifyContent: "space-between",
-    marginVertical: 8,
+    marginVertical: theme.spacing(1),
   },
-  headerRow: {
-    flexDirection: "row",
+  leftRow: {
+    flexDirection: "column",
     justifyContent: "space-between",
+    gap: theme.spacing(1),
   },
   name: {
     color: theme.colors.text.primary,
     fontSize: theme.typography.sizes.md,
     fontWeight: theme.typography.weights.bold,
-    marginBottom: theme.spacing(0.25),
   },
-  typeAndCategory: {
+  category: {
     color: theme.colors.text.tertiary,
-    fontSize: theme.typography.sizes.sm,
-    marginBottom: theme.spacing(1),
+    fontSize: theme.typography.sizes.md,
+    marginBottom: theme.spacing(0.5),
   },
   description: {
     color: theme.colors.text.primary,
   },
-  infos: { flexDirection: "row" },
-  column: {
-    flexDirection: "column",
-    flex: 1,
+  stateBox: {
+    padding: theme.spacing(1),
+    borderRadius: theme.spacing(0.5),
     marginBottom: theme.spacing(1),
   },
-  row: {
+  // statusGood: {
+  //   backgroundColor: theme.colors.surfaceVariant,
+  //   borderColor: theme.colors.border.lighting,
+  //   borderWidth: 1,
+  //   color: theme.colors.text.lighting,
+  // },
+  rightRow: {
     flexDirection: "column",
-    justifyContent: "space-between",
-    marginBottom: theme.spacing(2),
+    gap: theme.spacing(1.5),
+    marginBottom: theme.spacing(1),
+  },
+  infos: {
+    display: "flex",
+    flexDirection: "column",
   },
   infoLabel: {
     color: theme.colors.text.tertiary,
-    marginBottom: theme.spacing(0.5),
+    fontSize: theme.typography.sizes.xs,
   },
   infoValue: {
     color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.sm,
     fontWeight: theme.typography.weights.semibold,
   },
 });

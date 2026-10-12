@@ -72,7 +72,7 @@ npm i
 npx expo start
 ```
 
-Warning: I didn't optimize the project for pc usage, so it can less clean as the android version
+⚠️ Warning: I didn't optimize the project for pc usage, so it can less clean as the android version
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [Expo]: https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=fff

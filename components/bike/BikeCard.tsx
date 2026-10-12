@@ -1,33 +1,23 @@
-import ImageViewer from "@/components/common/ImageViewer";
-import {
-  Dimensions,
-  ImageSourcePropType,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { ReactNode, useCallback } from "react";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { useCallback } from "react";
 import { Bike } from "@/database/models/BikeModel";
-import { Divider } from "@/components/common/Divider";
 import { theme } from "@/constants/theme";
-import { usePiecesByBike } from "@/hooks/usePiecesByBike";
 import { useTranslation } from "react-i18next";
+import { LinearGradient } from "expo-linear-gradient";
+import { usePieceCount } from "@/hooks/usePieceCount";
 
-const PlaceholderImage = require("@/assets/images/bike_icon.png");
+const PlaceholderImage = require("@/assets/images/bike.png");
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 interface BikeCardProps {
   bike: Bike;
-  image?: ImageSourcePropType | ReactNode;
   onPress?: () => void;
 }
 
-export default function BikeCard({ bike, image, onPress }: BikeCardProps) {
+export default function BikeCard({ bike, onPress }: BikeCardProps) {
   const { t } = useTranslation();
-  const { pieces } = usePiecesByBike(bike.id);
-
-  const isReactElement = image && typeof image === "object" && "type" in image;
+  const pieceCount = usePieceCount(bike.id);
 
   const brandAndModel = useCallback((bike: Bike) => {
     if (bike.brand && bike.model) {
@@ -43,27 +33,34 @@ export default function BikeCard({ bike, image, onPress }: BikeCardProps) {
 
   return (
     <View style={styles.card} onTouchEnd={onPress}>
-      {isReactElement ? (
-        <View style={styles.image}>{image}</View>
-      ) : (
-        <ImageViewer
-          imgSource={(image as ImageSourcePropType) ?? PlaceholderImage}
+      <View style={styles.imageContainer}>
+        <Image
+          source={bike.imageUri ? { uri: bike.imageUri } : PlaceholderImage}
           style={styles.image}
         />
-      )}
+        <LinearGradient
+          style={styles.gradient}
+          colors={["transparent", "#12161270", theme.colors.surface]}
+        />
+      </View>
       <View style={styles.nameBanner}>
         <Text style={styles.name}>{bike.name}</Text>
-        <Text style={styles.modelBrand}>{brandAndModel(bike)}</Text>
+        {(bike.brand || bike.model) && (
+          <Text style={styles.modelBrand}>{brandAndModel(bike)}</Text>
+        )}
       </View>
-      <Divider style={styles.divider} />
       <View style={styles.detailsBanner}>
         <View>
-          <Text style={styles.detailsValue}>{bike.totalKm}</Text>
-          <Text style={styles.detailsName}>{t("km_traveled")}</Text>
+          <Text style={styles.detailsName}>{t("Traveled distance")}</Text>
+          <Text style={styles.detailsValue}>
+            {bike.totalKm}
+            {t(" km")}
+          </Text>
         </View>
         <View>
-          <Text style={styles.detailsValue}>{pieces.length}</Text>
           <Text style={styles.detailsName}>{t("Pieces")}</Text>
+          {/*<Text style={styles.detailsValue}>{pieces.length}</Text>*/}
+          <Text style={styles.detailsValue}>{pieceCount}</Text>
         </View>
       </View>
     </View>
@@ -73,22 +70,39 @@ export default function BikeCard({ bike, image, onPress }: BikeCardProps) {
 const styles = StyleSheet.create({
   card: {
     width: SCREEN_WIDTH * 0.9,
-    height: SCREEN_WIDTH * 0.9,
-    marginBottom: 10,
-    marginTop: 10,
-    borderRadius: 10,
-    backgroundColor: theme.colors.surfaceVariant,
+    height: SCREEN_WIDTH * 0.75,
+    marginBottom: theme.spacing(1.5),
+    marginTop: theme.spacing(1.5),
+    backgroundColor: theme.colors.surface,
+    borderRadius: 4,
+    borderColor: theme.colors.border.default,
+    borderWidth: 1,
     overflow: "hidden",
+  },
+  imageContainer: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
   image: {
     flex: 4,
-    marginBottom: 10,
+    width: "100%",
+    marginBottom: 0,
+    opacity: 0.6,
+  },
+  gradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: theme.spacing(25),
   },
   nameBanner: {
-    flex: 1,
     textAlign: "center",
     textAlignVertical: "center",
-    marginLeft: 10,
+    marginTop: theme.spacing(-7.5),
+    marginLeft: theme.spacing(1.5),
+    marginBottom: theme.spacing(1),
   },
   name: {
     color: theme.colors.text.primary,
@@ -103,16 +117,16 @@ const styles = StyleSheet.create({
   },
   divider: { width: "95%", alignSelf: "center" },
   detailsBanner: {
-    marginTop: 5,
-    marginBottom: 10,
+    marginBottom: theme.spacing(1.5),
+    marginLeft: theme.spacing(1.5),
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
+    gap: theme.spacing(5),
   },
   detailsValue: {
     fontSize: theme.typography.sizes.lg,
     fontWeight: theme.typography.weights.semibold,
-    color: theme.colors.text.lighting,
+    color: theme.colors.text.primary,
   },
   detailsName: {
     fontSize: theme.typography.sizes.sm,

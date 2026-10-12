@@ -2,12 +2,13 @@ import { StyleSheet } from "react-native";
 import { Box } from "@/components/ui/box";
 import { theme } from "@/constants/theme";
 import CreatePieceForm from "@/components/forms/CreatePieceForm";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "expo-router/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
+import { CREATE_PIECE, UPDATE_PIECE } from "@/constants/tabNames";
 
 type Props =
-  | NativeStackScreenProps<PieceStackParamList, "CreatePiece">
-  | NativeStackScreenProps<PieceStackParamList, "UpdatePiece">;
+  | NativeStackScreenProps<PieceStackParamList, typeof CREATE_PIECE>
+  | NativeStackScreenProps<PieceStackParamList, typeof UPDATE_PIECE>;
 
 export const CreatePieceView = ({ navigation, route }: Props) => {
   const { bikeId, bikeName } = route.params;

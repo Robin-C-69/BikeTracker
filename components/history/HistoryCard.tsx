@@ -1,15 +1,17 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { MaintenanceHistoryWithType } from "@/database/models/MaintenanceHistoryModel";
 import { Divider } from "@/components/common/Divider";
 import { theme } from "@/constants/theme";
 import { useTranslation } from "react-i18next";
-import { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { formatDateToHumanString } from "@/components/utils/stringFormatting";
 
 export const HistoryCard = ({
   historyEntry,
+  onClick,
 }: {
   historyEntry: MaintenanceHistoryWithType;
+  onClick?: () => void;
 }) => {
   const { t } = useTranslation();
 
@@ -31,23 +33,32 @@ export const HistoryCard = ({
         </View>
         <View style={styles.verticalLine} />
       </View>
-      <View style={styles.cardContainer}>
-        <View style={styles.cardHeader}>
-          <View style={styles.headerInfos}>
-            <Text style={styles.name}>
-              {t(`maintenance_type.${historyEntry.maintenanceType.name}`)}
-            </Text>
-            <Text style={styles.notes}>{historyEntry.notes}</Text>
+      <TouchableOpacity style={styles.cardContainer} onPress={onClick}>
+        <View>
+          <View style={styles.cardHeader}>
+            <View style={styles.headerInfos}>
+              <Text style={styles.name}>
+                {t(`maintenance_type.${historyEntry.maintenanceType.name}`)}
+              </Text>
+              {historyEntry.notes && (
+                <Text style={styles.notes}>{historyEntry.notes}</Text>
+              )}
+            </View>
+            <View>
+              <Text style={styles.date}>{dateDone()}</Text>
+            </View>
+          </View>
+          <Divider />
+          <View>
+            <Text style={styles.bikeKmLabel}>{t("Bike km")}</Text>
           </View>
           <View>
-            <Text style={styles.date}>{dateDone()}</Text>
+            <Text
+              style={styles.bikeKmValue}
+            >{`${historyEntry.kmAtMaintenance} km`}</Text>
           </View>
         </View>
-        <Divider />
-        <View>
-          <Text style={styles.bikeKm}>{formatBikeKm()}</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -96,15 +107,16 @@ const styles = StyleSheet.create({
   cardContainer: {
     flex: 1,
     backgroundColor: theme.colors.surface,
-    padding: theme.spacing(1.5),
-    borderRadius: theme.spacing(1),
     borderWidth: 1,
+    borderRadius: theme.spacing(0.5),
+    padding: theme.spacing(1.5),
     borderColor: theme.colors.border.default,
     marginBottom: theme.spacing(1.5),
   },
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: theme.spacing(1),
   },
   headerInfos: {
     gap: theme.spacing(0.5),
@@ -124,7 +136,12 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.sm,
   },
   bikeKm: {
-    color: theme.colors.text.tertiary,
-    fontSize: theme.typography.sizes.sm,
+    display: "flex",
+  },
+  bikeKmLabel: {
+    color: theme.colors.text.secondary,
+  },
+  bikeKmValue: {
+    color: theme.colors.text.primary,
   },
 });

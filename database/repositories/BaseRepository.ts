@@ -23,8 +23,7 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
 
   async findAll(limit?: number, offset?: number): Promise<T[]> {
     let query = `SELECT *
-                   FROM ${this.tableName}
-                   ORDER BY id DESC`;
+                   FROM ${this.tableName}`;
     const params: any[] = [];
 
     if (limit) {

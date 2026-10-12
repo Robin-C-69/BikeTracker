@@ -1,4 +1,4 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "expo-router/native-stack";
 import BikeListView from "@/views/bike/BikeListView";
 import BikeDetailView from "@/views/bike/BikeDetailView";
 import CreateBikeView from "@/views/bike/CreateBikeView";
@@ -11,6 +11,13 @@ import PieceNavigator, {
   PieceStackParamList,
 } from "@/navigators/PieceNavigator";
 import { NavigatorScreenParams } from "@react-navigation/core";
+import {
+  BIKE_DETAIL,
+  BIKE_LIST,
+  CREATE_BIKE,
+  PIECE_NAVIGATOR,
+  UPDATE_BIKE,
+} from "@/constants/tabNames";
 
 export type BikesStackParamList = {
   BikeList: undefined;
@@ -31,24 +38,28 @@ export default function BikesNavigator() {
           headerStyle: {
             backgroundColor: theme.colors.primary,
           },
-          headerTintColor: "#fff",
           headerTitleStyle: {
             fontWeight: "bold",
+          },
+          contentStyle: {
+            backgroundColor: theme.colors.background,
           },
         }}
       >
         <Stack.Screen
-          name="BikeList"
+          name={BIKE_LIST}
           component={BikeListView}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="BikeDetail"
+          name={BIKE_DETAIL}
           component={BikeDetailView}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+          }}
         />
         <Stack.Screen
-          name="CreateBike"
+          name={CREATE_BIKE}
           component={CreateBikeView}
           options={{
             headerShown: true,
@@ -61,7 +72,7 @@ export default function BikesNavigator() {
           }}
         />
         <Stack.Screen
-          name="UpdateBike"
+          name={UPDATE_BIKE}
           component={CreateBikeView}
           options={{
             headerShown: true,
@@ -69,7 +80,7 @@ export default function BikesNavigator() {
           }}
         />
         <Stack.Screen
-          name="PieceNavigator"
+          name={PIECE_NAVIGATOR}
           component={PieceNavigator}
           options={{ headerShown: false }}
         />

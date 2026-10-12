@@ -86,6 +86,7 @@ export default function FormField<T extends FieldValues>(
             style={[
               styles.inputContainer,
               isFocused && styles.inputContainerFocused,
+              error && styles.inputContainerError,
             ]}
           >
             <TextInput
@@ -97,7 +98,8 @@ export default function FormField<T extends FieldValues>(
               onFocus={() => setIsFocused(true)}
               onChangeText={(text) => {
                 if (type === "numeric") {
-                  onChange(text === "" ? undefined : Number(text));
+                  const num = Number(text);
+                  onChange(text === "" || Number.isNaN(num) ? undefined : num);
                 } else {
                   onChange(text);
                 }
@@ -129,7 +131,7 @@ export default function FormField<T extends FieldValues>(
 }
 
 const styles = StyleSheet.create({
-  formControl: { marginBottom: theme.spacing(3) },
+  formControl: { marginBottom: theme.spacing(2) },
   labelText: {
     color: theme.colors.text.primary,
     fontWeight: theme.typography.weights.semibold,
@@ -151,7 +153,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing(1.5),
   },
   inputContainerFocused: {
-    borderColor: theme.colors.border.focus,
+    borderColor: theme.colors.border.lighting,
+  },
+  inputContainerError: {
+    borderColor: theme.colors.border.error,
   },
   textField: {
     flex: 1,

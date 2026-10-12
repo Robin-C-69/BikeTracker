@@ -1,78 +1,35 @@
 import "../i18n";
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { DatabaseProvider } from "@/context/DatabaseContext";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
-import { Ionicons } from "@expo/vector-icons";
 import { theme } from "@/constants/theme";
-import { useEffect } from "react";
-import { Platform, StatusBar } from "react-native";
-import * as NavigationBar from "expo-navigation-bar";
-import CustomHeader from "@/components/common/CustomHeader";
+import { StatusBar } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
-import { useTranslation } from "react-i18next";
-
-const APP_TITLE = "BikeTracker";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 SplashScreen.setOptions({
   duration: 1000,
-  fade: true,
 });
 
 export default function RootLayout() {
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    const setupFullScreen = async () => {
-      if (Platform.OS === "android") {
-        await NavigationBar.setVisibilityAsync("hidden");
-      }
-    };
-    setupFullScreen();
-  }, []);
-
   return (
     <GluestackUIProvider mode="dark">
       <DatabaseProvider>
-        <StatusBar hidden={true} />
-        <Tabs
-          screenOptions={{
-            headerShown: false,
-            tabBarActiveTintColor: theme.colors.primary,
-            tabBarStyle: {
-              backgroundColor: theme.colors.surface,
-              borderTopWidth: 0,
-              height: "8%",
-            },
-          }}
-        >
-          <Tabs.Screen name="index" options={{ href: null }} />
-          <Tabs.Screen
-            name="bikes"
-            options={{
-              title: `${t("Bikes")}`,
-              tabBarIcon: ({ color }) => (
-                <Ionicons name="bicycle" size={24} color={color} />
-              ),
+        <KeyboardProvider>
+          <StatusBar hidden={true} />
+          <Stack
+            initialRouteName={"bikes"}
+            screenOptions={{
               headerShown: false,
+              contentStyle: {
+                backgroundColor: theme.colors.background,
+              },
             }}
-          />
-          <Tabs.Screen
-            name="next"
-            options={{
-              title: "Next",
-              tabBarIcon: ({ color }) => (
-                <Ionicons
-                  name="ellipsis-horizontal-outline"
-                  size={24}
-                  color={color}
-                />
-              ),
-              headerShown: true,
-              header: () => <CustomHeader title={APP_TITLE} />,
-            }}
-          />
-        </Tabs>
+          >
+            <Stack.Screen name="bikes" />
+          </Stack>
+        </KeyboardProvider>
       </DatabaseProvider>
     </GluestackUIProvider>
   );
