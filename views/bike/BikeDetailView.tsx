@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { theme } from "@/constants/theme";
 import { PieceCard } from "@/components/piece/PieceCard";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "expo-router/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
 import { usePiecesByBike } from "@/hooks/usePiecesByBike";
 import { Ionicons } from "@expo/vector-icons";
@@ -68,22 +68,22 @@ export default function BikeDetailView({ navigation, route }: Props) {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const sortedByCategory = (pieces: PieceWithDetails[]): PiecesByCategory => {
+  const sortedByType = (pieces: PieceWithDetails[]): PiecesByCategory => {
     const grouped = pieces.reduce<PiecesByCategory>((acc, piece) => {
-      const categoryId = piece.categoryId;
-      if (!acc[categoryId]) {
-        acc[categoryId] = { category: piece.category, pieces: [] };
+      const typeId = piece.category.typeId;
+      if (!acc[typeId]) {
+        acc[typeId] = {category: piece.category, pieces: []};
       }
-      acc[categoryId].pieces.push(piece);
+      acc[typeId].pieces.push(piece);
       return acc;
-    }, {});
+      },{})
 
     return Object.fromEntries(
-      Object.entries(grouped).sort(([a], [b]) => Number(a) - Number(b)),
-    );
-  };
+      Object.entries(grouped).sort(([a], [b]) => Number(a) - Number(b))
+    )
+  }
 
-  const sortedPieces = pieces ? sortedByCategory(pieces) : null;
+  const sortedPieces = pieces ? sortedByType(pieces) : null;
 
   const brandAndModel = useCallback((bike: Bike) => {
     if (bike.brand && bike.model) {
@@ -128,7 +128,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
         navigation.goBack();
       }
     },
-    [deleteBike, error, navigation],
+    [deleteBike, error, navigation, setShowDeleteModal],
   );
 
   if (loading || piecesLoading || !sortedPieces) {
@@ -177,13 +177,17 @@ export default function BikeDetailView({ navigation, route }: Props) {
       <ScrollView showsVerticalScrollIndicator={false}>
         {sortedPieces && (
           <Accordion
+            key={Object.keys(sortedPieces).join("-")}
             type="multiple"
             defaultValue={Object.values(sortedPieces).map(
-              (cat) => cat.category.name,
+              (cat) => cat.category.type.name,
             )}
           >
             {Object.values(sortedPieces).map((cat, idx) => (
-              <AccordionItem key={cat.category.id} value={cat.category.name}>
+              <AccordionItem
+                key={cat.category.id}
+                value={cat.category.type.name}
+              >
                 <AccordionHeader>
                   <AccordionTrigger>
                     <AccordionTitleText>

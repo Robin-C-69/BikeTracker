@@ -2,7 +2,7 @@ import { BikeRepository } from "@/database/repositories/BikeRepository";
 import { SQLiteDatabase } from "expo-sqlite";
 import { BikeModel, CreateBikeRequest } from "@/database/models/BikeModel";
 import { IResponseModel, ResponseModel } from "@/database/models/ResponseModel";
-import { File } from "expo-file-system/next";
+import { File } from "expo-file-system";
 
 export class BikeService {
   private bikeRepository: BikeRepository;

@@ -4,10 +4,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { theme } from "@/constants/theme";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "expo-router/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -28,14 +29,35 @@ import {
   UPDATE_PIECE,
 } from "@/constants/tabNames";
 import CustomHeader from "@/components/common/CustomHeader";
+import { Bike } from "@/database/models/BikeModel";
+import { usePieceStore } from "@/stores/pieceStore";
 
 type Props = NativeStackScreenProps<PieceStackParamList, typeof PIECE_DETAILS>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
+const HeaderSpec = ({ label, value }: { label: string; value: string }) => {
+  return (
+    <View style={styles.headerDetailsItem}>
+      <View>
+        <Text style={styles.hdLabel}>{label}</Text>
+      </View>
+      <View>
+        <Text style={styles.hdValue}>{value}</Text>
+      </View>
+    </View>
+  );
+};
+
 export const PieceDetailsView = ({ navigation, route }: Props) => {
-  const { piece } = route.params;
+  const { piece: routePiece } = route.params;
   const { t } = useTranslation();
+
+  const storedPiece = usePieceStore((state) =>
+    state.pieces[routePiece.bikeId]?.find((p) => p.id === routePiece.id),
+  );
+
+  const piece = storedPiece ?? routePiece;
 
   const { deletePiece } = usePieceMutations();
 
@@ -53,7 +75,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
     return formatPieceTypeAndCategory(piece.category, t);
   }, [piece.category, t]);
 
-  const pieceInstalledDate = useCallback(() => {
+  const pieceInstalledDate = useMemo(() => {
     return formatDateToHumanString(piece.installDate) ?? "-";
   }, [piece.installDate]);
 
@@ -74,26 +96,15 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   };
 
   const onDeletePiece = useCallback(
-    async (piece: PieceWithDetails) => {
-      await deletePiece(piece.id);
+    async (bike: Bike | undefined, piece: PieceWithDetails) => {
+      if (bike) {
+        await deletePiece(bike.id, piece.id);
+      }
       setShowDeleteModal(false);
       navigation.goBack();
     },
     [deletePiece, navigation],
   );
-
-  const HeaderSpec = ({ label, value }: { label: string; value: string }) => {
-    return (
-      <View style={styles.headerDetailsItem}>
-        <View>
-          <Text style={styles.hdLabel}>{label}</Text>
-        </View>
-        <View>
-          <Text style={styles.hdValue}>{value}</Text>
-        </View>
-      </View>
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -116,7 +127,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
             <HeaderSpec label={t("Bike")} value={currentBike?.name ?? "-"} />
             <HeaderSpec
               label={t("Installed date")}
-              value={pieceInstalledDate()}
+              value={pieceInstalledDate}
             />
           </View>
         </View>
@@ -140,8 +151,21 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
           history={maintenanceHistory}
           navigation={navigation}
         />
+        <TouchableOpacity
+          style={[styles.actionCard, styles.deleteButton]}
+          onPress={() => {
+            setShowDeleteModal(true);
+          }}
+        >
+          <Ionicons
+            name={"trash-bin-outline"}
+            size={20}
+            style={styles.deleteIcon}
+          />
+          <Text style={styles.deleteButtonTitle}>{t("Delete piece")}</Text>
+        </TouchableOpacity>
         <Modal
-          animationType="fade"
+          animationType="none"
           transparent={true}
           visible={showDeleteModal}
           onRequestClose={() => {
@@ -163,13 +187,13 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
                   style={styles.modalCancel}
                   onPress={() => setShowDeleteModal(false)}
                 >
-                  <Text style={styles.modalButtonText}>{t("Cancel")}</Text>
+                  <Text style={styles.modalCancelText}>{t("Cancel")}</Text>
                 </Button>
                 <Button
                   style={styles.modalDelete}
-                  onPress={() => onDeletePiece(piece)}
+                  onPress={() => onDeletePiece(currentBike, piece)}
                 >
-                  <Text style={styles.modalButtonText}>{t("Delete")}</Text>
+                  <Text style={styles.modalDeleteText}>{t("Delete")}</Text>
                 </Button>
               </View>
             </View>
@@ -192,7 +216,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     padding: theme.spacing(1),
     justifyContent: "space-between",
-    // alignItems: "center",
     gap: theme.spacing(2),
     backgroundColor: theme.colors.surface,
     marginBottom: theme.spacing(1),
@@ -275,7 +298,31 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontSize: theme.typography.sizes.md,
   },
-  deletePieceButton: { backgroundColor: theme.colors.error },
+  actionCard: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: theme.spacing(1.5),
+    borderRadius: theme.spacing(0.5),
+    borderWidth: 1,
+    borderStyle: "dashed",
+  },
+  deleteButton: {
+    backgroundColor: theme.colors.errorDark,
+    marginTop: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
+    borderColor: theme.colors.border.error,
+  },
+  deleteButtonTitle: {
+    color: theme.colors.text.error,
+    fontSize: theme.typography.sizes.sm,
+    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
+  },
+  deleteIcon: {
+    color: theme.colors.error,
+    marginTop: theme.spacing(0.5),
+  },
   modalWrapper: {
     flex: 1,
     justifyContent: "center",
@@ -284,11 +331,13 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     padding: 10,
-    backgroundColor: theme.colors.surfaceVariant,
+    backgroundColor: theme.colors.surface,
+    justifyContent: "center",
     width: SCREEN_WIDTH * 0.8,
     height: SCREEN_WIDTH * 0.5,
-    borderRadius: theme.spacing(1.5),
-    justifyContent: "center",
+    borderRadius: theme.spacing(0.5),
+    borderColor: theme.colors.border.default,
+    borderWidth: 1,
   },
   deleteTextWrapper: {
     justifyContent: "center",
@@ -297,6 +346,7 @@ const styles = StyleSheet.create({
   deleteText: {
     color: theme.colors.text.primary,
     fontSize: theme.typography.sizes.md,
+    textAlign: "center",
   },
   modalButtonsWrapper: {
     display: "flex",
@@ -305,20 +355,28 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   modalCancel: {
-    width: 130,
-    height: 50,
+    width: "45%",
+    height: theme.spacing(7),
     backgroundColor: "transparent",
-    borderRadius: theme.spacing(1.5),
+    borderRadius: theme.spacing(0.5),
     borderWidth: 1,
+    borderColor: theme.colors.border.disabled,
+  },
+  modalCancelText: {
+    color: theme.colors.text.tertiary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
   },
   modalDelete: {
-    width: 130,
-    height: 50,
-    backgroundColor: theme.colors.error,
-    borderRadius: theme.spacing(1.5),
+    width: "45%",
+    height: theme.spacing(7),
+    backgroundColor: theme.colors.errorDark,
+    borderRadius: theme.spacing(0.5),
+    borderColor: theme.colors.border.error,
+    borderWidth: 1,
   },
-  modalButtonText: {
-    color: theme.colors.text.primary,
+  modalDeleteText: {
+    color: theme.colors.text.error,
     fontSize: theme.typography.sizes.md,
     fontWeight: theme.typography.weights.bold,
   },

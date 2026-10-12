@@ -1,4 +1,4 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "expo-router/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
 import BikeCard from "@/components/bike/BikeCard";
 import {
@@ -93,8 +93,7 @@ const styles = StyleSheet.create({
   logo: { width: 40, height: 40, marginRight: theme.spacing(1) },
   title: {
     color: theme.colors.primaryLight,
-    fontSize: 26,
-    marginBottom: theme.spacing(0.5),
+    fontSize: 20,
     fontWeight: "bold",
   },
   subTitle: {

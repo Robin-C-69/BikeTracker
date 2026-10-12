@@ -153,7 +153,7 @@ export default function CreateBikeForm({
                 }}
                 style={styles.removeImageBtn}
               >
-                <Ionicons name={"close-circle"} size={24} />
+                <Ionicons name={"close-circle"} size={24} style={styles.closeCircle} />
               </TouchableOpacity>
             </View>
           ) : (
@@ -245,9 +245,12 @@ const styles = StyleSheet.create({
   },
   removeImageBtn: {
     position: "absolute",
-    top: theme.spacing(-1),
-    right: theme.spacing(-1),
+    top: theme.spacing(0.5),
+    right: theme.spacing(0.5),
     zIndex: 10,
+  },
+  closeCircle: {
+    color: theme.colors.primaryDark,
   },
   cameraIcon: {
     color: theme.colors.text.secondary,

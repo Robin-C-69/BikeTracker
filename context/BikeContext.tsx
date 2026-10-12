@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useMemo } from "react";
 import { useBike } from "@/hooks/useBike";
 import { useBikeMutations } from "@/hooks/useBikeMutations";
 import { Bike, CreateBikeRequest } from "@/database/models/BikeModel";
@@ -18,7 +18,11 @@ const BikeContext = createContext<BikeContextProps | undefined>(undefined);
 export const BikeProvider = ({ children }: { children: ReactNode }) => {
   useBike();
   const mutations = useBikeMutations();
-  const { bikes, loading, error } = useBikeStore();
+  const { bikes: storeBikes, loading, error } = useBikeStore();
+  const bikes = useMemo(
+    () => [...storeBikes].sort((a, b) => b.id - a.id), // newest first
+    [storeBikes],
+  );
 
   return (
     <BikeContext.Provider

@@ -1,4 +1,4 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "expo-router/native-stack";
 import BikeListView from "@/views/bike/BikeListView";
 import BikeDetailView from "@/views/bike/BikeDetailView";
 import CreateBikeView from "@/views/bike/CreateBikeView";

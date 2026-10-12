@@ -25,6 +25,8 @@
   "Delete": "Delete",
   "Delete bike": "Delete bike",
   "delete_bike_confirmation": "Are you sure to delete the bike: {{bike}} ?",
+  "delete_history_entry_confirmation": "Are you sure to delete this history entry ?",
+  "Delete piece": "Delete piece",
   "delete_piece_confirmation": "Are you sure to delete the piece: {{piece}} ?",
   "Edit": "Edit",
   "field_required": "This field is required",

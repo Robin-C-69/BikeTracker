@@ -25,7 +25,7 @@ export const usePieceStore = create<PieceStore>((set) => ({
   setPieces: (bikeId, pieces) =>
     set((prev) => ({
       pieces: {
-        ...prev,
+        ...prev.pieces,
         [bikeId]: pieces,
       },
     })),

@@ -1,4 +1,4 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "expo-router/native-stack";
 import { useTranslation } from "react-i18next";
 import { CreatePieceView } from "@/views/piece/CreatePieceView";
 import CustomHeader from "@/components/common/CustomHeader";
