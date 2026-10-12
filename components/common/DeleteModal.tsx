@@ -23,7 +23,7 @@ export const DeleteModal = ({
 
   return (
     <Modal
-      animationType="fade"
+      animationType="none"
       transparent={true}
       visible={showDeleteModal}
       onRequestClose={() => {
@@ -41,10 +41,13 @@ export const DeleteModal = ({
               style={styles.modalCancel}
               onPress={() => setShowDeleteModal(false)}
             >
-              <Text style={styles.modalButtonText}>{t("Cancel")}</Text>
+              <Text style={styles.modalCancelText}>{t("Cancel")}</Text>
             </Button>
-            <Button style={styles.modalDelete} onPress={onClick}>
-              <Text style={styles.modalButtonText}>{t("Delete")}</Text>
+            <Button
+              style={styles.modalDelete}
+              onPress={onClick}
+            >
+              <Text style={styles.modalDeleteText}>{t("Delete")}</Text>
             </Button>
           </View>
         </View>
@@ -62,11 +65,13 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     padding: 10,
-    backgroundColor: theme.colors.surfaceVariant,
+    backgroundColor: theme.colors.surface,
+    justifyContent: "center",
     width: SCREEN_WIDTH * 0.8,
     height: SCREEN_WIDTH * 0.5,
-    borderRadius: theme.spacing(1.5),
-    justifyContent: "center",
+    borderRadius: theme.spacing(0.5),
+    borderColor: theme.colors.border.default,
+    borderWidth: 1,
   },
   deleteTextWrapper: {
     justifyContent: "center",
@@ -75,6 +80,7 @@ const styles = StyleSheet.create({
   deleteText: {
     color: theme.colors.text.primary,
     fontSize: theme.typography.sizes.md,
+    textAlign: "center",
   },
   modalButtonsWrapper: {
     display: "flex",
@@ -83,20 +89,28 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   modalCancel: {
-    width: 130,
-    height: 50,
+    width: "45%",
+    height: theme.spacing(7),
     backgroundColor: "transparent",
-    borderRadius: theme.spacing(1.5),
+    borderRadius: theme.spacing(0.5),
     borderWidth: 1,
+    borderColor: theme.colors.border.disabled,
+  },
+  modalCancelText: {
+    color: theme.colors.text.tertiary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
   },
   modalDelete: {
-    width: 130,
-    height: 50,
-    backgroundColor: theme.colors.error,
-    borderRadius: theme.spacing(1.5),
+    width: "45%",
+    height: theme.spacing(7),
+    backgroundColor: theme.colors.errorDark,
+    borderRadius: theme.spacing(0.5),
+    borderColor: theme.colors.border.error,
+    borderWidth: 1,
   },
-  modalButtonText: {
-    color: theme.colors.text.primary,
+  modalDeleteText: {
+    color: theme.colors.text.error,
     fontSize: theme.typography.sizes.md,
     fontWeight: theme.typography.weights.bold,
   },

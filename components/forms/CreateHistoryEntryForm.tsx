@@ -75,6 +75,7 @@ export const CreateHistoryEntryForm = ({
   const {
     control,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),
@@ -100,17 +101,21 @@ export const CreateHistoryEntryForm = ({
   );
 
   const validateDate = useCallback(
-    (maintenanceDate: any) => {
-      return maintenanceDate >= piece.installDate;
-    },
+    (maintenanceDate: any) =>
+      !piece.installDate || maintenanceDate >= piece.installDate,
     [piece.installDate],
   );
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (!db) return;
 
-    const validate = validateDate(data.date);
-    if (!validate) return;
+    if (!validateDate(data.date)) {
+      setError("date", {
+        type: "validate",
+        message: t("date_before_install_date"),
+      });
+      return;
+    }
 
     try {
       const historyData: CreateMaintenanceHistory = {
