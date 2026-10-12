@@ -123,8 +123,6 @@ export default function CreatePieceForm({
     loadData();
   }, [db]);
 
-  console.log("errorCategory:", errors.categoryId);
-
   if (isLoading) {
     return (
       <SafeAreaView>
