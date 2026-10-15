@@ -75,8 +75,8 @@
 
   "types": {
     "Transmission": "Transmission",
-    "Braking": "Freins",
-    "Wheels & Tires": "Roues & Pneus",
+    "Braking": "Freinage",
+    "Wheel": "Roue",
     "Suspension": "Suspension"
   },
 

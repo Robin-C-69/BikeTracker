@@ -1,6 +1,7 @@
 import { CreatePieceType } from "@/database/models/PieceTypeModel";
 import { CreateCategory } from "@/database/models/PieceCategoryModel";
 import { CreateMaintenanceType } from "@/database/models/MaintenanceTypeModel";
+import { CreateCategoryMaintenanceLink } from "@/database/models/CategoryMaintenanceLinksModel";
 
 const initialTypes: CreatePieceType[] = [
   {
@@ -9,14 +10,15 @@ const initialTypes: CreatePieceType[] = [
   },
   { name: "Braking", description: "Braking system components" },
   {
-    name: "Wheels & Tires",
+    name: "Wheel",
     description: "Wheels, tires, and related components",
   },
   { name: "Suspension", description: "Suspension and shock components" },
+  {name: "Peripherical", description: "Peripherical system components" },
 ];
 
 const initialCategories: CreateCategory[] = [
-  // Transmission (type_id: 1)
+  // Transmission (typeId: 1)
   { typeId: 1, name: "Chain", description: "Bike chain" },
   { typeId: 1, name: "Cassette", description: "Rear gear cassette" },
   { typeId: 1, name: "Chainring", description: "Front chainrings" },
@@ -27,7 +29,7 @@ const initialCategories: CreateCategory[] = [
   },
   { typeId: 1, name: "Shifters", description: "Gear shifters" },
 
-  // Braking (type_id: 2)
+  // Braking (typeId: 2)
   { typeId: 2, name: "Brake Pads", description: "Disc or rim brake pads" },
   { typeId: 2, name: "Brake Rotors", description: "Disc brake rotors" },
   {
@@ -36,12 +38,17 @@ const initialCategories: CreateCategory[] = [
     description: "Brake caliper and levers",
   },
 
-  // Wheels & Tires (typeId: 3)
-  { typeId: 3, name: "Tires", description: "Wheels tires" },
+  // Wheels (typeId: 3)
+  { typeId: 3, name: "Tires", description: "What touches the ground" },
 
   // Suspension (typeId: 4)
   { typeId: 4, name: "Front Fork", description: "Front suspension fork" },
   { typeId: 4, name: "Rear Shock", description: "Rear suspension shock" },
+
+  //Peripherical (typeId: 5)
+  {typeId: 5, name: "Seat", description: "Where you put your ass"},
+  {typeId: 5, name: "Seat post", description: "The seat's shaft"},
+  {typeId: 5, name: "Pedals", description: "Press your pedals to move forward"},
 ];
 
 const initialMaintenanceTypes: CreateMaintenanceType[] = [
@@ -77,7 +84,7 @@ const initialMaintenanceTypes: CreateMaintenanceType[] = [
   },
 ];
 
-const initialCategoryMaintenanceLinks = [
+const initialCategoryMaintenanceLinks: CreateCategoryMaintenanceLink[] = [
   // ── Chain (1) ──────────────────────────────────────────────────────────────
   // Chains wear fast; replace yearly or ~2000 km, inspect every 500 km
   {
@@ -90,13 +97,13 @@ const initialCategoryMaintenanceLinks = [
     categoryId: 1,
     maintenanceTypeId: 5,
     recommendedKm: 500,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
   {
     categoryId: 1,
     maintenanceTypeId: 6,
-    recommendedKm: null,
-    recommendedDays: null,
+    recommendedKm: undefined,
+    recommendedDays: undefined,
   }, // Adjustment (on demand)
 
   // ── Cassette (2) ───────────────────────────────────────────────────────────
@@ -111,7 +118,7 @@ const initialCategoryMaintenanceLinks = [
     categoryId: 2,
     maintenanceTypeId: 5,
     recommendedKm: 500,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
 
   // ── Chainring (3) ──────────────────────────────────────────────────────────
@@ -120,13 +127,13 @@ const initialCategoryMaintenanceLinks = [
     categoryId: 3,
     maintenanceTypeId: 1,
     recommendedKm: 6000,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Replace
   {
     categoryId: 3,
     maintenanceTypeId: 5,
     recommendedKm: 1000,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
 
   // ── Derailleur (4) ─────────────────────────────────────────────────────────
@@ -134,14 +141,14 @@ const initialCategoryMaintenanceLinks = [
   {
     categoryId: 4,
     maintenanceTypeId: 1,
-    recommendedKm: null,
-    recommendedDays: null,
+    recommendedKm: undefined,
+    recommendedDays: undefined,
   }, // Replace (on demand)
   {
     categoryId: 4,
     maintenanceTypeId: 6,
     recommendedKm: 500,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Adjustment
 
   // ── Shifters (5) ───────────────────────────────────────────────────────────
@@ -149,14 +156,14 @@ const initialCategoryMaintenanceLinks = [
   {
     categoryId: 5,
     maintenanceTypeId: 1,
-    recommendedKm: null,
-    recommendedDays: null,
+    recommendedKm: undefined,
+    recommendedDays: undefined,
   }, // Replace (on demand)
   {
     categoryId: 5,
     maintenanceTypeId: 6,
     recommendedKm: 500,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Adjustment
 
   // ── Brake Pads (6) ─────────────────────────────────────────────────────────
@@ -164,14 +171,14 @@ const initialCategoryMaintenanceLinks = [
   {
     categoryId: 6,
     maintenanceTypeId: 1,
-    recommendedKm: null,
-    recommendedDays: null,
+    recommendedKm: undefined,
+    recommendedDays: undefined,
   }, // Replace (wear-based)
   {
     categoryId: 6,
     maintenanceTypeId: 5,
     recommendedKm: 500,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
 
   // ── Brake Rotors (7) ───────────────────────────────────────────────────────
@@ -180,13 +187,13 @@ const initialCategoryMaintenanceLinks = [
     categoryId: 7,
     maintenanceTypeId: 1,
     recommendedKm: 5000,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Replace
   {
     categoryId: 7,
     maintenanceTypeId: 5,
     recommendedKm: 1000,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
 
   // ── Brake System (8) ───────────────────────────────────────────────────────
@@ -194,20 +201,20 @@ const initialCategoryMaintenanceLinks = [
   {
     categoryId: 8,
     maintenanceTypeId: 2,
-    recommendedKm: null,
+    recommendedKm: undefined,
     recommendedDays: 365,
   }, // Bleed
   {
     categoryId: 8,
     maintenanceTypeId: 5,
     recommendedKm: 500,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
   {
     categoryId: 8,
     maintenanceTypeId: 6,
-    recommendedKm: null,
-    recommendedDays: null,
+    recommendedKm: undefined,
+    recommendedDays: undefined,
   }, // Adjustment (on demand)
 
   // ── Tires (9) ──────────────────────────────────────────────────────────────
@@ -215,14 +222,14 @@ const initialCategoryMaintenanceLinks = [
   {
     categoryId: 9,
     maintenanceTypeId: 4,
-    recommendedKm: null,
+    recommendedKm: undefined,
     recommendedDays: 180,
   }, // Tubeless
   {
     categoryId: 9,
     maintenanceTypeId: 5,
     recommendedKm: 200,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
 
   // ── Front Fork (10) ────────────────────────────────────────────────────────
@@ -230,20 +237,20 @@ const initialCategoryMaintenanceLinks = [
   {
     categoryId: 10,
     maintenanceTypeId: 3,
-    recommendedKm: null,
+    recommendedKm: undefined,
     recommendedDays: 365,
   }, // Revision
   {
     categoryId: 10,
     maintenanceTypeId: 5,
     recommendedKm: 500,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
   {
     categoryId: 10,
     maintenanceTypeId: 6,
-    recommendedKm: null,
-    recommendedDays: null,
+    recommendedKm: undefined,
+    recommendedDays: undefined,
   }, // Adjustment (on demand)
 
   // ── Rear Shock (11) ────────────────────────────────────────────────────────
@@ -251,20 +258,20 @@ const initialCategoryMaintenanceLinks = [
   {
     categoryId: 11,
     maintenanceTypeId: 3,
-    recommendedKm: null,
+    recommendedKm: undefined,
     recommendedDays: 365,
   }, // Revision
   {
     categoryId: 11,
     maintenanceTypeId: 5,
     recommendedKm: 500,
-    recommendedDays: null,
+    recommendedDays: undefined,
   }, // Inspection
   {
     categoryId: 11,
     maintenanceTypeId: 6,
-    recommendedKm: null,
-    recommendedDays: null,
+    recommendedKm: undefined,
+    recommendedDays: undefined,
   }, // Adjustment (on demand)
 ];
 

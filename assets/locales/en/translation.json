@@ -76,7 +76,7 @@
   "types": {
     "Transmission": "Transmission",
     "Braking": "Braking",
-    "Wheels & Tires": "Wheels & Tires",
+    "Wheel": "Wheel",
     "Suspension": "Suspension"
   },
 

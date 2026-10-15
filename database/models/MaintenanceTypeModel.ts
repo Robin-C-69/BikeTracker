@@ -1,3 +1,6 @@
+/**
+ * Maintenance type lists all maintenances available for any category of the bike
+ */
 export type MaintenanceType = {
   id: number;
   name: string;

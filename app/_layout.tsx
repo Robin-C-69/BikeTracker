@@ -10,6 +10,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 
 SplashScreen.setOptions({
   duration: 1000,
+  fade: false
 });
 
 export default function RootLayout() {

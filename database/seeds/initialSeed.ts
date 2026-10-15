@@ -69,8 +69,8 @@ export const seedInitialData = (): void => {
         [
           cat.categoryId,
           cat.maintenanceTypeId,
-          cat.recommendedKm,
-          cat.recommendedDays,
+          cat.recommendedKm ?? null,
+          cat.recommendedDays ?? null,
         ],
       );
     });
