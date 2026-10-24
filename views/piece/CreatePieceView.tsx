@@ -1,5 +1,4 @@
-import { StyleSheet } from "react-native";
-import { Box } from "@/components/ui/box";
+import { StyleSheet, View } from "react-native";
 import { theme } from "@/constants/theme";
 import CreatePieceForm from "@/components/forms/CreatePieceForm";
 import { NativeStackScreenProps } from "expo-router/native-stack";
@@ -25,7 +24,7 @@ export const CreatePieceView = ({ navigation, route }: Props) => {
   };
 
   return (
-    <Box style={styles.container}>
+    <View style={styles.container}>
       <CreatePieceForm
         bikeId={bikeId}
         bikeName={bikeName}
@@ -33,7 +32,7 @@ export const CreatePieceView = ({ navigation, route }: Props) => {
         onSuccess={onPieceCreated}
         onCancel={onCancel}
       />
-    </Box>
+    </View>
   );
 };
 

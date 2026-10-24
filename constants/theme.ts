@@ -1,4 +1,8 @@
-export const colors = {
+// import { Theme } from "expo-router";
+
+export type ColorScheme = "light" | "dark";
+
+const darkColors = {
   primary: "#22b383",
   primaryLight: "#00ff66",
   primaryDark: "#007d51",
@@ -11,6 +15,12 @@ export const colors = {
   warningDark: "rgba(255, 193, 7, 0.08)",
   success: "#22c55e",
   greenHint: "rgba(34, 179, 131, 0.08)",
+
+  onPrimary: "#ffffff", // text on primary/danger buttons and selected chips
+  chip: "#2d333a",
+  chipText: "#ffffff",
+
+
   text: {
     primary: "#ffffff",
     secondary: "#8B998B",
@@ -27,11 +37,45 @@ export const colors = {
   },
 };
 
-export const spacing = (value: number) => {
+const lightColors = {
+  primary: "#22b383",
+  primaryLight: "#00ff66",
+  primaryDark: "#007d51",
+  background: "#FFF",
+  surface: "#AAA  ",
+  surfaceVariant: "#00FF660D",
+  error: "#ff4444",
+  errorDark: "#FF453A1A",
+  warning: "#ff9800",
+  warningDark: "rgba(255, 193, 7, 0.08)",
+  success: "#22c55e",
+  greenHint: "rgba(34, 179, 131, 0.08)",
+
+  onPrimary: "#ffffff", // text on primary/danger buttons and selected chips
+  chip: "#2d333a",
+  chipText: "#ffffff",
+
+  text: {
+    primary: "#ffffff",
+    secondary: "#8B998B",
+    tertiary: "#888888",
+    lighting: "#00ff66",
+    disabled: "#666666",
+    error: "#ff453a",
+  },
+  border: {
+    default: "#233323",
+    lighting: "#00ff6630",
+    error: "#ff4444",
+    disabled: "#888888",
+  },
+};
+
+const spacing = (value: number) => {
   return value * 8;
 };
 
-export const typography = {
+const typography = {
   sizes: {
     xs: 12,
     sm: 14,
@@ -48,7 +92,7 @@ export const typography = {
   },
 };
 
-export const borderRadius = {
+const borderRadius = {
   sm: 4,
   md: 8,
   lg: 12,
@@ -56,7 +100,7 @@ export const borderRadius = {
   full: 9999,
 };
 
-export const shadows = {
+const shadows = {
   sm: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -80,12 +124,15 @@ export const shadows = {
   },
 };
 
-export const theme = {
-  colors,
-  spacing,
-  typography,
-  borderRadius,
-  shadows,
+const base = {spacing, typography, borderRadius, shadows};
+
+const themes = {
+  light: { colors: lightColors, ...base },
+  dark: { colors: darkColors, ...base }
 };
 
-export type Theme = typeof theme;
+export const getTheme = (scheme: ColorScheme) => themes[scheme];
+export type Theme = typeof themes.dark;
+
+// Backward compatibility: files you haven't migrated yet keep compiling (dark only)
+export const theme = themes.dark;

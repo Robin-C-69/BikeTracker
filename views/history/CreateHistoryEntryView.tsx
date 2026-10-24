@@ -1,7 +1,6 @@
 import { NativeStackScreenProps } from "expo-router/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
-import { StyleSheet } from "react-native";
-import { Box } from "@/components/ui/box";
+import { StyleSheet, View } from "react-native";
 import { CreateHistoryEntryForm } from "@/components/forms/CreateHistoryEntryForm";
 import { theme } from "@/constants/theme";
 import {
@@ -30,14 +29,14 @@ export const CreateHistoryEntryView = ({ navigation, route }: Props) => {
   };
 
   return (
-    <Box style={styles.container}>
+    <View style={styles.container}>
       <CreateHistoryEntryForm
         piece={pieceWithDetails}
         historyEntry={historyEntry}
         onSuccess={onHistoryAdded}
         onCancel={onCancel}
       />
-    </Box>
+    </View>
   );
 };
 

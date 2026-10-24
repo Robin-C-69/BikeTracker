@@ -1,10 +1,7 @@
-import { Box } from "@/components/ui/box";
-import { Button } from "@/components/ui/button";
 import {
   ActivityIndicator,
   Dimensions,
   Image,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -73,16 +70,16 @@ export default function BikeDetailView({ navigation, route }: Props) {
     const grouped = pieces.reduce<PiecesByCategory>((acc, piece) => {
       const typeId = piece.category.typeId;
       if (!acc[typeId]) {
-        acc[typeId] = {category: piece.category, pieces: []};
+        acc[typeId] = { category: piece.category, pieces: [] };
       }
       acc[typeId].pieces.push(piece);
       return acc;
-      },{})
+    }, {});
 
     return Object.fromEntries(
-      Object.entries(grouped).sort(([a], [b]) => Number(a) - Number(b))
-    )
-  }
+      Object.entries(grouped).sort(([a], [b]) => Number(a) - Number(b)),
+    );
+  };
 
   const sortedPieces = pieces ? sortedByType(pieces) : null;
 
@@ -154,7 +151,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
         title={t("Bike details")}
         actionButton={{ label: t("Edit"), onPress: onEditBike, visible: true }}
       />
-      <Box style={styles.headerContainer}>
+      <View style={styles.headerContainer}>
         <Image
           source={bike.imageUri ? { uri: bike.imageUri } : PlaceholderImage}
           style={styles.bikeImage}
@@ -165,16 +162,16 @@ export default function BikeDetailView({ navigation, route }: Props) {
             <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
           </View>
           <View style={styles.bikeStats}>
-            <Box>
+            <View>
               <Text style={styles.statName}>{t("Traveled distance")}</Text>
               <Text style={styles.statValue}>
                 {bike.totalKm}
                 {t(" km")}
               </Text>
-            </Box>
+            </View>
           </View>
         </View>
-      </Box>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         {sortedPieces && (
           <Accordion

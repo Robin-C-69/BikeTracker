@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Box } from "@/components/ui/box";
 import { theme } from "@/constants/theme";
 import { Piece } from "@/database/models/PieceModel";
 import { useTranslation } from "react-i18next";
@@ -68,17 +67,17 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
   }, [maintenanceHistoryService, piece.id, setHistoryForPiece]);
 
   return (
-    <Box style={styles.card}>
-      <Box style={styles.leftRow}>
-        <Box>
+    <View style={styles.card}>
+      <View style={styles.leftRow}>
+        <View>
           <Text style={styles.name}>{piece.name}</Text>
           <Text style={styles.category}>
             {t(`categories.${capitalized(categoryName)}`)}
           </Text>
           <Text style={styles.description}>{piece.description}</Text>
-        </Box>
-      </Box>
-      <Box style={styles.rightRow}>
+        </View>
+      </View>
+      <View style={styles.rightRow}>
         {/*<Box style={[styles.stateBox, styles.statusGood]}>*/}
         {/*  <Text>{t(nextActionName)}</Text>*/}
         {/*</Box>*/}
@@ -90,8 +89,8 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
           <Text style={styles.infoLabel}>{t("Last Maintenance")}:</Text>
           <Text style={styles.infoValue}>{lastMaintenanceDate()}</Text>
         </View>
-      </Box>
-    </Box>
+      </View>
+    </View>
   );
 };
 

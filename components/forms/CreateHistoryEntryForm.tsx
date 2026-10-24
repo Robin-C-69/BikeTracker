@@ -1,33 +1,22 @@
 import { useDatabase } from "@/context/DatabaseContext";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box } from "@/components/ui/box";
 import {
   ActivityIndicator,
   Alert,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { theme } from "@/constants/theme";
-import { VStack } from "../ui/vstack";
 import FormField from "@/components/forms/fields/FormField";
-import {
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
-} from "@/components/ui/form-control";
 import { useCallback, useEffect, useState } from "react";
 import { MaintenanceType } from "@/database/models/MaintenanceTypeModel";
 import { MaintenanceTypeRepository } from "@/database/repositories/MaintenanceTypeRepository";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, ButtonText } from "@/components/ui/button";
 import {
   CreateMaintenanceHistory,
   MaintenanceHistoryWithType,
@@ -37,6 +26,8 @@ import { NotificationBar } from "@/components/common/NotificationBar";
 import { PieceWithDetails } from "@/database/models/PieceModel";
 import { initialCategoryMaintenanceLinks } from "@/database/seeds/initialData";
 import { DeleteModal } from "@/components/common/DeleteModal";
+import ChipField from "@/components/forms/fields/ChipField";
+import Button from "@/components/common/Button";
 
 type Props = {
   piece: PieceWithDetails;
@@ -76,7 +67,6 @@ export const CreateHistoryEntryForm = ({
     control,
     handleSubmit,
     setError,
-    formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -172,63 +162,31 @@ export const CreateHistoryEntryForm = ({
   }
 
   return (
-    <Box style={styles.container}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <VStack space="md" style={styles.form}>
+        <View style={styles.form}>
           <NotificationBar type="success">
             <Text style={styles.addTo}>{t("Add to")}</Text>
             <Text style={styles.pieceName}>{pieceName}</Text>
           </NotificationBar>
-          <FormControl isRequired={true} isInvalid={!!errors.maintenanceTypeId}>
-            <FormControlLabel>
-              <FormControlLabelText style={styles.labelText}>
-                {t("Maintenance type")}
-              </FormControlLabelText>
-            </FormControlLabel>
-            <Controller
-              control={control}
-              name={"maintenanceTypeId"}
-              rules={{ required: true }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.chipsContainer}>
-                  {maintenanceTypes.map((type) => {
-                    const isSelected = value === type.id;
-                    return (
-                      <TouchableOpacity
-                        key={type.id}
-                        onPress={() =>
-                          onChange(value === type.id ? undefined : type.id)
-                        }
-                        onBlur={onBlur}
-                        style={[styles.chip, isSelected && styles.chipSelected]}
-                        activeOpacity={1}
-                      >
-                        <Text style={styles.chipText}>
-                          {t(`maintenance_type.${type.name}`, {
-                            defaultValue: type.name,
-                          })}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              )}
-            />
-            {errors.maintenanceTypeId && (
-              <FormControlError>
-                <FormControlErrorText style={styles.error}>
-                  {errors.maintenanceTypeId.message}
-                </FormControlErrorText>
-              </FormControlError>
-            )}
-          </FormControl>
+          <ChipField
+            control={control}
+            name={"maintenanceTypeId"}
+            label={t("Maintenance type")}
+            isRequired={true}
+            options={maintenanceTypes.map((type) => ({
+              value: type.id,
+              label: t(`maintenance_type.${type.name}`, {
+                defaultValue: type.name,
+              }),
+            }))}
+          />
           <FormField
             control={control}
             name={"date"}
             label={t("Maintenance date")}
             type={"date"}
             isRequired={true}
-            error={errors.date?.message}
           />
           <FormField
             control={control}
@@ -237,41 +195,28 @@ export const CreateHistoryEntryForm = ({
             type={"numeric"}
             isRequired={true}
             placeholder={"Eg: 0, 1500, 30000..."}
-            error={errors.kmAtMaintenance?.message}
             endText={"km"}
           />
           <FormField control={control} name={"notes"} label={t("Notes")} />
-        </VStack>
+        </View>
       </ScrollView>
       <View style={styles.buttonsWrapper}>
         <View style={styles.actionButtons}>
           <Button
-            size="lg"
+            title={isUpdate ? t("Update") : t("Create")}
             onPress={handleSubmit(onSubmit)}
             style={styles.saveButton}
-          >
-            <ButtonText style={styles.saveText}>
-              {isUpdate ? t("Update") : t("Create")}
-            </ButtonText>
-          </Button>
+          />
           {isUpdate && (
             <Button
-              size="lg"
+              title={t("Delete")}
+              variant="danger"
               onPress={() => setShowDeleteModal(true)}
               style={styles.deleteButton}
-            >
-              <ButtonText style={styles.deleteText}>{t("Delete")}</ButtonText>
-            </Button>
+            />
           )}
         </View>
-        <Button
-          variant="outline"
-          size="lg"
-          onPress={onCancel}
-          style={styles.cancelButton}
-        >
-          <ButtonText>{t("Cancel")}</ButtonText>
-        </Button>
+        <Button title={t("Cancel")} variant="outline" onPress={onCancel} />
       </View>
       {historyEntry && (
         <DeleteModal
@@ -281,21 +226,14 @@ export const CreateHistoryEntryForm = ({
           setShowDeleteModal={setShowDeleteModal}
         />
       )}
-    </Box>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  form: {
-    margin: 25,
-  },
+  container: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
+  form: { margin: 25, gap: theme.spacing(2) },
   addTo: {
     color: theme.colors.text.secondary,
     fontSize: theme.typography.sizes.sm,
@@ -306,59 +244,8 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.md,
     fontWeight: theme.typography.weights.semibold,
   },
-  labelText: {
-    color: theme.colors.text.primary,
-    fontWeight: theme.typography.weights.semibold,
-    fontSize: theme.typography.sizes.md,
-  },
-  chipsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  chip: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    backgroundColor: "#2d333a",
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  chipSelected: {
-    backgroundColor: "#22b383",
-  },
-  chipText: {
-    color: "white",
-  },
-  error: {
-    color: theme.colors.error,
-    marginBottom: theme.spacing(1),
-  },
-  buttonsWrapper: {
-    gap: 12,
-    padding: 16,
-  },
+  buttonsWrapper: { gap: 12, padding: 16 },
   actionButtons: { flexDirection: "row", gap: theme.spacing(1) },
-  cancelButton: {
-    borderRadius: 20,
-  },
-  saveButton: {
-    flex: 2,
-    borderRadius: 20,
-    backgroundColor: theme.colors.primary,
-  },
-  saveText: {
-    color: theme.colors.text.primary,
-    fontWeight: theme.typography.weights.bold,
-    fontSize: theme.typography.sizes.md,
-  },
-  deleteButton: {
-    flex: 1,
-    borderRadius: 20,
-    backgroundColor: theme.colors.error,
-  },
-  deleteText: {
-    color: theme.colors.text.primary,
-    fontWeight: theme.typography.weights.bold,
-    fontSize: theme.typography.sizes.md,
-  },
+  saveButton: { flex: 2 },
+  deleteButton: { flex: 1 },
 });

@@ -1,24 +1,18 @@
 import {
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  FormControlHelper,
-  FormControlHelperText,
-  FormControlLabel,
-  FormControlLabelText,
-} from "@/components/ui/form-control";
-import {
   Control,
   Controller,
   FieldValues,
   Path,
   RegisterOptions,
 } from "react-hook-form";
-import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { Pressable, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
-import { theme } from "@/constants/theme";
+import FieldShell, {
+  useInputStyles,
+} from "@/components/forms/fields/FieldShell";
+import { useTheme } from "@/hooks/useThemedStyles";
 
 type DateFormFieldProps<T extends FieldValues> = {
   control: Control<T>;
@@ -45,65 +39,54 @@ export default function DateFormField<T extends FieldValues>({
 }: DateFormFieldProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const [pickerDate, setPickerDate] = useState(new Date());
-  const [isFocused, setIsFocused] = useState(false);
+  const input = useInputStyles();
+  const theme = useTheme();
 
   return (
-    <FormControl
-      isRequired={isRequired}
-      style={styles.formControl}
-      isInvalid={!!error}
-    >
-      <FormControlLabel>
-        <FormControlLabelText style={styles.labelText}>
-          {label}
-        </FormControlLabelText>
-      </FormControlLabel>
-      {helperText && (
-        <FormControlHelper>
-          <FormControlHelperText style={styles.helperText}>
-            {helperText}
-          </FormControlHelperText>
-        </FormControlHelper>
-      )}
-      <Controller
-        control={control}
-        name={name}
-        rules={rules}
-        render={({ field: { onChange, value } }) => (
-          <>
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={() => {
-                setIsFocused(true);
-                setIsOpen(true);
-              }}
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field: { onChange, value }, fieldState }) => {
+        const message = error ?? fieldState.error?.message;
+        return (
+          <FieldShell
+            label={label}
+            helperText={helperText}
+            isRequired={isRequired}
+            error={message}
+          >
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={label}
+              onPress={() => setIsOpen(true)}
               style={[
-                styles.inputContainer,
-                isFocused && styles.inputContainerFocused,
-                error && styles.inputContainerError,
+                input.container,
+                isOpen && input.focused,
+                !!message && input.error,
               ]}
             >
               <TextInput
                 value={formatDate(value ?? "")}
-                placeholder={placeholder && placeholder}
+                placeholder={placeholder}
                 placeholderTextColor={theme.colors.text.tertiary}
                 editable={false}
                 pointerEvents="none"
-                style={styles.textField}
+                style={input.textField}
               />
               <Ionicons
                 name="calendar-outline"
                 size={20}
                 color={theme.colors.text.tertiary}
               />
-            </TouchableOpacity>
+            </Pressable>
 
             {isOpen && (
               <DateTimePicker
                 value={pickerDate}
                 mode="date"
                 display="default"
-                onChange={(_, selectedDate) => {
+                onValueChange={(_, selectedDate) => {
                   setIsOpen(false);
                   if (selectedDate) {
                     setPickerDate(selectedDate);
@@ -112,56 +95,9 @@ export default function DateFormField<T extends FieldValues>({
                 }}
               />
             )}
-          </>
-        )}
-      />
-      {error && (
-        <FormControlError>
-          <FormControlErrorText style={styles.error}>
-            {error}
-          </FormControlErrorText>
-        </FormControlError>
-      )}
-    </FormControl>
+          </FieldShell>
+        );
+      }}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  formControl: { marginBottom: theme.spacing(2) },
-  labelText: {
-    color: theme.colors.text.primary,
-    fontWeight: theme.typography.weights.semibold,
-    fontSize: theme.typography.sizes.md,
-  },
-  helperText: {
-    color: theme.colors.text.tertiary,
-    fontSize: theme.typography.sizes.xs,
-    marginTop: theme.spacing(-0.5),
-    marginBottom: theme.spacing(0.5),
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: theme.colors.surface,
-    borderWidth: 1.5,
-    borderColor: theme.colors.border.default,
-    borderRadius: 14,
-    paddingHorizontal: theme.spacing(1.5),
-  },
-  inputContainerFocused: {
-    borderColor: theme.colors.border.lighting,
-  },
-  inputContainerError: {
-    borderColor: theme.colors.border.error,
-  },
-  textField: {
-    flex: 1,
-    color: theme.colors.text.primary,
-    paddingVertical: theme.spacing(1.5),
-    fontSize: theme.typography.sizes.md,
-  },
-  error: {
-    color: theme.colors.error,
-    marginBottom: theme.spacing(1),
-  },
-});

@@ -1,37 +1,41 @@
 import "../i18n";
+import { StatusBar } from "react-native";
 import { Stack } from "expo-router";
 import { DatabaseProvider } from "@/context/DatabaseContext";
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import "@/global.css";
-import { theme } from "@/constants/theme";
-import { StatusBar } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import { loadThemeMode } from "@/constants/themeMode";
+import { useTheme } from "@/hooks/useThemedStyles";
+
+loadThemeMode();
 
 SplashScreen.setOptions({
   duration: 1000,
-  fade: false
+  fade: false,
 });
+
+function Navigation() {
+  const theme = useTheme();
+  return (
+    <Stack
+      initialRouteName={"bikes"}
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: theme.colors.background },
+      }}
+    >
+      <Stack.Screen name="bikes" />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   return (
-    <GluestackUIProvider mode="dark">
-      <DatabaseProvider>
-        <KeyboardProvider>
-          <StatusBar hidden={true} />
-          <Stack
-            initialRouteName={"bikes"}
-            screenOptions={{
-              headerShown: false,
-              contentStyle: {
-                backgroundColor: theme.colors.background,
-              },
-            }}
-          >
-            <Stack.Screen name="bikes" />
-          </Stack>
-        </KeyboardProvider>
-      </DatabaseProvider>
-    </GluestackUIProvider>
+    <DatabaseProvider>
+      <KeyboardProvider>
+        <StatusBar hidden={true} />
+        <Navigation />
+      </KeyboardProvider>
+    </DatabaseProvider>
   );
 }

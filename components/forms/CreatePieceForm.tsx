@@ -1,36 +1,20 @@
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 import { z } from "zod";
 import { useDatabase } from "@/context/DatabaseContext";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { PieceCategoryRepository } from "@/database/repositories/PieceCategoryRepository";
 import { Category } from "@/database/models/PieceCategoryModel";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Box } from "@/components/ui/box";
-import { VStack } from "@/components/ui/vstack";
-import {
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
-} from "@/components/ui/form-control";
 import { CreatePiece, PieceWithDetails } from "@/database/models/PieceModel";
-import { Button, ButtonText } from "@/components/ui/button";
 import FormField from "@/components/forms/fields/FormField";
-import { theme } from "@/constants/theme";
 import { useTranslation } from "react-i18next";
 import { usePieceMutations } from "@/hooks/usePieceMutations";
 import { NotificationBar } from "@/components/common/NotificationBar";
+import { makeStyles, useTheme } from "@/hooks/useThemedStyles";
+import ChipField from "@/components/forms/fields/ChipField";
+import Button from "@/components/common/Button";
 
 type Props = {
   bikeId: number;
@@ -47,6 +31,8 @@ export default function CreatePieceForm({
   onSuccess,
   onCancel,
 }: Props) {
+  const styles = useStyles();
+  const theme = useTheme();
   const { db } = useDatabase();
   const { createPiece, updatePiece } = usePieceMutations();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -63,11 +49,7 @@ export default function CreatePieceForm({
     installKm: z.number().int().min(0, t("mileage_hint")).optional(),
   });
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: piece?.name ?? "",
@@ -126,15 +108,15 @@ export default function CreatePieceForm({
   if (isLoading) {
     return (
       <SafeAreaView>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
       </SafeAreaView>
     );
   }
 
   return (
-    <Box style={styles.container}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <VStack space="md" style={styles.form}>
+        <View style={styles.form}>
           <NotificationBar type="success">
             <Text style={styles.addTo}>{t("Add to")}</Text>
             <Text style={styles.bikeName}>{bikeName}</Text>
@@ -145,7 +127,6 @@ export default function CreatePieceForm({
             label={t("Name")}
             isRequired={true}
             placeholder={t("Name")}
-            error={errors.name?.message}
           />
           <FormField
             control={control}
@@ -153,56 +134,23 @@ export default function CreatePieceForm({
             label={t("Description")}
             placeholder={t("Description")}
           />
-          <FormControl isRequired={true} isInvalid={!!errors.categoryId}>
-            <FormControlLabel>
-              <FormControlLabelText style={styles.labelText}>
-                {t("Category")}
-              </FormControlLabelText>
-            </FormControlLabel>
-            <Controller
-              control={control}
-              name={"categoryId"}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.chipsContainer}>
-                  {categories.map((category) => {
-                    const isSelected = value === category.id;
-                    return (
-                      <TouchableOpacity
-                        key={category.id}
-                        onPress={() =>
-                          onChange(
-                            value === category.id ? undefined : category.id,
-                          )
-                        }
-                        onBlur={onBlur}
-                        style={[styles.chip, isSelected && styles.chipSelected]}
-                        activeOpacity={1}
-                      >
-                        <Text style={styles.chipText}>
-                          {t(`categories.${category.name}`, {
-                            defaultValue: category.name,
-                          })}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              )}
-            />
-            {errors.categoryId && (
-              <FormControlError>
-                <FormControlErrorText style={styles.error}>
-                  {errors.categoryId.message}
-                </FormControlErrorText>
-              </FormControlError>
-            )}
-          </FormControl>
+          <ChipField
+            control={control}
+            name={"categoryId"}
+            label={t("Category")}
+            isRequired={true}
+            options={categories.map((category) => ({
+              value: category.id,
+              label: t(`categories.${category.name}`, {
+                defaultValue: category.name,
+              }),
+            }))}
+          />
           <FormField
             control={control}
             name={"installDate"}
             label={t("Installed date")}
             type={"date"}
-            error={errors.installDate?.message}
           />
           <FormField
             control={control}
@@ -212,42 +160,23 @@ export default function CreatePieceForm({
             endText={"km"}
             type={"numeric"}
           />
-        </VStack>
+        </View>
       </ScrollView>
       <View style={styles.buttonsWrapper}>
         <Button
-          size="lg"
+          title={isUpdate ? t("Update") : t("Create")}
           onPress={handleSubmit(onSubmit)}
-          style={styles.deleteButton}
-        >
-          <ButtonText style={styles.deleteText}>
-            {isUpdate ? t("Update") : t("Create")}
-          </ButtonText>
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          onPress={onCancel}
-          style={styles.cancelButton}
-        >
-          <ButtonText>{t("Cancel")}</ButtonText>
-        </Button>
+        />
+        <Button title={t("Cancel")} variant="outline" onPress={onCancel} />
       </View>
-    </Box>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  form: {
-    margin: 25,
-  },
+const useStyles = makeStyles((theme) => ({
+  container: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
+  form: { margin: 25, gap: theme.spacing(2) },
   addTo: {
     color: theme.colors.text.secondary,
     fontSize: theme.typography.sizes.sm,
@@ -258,50 +187,5 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.md,
     fontWeight: theme.typography.weights.semibold,
   },
-  labelText: {
-    color: theme.colors.text.primary,
-    fontWeight: theme.typography.weights.semibold,
-    fontSize: theme.typography.sizes.md,
-  },
-  chipsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  chip: {
-    paddingVertical: theme.spacing(1),
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    backgroundColor: "#2d333a",
-    marginRight: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  chipSelected: {
-    backgroundColor: theme.colors.primary,
-  },
-  chipText: {
-    color: "white",
-  },
-  error: {
-    color: theme.colors.error,
-    marginBottom: theme.spacing(1),
-  },
-  dateInputWrapper: {
-    position: "relative",
-  },
-  buttonsWrapper: {
-    gap: 12,
-    padding: 16,
-  },
-  cancelButton: {
-    borderRadius: 20,
-  },
-  deleteButton: {
-    borderRadius: 20,
-    backgroundColor: theme.colors.primary,
-  },
-  deleteText: {
-    color: theme.colors.text.primary,
-    fontWeight: theme.typography.weights.bold,
-    fontSize: theme.typography.sizes.md,
-  },
-});
+  buttonsWrapper: { gap: 12, padding: 16 },
+}));

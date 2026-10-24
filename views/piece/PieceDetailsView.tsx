@@ -1,6 +1,5 @@
 import {
-  Dimensions,
-  Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,7 +11,6 @@ import { NativeStackScreenProps } from "expo-router/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, ButtonText } from "@/components/ui/button";
 import { Ionicons } from "@expo/vector-icons";
 import { PieceHistory } from "@/components/history/PieceHistory";
 import { usePieceMutations } from "@/hooks/usePieceMutations";
@@ -34,8 +32,6 @@ import { usePieceStore } from "@/stores/pieceStore";
 import { DeleteModal } from "@/components/common/DeleteModal";
 
 type Props = NativeStackScreenProps<PieceStackParamList, typeof PIECE_DETAILS>;
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const HeaderSpec = ({ label, value }: { label: string; value: string }) => {
   return (
@@ -139,13 +135,14 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
               {maintenanceHistory.length} {t("Interventions")}
             </Text>
           </View>
-          <Button
+          <Pressable
+            accessibilityRole="button"
             style={styles.addHistoryButton}
             onPress={navigateToCreateHistoryEntry}
           >
             <Ionicons name={"add-outline"} size={20} style={styles.addIcon} />
-            <ButtonText style={styles.actionText}>{t("Add")}</ButtonText>
-          </Button>
+            <Text style={styles.actionText}>{t("Add")}</Text>
+          </Pressable>
         </View>
         <PieceHistory
           piece={piece}
