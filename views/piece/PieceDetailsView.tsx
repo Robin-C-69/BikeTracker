@@ -1,12 +1,10 @@
 import {
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { theme } from "@/constants/theme";
 import { NativeStackScreenProps } from "expo-router/native-stack";
 import { PieceStackParamList } from "@/navigators/PieceNavigator";
 import React, { useCallback, useMemo, useState } from "react";
@@ -30,10 +28,12 @@ import CustomHeader from "@/components/common/CustomHeader";
 import { Bike } from "@/database/models/BikeModel";
 import { usePieceStore } from "@/stores/pieceStore";
 import { DeleteModal } from "@/components/common/DeleteModal";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 type Props = NativeStackScreenProps<PieceStackParamList, typeof PIECE_DETAILS>;
 
 const HeaderSpec = ({ label, value }: { label: string; value: string }) => {
+  const styles = useStyles();
   return (
     <View style={styles.headerDetailsItem}>
       <View>
@@ -47,6 +47,7 @@ const HeaderSpec = ({ label, value }: { label: string; value: string }) => {
 };
 
 export const PieceDetailsView = ({ navigation, route }: Props) => {
+  const styles = useStyles();
   const { piece: routePiece } = route.params;
   const { t } = useTranslation();
 
@@ -173,7 +174,7 @@ export const PieceDetailsView = ({ navigation, route }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: theme.colors.background,
     height: "100%",
@@ -292,4 +293,4 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     marginTop: theme.spacing(0.5),
   },
-});
+}));

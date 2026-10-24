@@ -6,7 +6,7 @@ const darkColors = {
   primary: "#22b383",
   primaryLight: "#00ff66",
   primaryDark: "#007d51",
-  background: "#090b09",
+  background: "#090b09", //0B1924
   surface: "#121612",
   surfaceVariant: "#00FF660D",
   error: "#ff4444",
@@ -19,7 +19,6 @@ const darkColors = {
   onPrimary: "#ffffff", // text on primary/danger buttons and selected chips
   chip: "#2d333a",
   chipText: "#ffffff",
-
 
   text: {
     primary: "#ffffff",
@@ -133,6 +132,3 @@ const themes = {
 
 export const getTheme = (scheme: ColorScheme) => themes[scheme];
 export type Theme = typeof themes.dark;
-
-// Backward compatibility: files you haven't migrated yet keep compiling (dark only)
-export const theme = themes.dark;

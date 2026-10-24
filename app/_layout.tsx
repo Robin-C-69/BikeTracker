@@ -1,11 +1,11 @@
 import "../i18n";
-import { StatusBar } from "react-native";
 import { Stack } from "expo-router";
 import { DatabaseProvider } from "@/context/DatabaseContext";
 import * as SplashScreen from "expo-splash-screen";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { loadThemeMode } from "@/constants/themeMode";
 import { useTheme } from "@/hooks/useThemedStyles";
+import SystemBarsTheme from "@/components/common/SystembarsTheme";
 
 loadThemeMode();
 
@@ -33,7 +33,7 @@ export default function RootLayout() {
   return (
     <DatabaseProvider>
       <KeyboardProvider>
-        <StatusBar hidden={true} />
+        <SystemBarsTheme />
         <Navigation />
       </KeyboardProvider>
     </DatabaseProvider>

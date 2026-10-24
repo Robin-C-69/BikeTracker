@@ -5,24 +5,25 @@ import {
   ActivityIndicator,
   Dimensions,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { theme } from "@/constants/theme";
 import { useBikeContext } from "@/context/BikeContext";
 import { BIKE_DETAIL, BIKE_LIST, CREATE_BIKE } from "@/constants/tabNames";
 import CustomHeader from "@/components/common/CustomHeader";
 import { Image } from "expo-image";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
+import { makeStyles, useTheme } from "@/hooks/useThemedStyles";
 
 type Props = NativeStackScreenProps<BikesStackParamList, typeof BIKE_LIST>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function BikeListView({ navigation }: Props) {
+  const styles = useStyles();
+  const theme = useTheme();
   const { bikes, loading, error } = useBikeContext();
   const { t } = useTranslation();
 
@@ -85,7 +86,7 @@ export default function BikeListView({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -129,4 +130,4 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.md,
     marginTop: theme.spacing(0.5),
   },
-});
+}));

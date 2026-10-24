@@ -2,7 +2,6 @@ import { createNativeStackNavigator } from "expo-router/native-stack";
 import BikeListView from "@/views/bike/BikeListView";
 import BikeDetailView from "@/views/bike/BikeDetailView";
 import CreateBikeView from "@/views/bike/CreateBikeView";
-import { theme } from "@/constants/theme";
 import CustomHeader from "@/components/common/CustomHeader";
 import { useTranslation } from "react-i18next";
 import { BikeProvider } from "@/context/BikeContext";
@@ -18,6 +17,7 @@ import {
   PIECE_NAVIGATOR,
   UPDATE_BIKE,
 } from "@/constants/tabNames";
+import { useTheme } from "@/hooks/useThemedStyles";
 
 export type BikesStackParamList = {
   BikeList: undefined;
@@ -30,6 +30,7 @@ export type BikesStackParamList = {
 const Stack = createNativeStackNavigator<BikesStackParamList>();
 
 export default function BikesNavigator() {
+  const theme = useTheme();
   const { t } = useTranslation();
   return (
     <BikeProvider>

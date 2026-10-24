@@ -1,8 +1,9 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { HistoryCard } from "@/components/history/HistoryCard";
 import { UPDATE_HISTORY_ENTRY } from "@/constants/tabNames";
 import { PieceWithDetails } from "@/database/models/PieceModel";
 import { MaintenanceHistoryWithType } from "@/database/models/MaintenanceHistoryModel";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 export const PieceHistory = ({
   piece,
@@ -13,6 +14,7 @@ export const PieceHistory = ({
   history: MaintenanceHistoryWithType[];
   navigation?: any;
 }) => {
+  const styles = useStyles();
   const onClick = (historyEntry: MaintenanceHistoryWithType) => {
     if (!navigation) return;
     navigation.navigate(UPDATE_HISTORY_ENTRY, {
@@ -36,6 +38,6 @@ export const PieceHistory = ({
   );
 };
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   historyContainer: { paddingLeft: 10, paddingRight: 10 },
-});
+}));

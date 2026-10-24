@@ -1,15 +1,16 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import CreateBikeForm from "@/components/forms/CreateBikeForm";
-import { theme } from "@/constants/theme";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "expo-router/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
 import { CREATE_BIKE, UPDATE_BIKE } from "@/constants/tabNames";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 type Props =
   | NativeStackScreenProps<BikesStackParamList, typeof CREATE_BIKE>
   | NativeStackScreenProps<BikesStackParamList, typeof UPDATE_BIKE>;
 
 export default function CreateBikeView({ navigation, route }: Props) {
+  const styles = useStyles();
   const isBikePresent = route.params && "bike" in route.params;
   const bike = isBikePresent ? route.params.bike : undefined;
 
@@ -24,6 +25,6 @@ export default function CreateBikeView({ navigation, route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   safe: { flex: 1, backgroundColor: theme.colors.background },
-});
+}));
