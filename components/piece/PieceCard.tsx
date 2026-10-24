@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { theme } from "@/constants/theme";
+import { Text, View } from "react-native";
 import { Piece } from "@/database/models/PieceModel";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,8 +11,10 @@ import { MaintenanceHistoryService } from "@/database/services/MaintenanceHistor
 import { useDatabase } from "@/context/DatabaseContext";
 import { usePieceCategory } from "@/hooks/usePieceCategory";
 import { getCategoryNameById } from "@/components/utils/typesCategoriesFunctions";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 export const PieceCard = ({ piece }: { piece: Piece }) => {
+  const styles = useStyles();
   const { t } = useTranslation();
   const { db } = useDatabase();
   const { historyByPiece, setHistoryForPiece } = useMaintenanceHistoryStore();
@@ -94,7 +95,7 @@ export const PieceCard = ({ piece }: { piece: Piece }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   card: {
     flexDirection: "row",
     backgroundColor: theme.colors.surface,
@@ -153,4 +154,4 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.sm,
     fontWeight: theme.typography.weights.semibold,
   },
-});
+}));

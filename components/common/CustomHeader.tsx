@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { theme } from "@/constants/theme";
 import { useNavigation } from "expo-router";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 interface ActionButtonProps {
   label: string;
@@ -26,6 +26,7 @@ export default function CustomHeader({
   children,
   actionButton,
 }: CustomHeaderProps) {
+  const styles = useStyles();
   const navigation = useNavigation();
 
   const navigateBack = () => {
@@ -65,7 +66,7 @@ export default function CustomHeader({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   header: {
     width: "100%",
     flexDirection: "row",
@@ -109,4 +110,4 @@ const styles = StyleSheet.create({
     color: theme.colors.text.lighting,
     fontSize: theme.typography.sizes.md,
   },
-});
+}));

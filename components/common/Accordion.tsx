@@ -1,16 +1,22 @@
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Animated,
   LayoutChangeEvent,
-  StyleSheet,
+  StyleProp,
   Text,
   TextStyle,
   TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
-import { theme } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { makeStyles, useTheme } from "@/hooks/useThemedStyles";
 
 // ─── Context ────────────────────────────────────────────────────────────────
 
@@ -55,7 +61,7 @@ interface AccordionProps {
   type?: AccordionType;
   defaultValue?: string | string[];
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function Accordion({
@@ -94,10 +100,11 @@ export function Accordion({
 interface AccordionItemProps {
   value: string;
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function AccordionItem({ value, children, style }: AccordionItemProps) {
+  const styles = useStyles();
   const { openItems } = useAccordionContext();
   const isOpen = openItems.has(value);
 
@@ -112,10 +119,11 @@ export function AccordionItem({ value, children, style }: AccordionItemProps) {
 
 interface AccordionHeaderProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function AccordionHeader({ children, style }: AccordionHeaderProps) {
+  const styles = useStyles();
   return <View style={[styles.header, style]}>{children}</View>;
 }
 
@@ -123,7 +131,7 @@ export function AccordionHeader({ children, style }: AccordionHeaderProps) {
 
 interface AccordionTriggerProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   chevron?: React.ReactNode;
 }
 
@@ -132,12 +140,14 @@ export function AccordionTrigger({
   style,
   chevron,
 }: AccordionTriggerProps) {
+  const styles = useStyles();
+  const theme = useTheme();
   const { toggle } = useAccordionContext();
   const { value, isOpen } = useAccordionItemContext();
 
-  const rotation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
+  const [rotation] = useState(() => new Animated.Value(isOpen ? 1 : 0));
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.timing(rotation, {
       toValue: isOpen ? 1 : 0,
       duration: 250,
@@ -152,22 +162,22 @@ export function AccordionTrigger({
 
   return (
     <TouchableOpacity
+      accessibilityRole="button"
+      accessibilityState={{ expanded: isOpen }}
       activeOpacity={0.7}
       onPress={() => toggle(value)}
       style={[styles.trigger, style]}
     >
       <View style={styles.triggerContent}>{children}</View>
-      {chevron ? (
-        <Animated.View style={{ transform: [{ rotate }] }}>
-          {chevron}
-        </Animated.View>
-      ) : (
-        <Animated.Text
-          style={[styles.defaultChevron, { transform: [{ rotate }] }]}
-        >
-          <Ionicons name={"chevron-down"} />
-        </Animated.Text>
-      )}
+      <Animated.View style={[styles.chevron, { transform: [{ rotate }] }]}>
+        {chevron ?? (
+          <Ionicons
+            name="chevron-down"
+            size={16}
+            color={theme.colors.text.tertiary}
+          />
+        )}
+      </Animated.View>
     </TouchableOpacity>
   );
 }
@@ -176,65 +186,61 @@ export function AccordionTrigger({
 
 interface AccordionContentProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function AccordionContent({ children, style }: AccordionContentProps) {
+  const styles = useStyles();
   const { isOpen } = useAccordionItemContext();
 
-  const animatedHeight = useRef(new Animated.Value(0)).current;
-  const animatedOpacity = useRef(new Animated.Value(0)).current;
+  // const animatedHeight = useRef(new Animated.Value(0)).current;
+  // const animatedOpacity = useRef(new Animated.Value(0)).current;
+  const [height] = useState(() => new Animated.Value(0));
+  const [opacity] = useState(() => new Animated.Value(0));
   const [contentHeight, setContentHeight] = useState(0);
-  const [measured, setMeasured] = useState(false);
+  // const [measured, setMeasured] = useState(false);
+  const hasMeasured = useRef(false);
 
   // Measure content height once
   const onLayout = (e: LayoutChangeEvent) => {
     const h = e.nativeEvent.layout.height;
-    if (h > 0 && !measured) {
-      setContentHeight(h);
-      setMeasured(true);
-      // If already open when first measured, jump to open state
+    if (h === contentHeight) return;
+    if (!hasMeasured.current) {
+      hasMeasured.current = true;
+      // Already open on first measure: jump to the open state, no animation.
       if (isOpen) {
-        animatedHeight.setValue(h);
-        animatedOpacity.setValue(1);
+        height.setValue(h);
+        opacity.setValue(1);
       }
     }
+    setContentHeight(h);
   };
 
-  React.useEffect(() => {
-    if (!measured) return;
+  useEffect(() => {
+    if (!hasMeasured.current) return;
     Animated.parallel([
-      Animated.timing(animatedHeight, {
+      Animated.timing(height, {
         toValue: isOpen ? contentHeight : 0,
         duration: 280,
         useNativeDriver: false,
       }),
-      Animated.timing(animatedOpacity, {
+      Animated.timing(opacity, {
         toValue: isOpen ? 1 : 0,
         duration: 220,
         useNativeDriver: false,
       }),
     ]).start();
-  }, [isOpen, measured, contentHeight, animatedHeight, animatedOpacity]);
+  }, [isOpen, contentHeight, height, opacity]);
 
   return (
     <Animated.View
-      style={[
-        styles.contentWrapper,
-        {
-          height: measured ? animatedHeight : undefined,
-          opacity: animatedOpacity,
-        },
-      ]}
+      accessibilityElementsHidden={!isOpen}
+      importantForAccessibility={isOpen ? "auto" : "no-hide-descendants"}
+      style={[styles.contentWrapper, { height, opacity }]}
     >
-      {/* Hidden measurement layer */}
-      {!measured && (
-        <View style={styles.measureLayer} onLayout={onLayout}>
-          <View style={[styles.content, style]}>{children}</View>
-        </View>
-      )}
-      {/* Visible content (rendered after measurement) */}
-      {measured && <View style={[styles.content, style]}>{children}</View>}
+      <View style={styles.measureLayer} onLayout={onLayout}>
+        <View style={[styles.content, style]}>{children}</View>
+      </View>
     </Animated.View>
   );
 }
@@ -243,19 +249,20 @@ export function AccordionContent({ children, style }: AccordionContentProps) {
 
 interface AccordionTitleTextProps {
   children: React.ReactNode;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
 }
 
 export function AccordionTitleText({
   children,
   style,
 }: AccordionTitleTextProps) {
+  const styles = useStyles();
   return <Text style={[styles.titleText, style]}>{children}</Text>;
 }
 
 // ─── Styles ─────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   item: {
     overflow: "hidden",
   },
@@ -274,19 +281,15 @@ const styles = StyleSheet.create({
   triggerContent: {
     flex: 1,
   },
-  defaultChevron: {
-    fontSize: 16,
-    color: theme.colors.text.tertiary,
-    marginLeft: 8,
-  },
+  // defaultChevron: {
+  //   fontSize: 16,
+  //   color: theme.colors.text.tertiary,
+  //   marginLeft: 8,
+  // },
   contentWrapper: {
     overflow: "hidden",
   },
-  measureLayer: {
-    position: "absolute",
-    opacity: 0,
-    pointerEvents: "none",
-  },
+  measureLayer: { position: "absolute", left: 0, right: 0 },
   content: {
     paddingBottom: 12,
   },
@@ -295,4 +298,5 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.weights.regular,
     color: theme.colors.text.tertiary,
   },
-});
+  chevron: { marginLeft: 8 },
+}));

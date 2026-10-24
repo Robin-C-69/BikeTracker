@@ -1,10 +1,10 @@
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, Text, View } from "react-native";
 import { useCallback } from "react";
 import { Bike } from "@/database/models/BikeModel";
-import { theme } from "@/constants/theme";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
 import { usePieceCount } from "@/hooks/usePieceCount";
+import { makeStyles, useTheme } from "@/hooks/useThemedStyles";
 
 const PlaceholderImage = require("@/assets/images/bike.png");
 
@@ -16,6 +16,8 @@ interface BikeCardProps {
 }
 
 export default function BikeCard({ bike, onPress }: BikeCardProps) {
+  const styles = useStyles();
+  const theme = useTheme();
   const { t } = useTranslation();
   const pieceCount = usePieceCount(bike.id);
 
@@ -59,7 +61,6 @@ export default function BikeCard({ bike, onPress }: BikeCardProps) {
         </View>
         <View>
           <Text style={styles.detailsName}>{t("Pieces")}</Text>
-          {/*<Text style={styles.detailsValue}>{pieces.length}</Text>*/}
           <Text style={styles.detailsValue}>{pieceCount}</Text>
         </View>
       </View>
@@ -67,7 +68,7 @@ export default function BikeCard({ bike, onPress }: BikeCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   card: {
     width: SCREEN_WIDTH * 0.9,
     height: SCREEN_WIDTH * 0.75,
@@ -132,4 +133,4 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.sm,
     color: theme.colors.text.secondary,
   },
-});
+}));

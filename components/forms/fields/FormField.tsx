@@ -6,7 +6,6 @@ import {
   RegisterOptions,
 } from "react-hook-form";
 import { Text, TextInput, View } from "react-native";
-import { Theme } from "@/constants/theme";
 import DateFormField from "@/components/forms/fields/DateFormField";
 import { useState } from "react";
 import FieldShell, {
@@ -112,7 +111,7 @@ export default function FormField<T extends FieldValues>(
   );
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   endAdornment: {
     paddingLeft: theme.spacing(1),
     justifyContent: "center",

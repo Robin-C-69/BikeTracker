@@ -2,12 +2,10 @@ import {
   Alert,
   Image,
   Pressable,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { theme } from "@/constants/theme";
 import { useForm } from "react-hook-form";
 import { Bike, CreateBikeRequest } from "@/database/models/BikeModel";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,6 +19,7 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Directory, File, Paths } from "expo-file-system";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { makeStyles, useTheme } from "@/hooks/useThemedStyles";
 
 export default function CreateBikeForm({
   onSuccess,
@@ -29,6 +28,8 @@ export default function CreateBikeForm({
   onSuccess?: () => void;
   bike?: Bike;
 }) {
+  const styles = useStyles();
+  const theme = useTheme();
   const { t } = useTranslation();
   const { error, loading, createBike, updateBike } = useBikeContext();
   const isUpdate = !!bike;
@@ -45,11 +46,7 @@ export default function CreateBikeForm({
     imageUri: z.string().optional(),
   });
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-  } = useForm<CreateBikeRequest>({
+  const { control, handleSubmit, setValue } = useForm<CreateBikeRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: bike?.name ?? "",
@@ -82,7 +79,7 @@ export default function CreateBikeForm({
 
       const sourceFile = new File(selectedImageUri);
       const destFile = new File(destDir, fileName);
-      sourceFile.copy(destFile);
+      await sourceFile.copy(destFile);
 
       setLocalImageUri(destFile.uri);
       setValue("imageUri", destFile.uri, { shouldDirty: true });
@@ -152,7 +149,11 @@ export default function CreateBikeForm({
                 }}
                 style={styles.removeImageBtn}
               >
-                <Ionicons name={"close-circle"} size={24} style={styles.closeCircle} />
+                <Ionicons
+                  name={"close-circle"}
+                  size={24}
+                  style={styles.closeCircle}
+                />
               </TouchableOpacity>
             </View>
           ) : (
@@ -173,8 +174,6 @@ export default function CreateBikeForm({
           placeholder={"My super bike"}
           helperText={t("An easy to remind name to identify your bike")}
           isRequired={true}
-          // rules={{ required: t("field_required") }}
-          // error={errors.name?.message}
         />
         <FormField
           control={control}
@@ -198,10 +197,6 @@ export default function CreateBikeForm({
           )}
           type={"numeric"}
           endText={"km"}
-          // rules={{
-          //   min: { value: 0, message: t("mileage_min") },
-          //}}
-          // error={errors.totalKm?.message}
         />
         <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
           <Text style={styles.buttonText}>
@@ -213,7 +208,7 @@ export default function CreateBikeForm({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   safe: { flex: 1, backgroundColor: theme.colors.background },
   container: {
     flex: 1,
@@ -291,4 +286,4 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.weights.bold,
     fontSize: theme.typography.sizes.md,
   },
-});
+}));

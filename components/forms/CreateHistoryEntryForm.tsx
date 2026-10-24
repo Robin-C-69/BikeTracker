@@ -3,15 +3,7 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { theme } from "@/constants/theme";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 import FormField from "@/components/forms/fields/FormField";
 import { useCallback, useEffect, useState } from "react";
 import { MaintenanceType } from "@/database/models/MaintenanceTypeModel";
@@ -28,6 +20,7 @@ import { initialCategoryMaintenanceLinks } from "@/database/seeds/initialData";
 import { DeleteModal } from "@/components/common/DeleteModal";
 import ChipField from "@/components/forms/fields/ChipField";
 import Button from "@/components/common/Button";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 type Props = {
   piece: PieceWithDetails;
@@ -42,6 +35,7 @@ export const CreateHistoryEntryForm = ({
   onSuccess,
   onCancel,
 }: Props) => {
+  const styles = useStyles();
   const { id: pieceId, name: pieceName, categoryId: pieceCategoryId } = piece;
   const { db } = useDatabase();
   const { t } = useTranslation();
@@ -63,11 +57,7 @@ export const CreateHistoryEntryForm = ({
     notes: z.string().optional(),
   });
 
-  const {
-    control,
-    handleSubmit,
-    setError,
-  } = useForm({
+  const { control, handleSubmit, setError } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       maintenanceTypeId: historyEntry?.maintenanceTypeId ?? undefined,
@@ -230,7 +220,7 @@ export const CreateHistoryEntryForm = ({
   );
 };
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: { flex: 1 },
   scrollContent: { flexGrow: 1 },
   form: { margin: 25, gap: theme.spacing(2) },
@@ -248,4 +238,4 @@ const styles = StyleSheet.create({
   actionButtons: { flexDirection: "row", gap: theme.spacing(1) },
   saveButton: { flex: 2 },
   deleteButton: { flex: 1 },
-});
+}));

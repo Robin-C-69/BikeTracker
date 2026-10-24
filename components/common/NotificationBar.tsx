@@ -1,6 +1,6 @@
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { View, ViewStyle } from "react-native";
 import { ReactNode } from "react";
-import { theme } from "@/constants/theme";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 type Props = {
   type?: "success" | "warning" | "error";
@@ -13,10 +13,11 @@ export const NotificationBar = ({
   style,
   children,
 }: Props) => {
+  const styles = useStyles();
   return <View style={[styles.base, styles[type], style]}>{children}</View>;
 };
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   base: {
     display: "flex",
     padding: 10,
@@ -35,4 +36,4 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.errorDark,
     borderColor: theme.colors.error,
   },
-});
+}));

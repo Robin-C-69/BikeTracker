@@ -1,10 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { MaintenanceHistoryWithType } from "@/database/models/MaintenanceHistoryModel";
 import { Divider } from "@/components/common/Divider";
-import { theme } from "@/constants/theme";
 import { useTranslation } from "react-i18next";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { formatDateToHumanString } from "@/components/utils/stringFormatting";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 export const HistoryCard = ({
   historyEntry,
@@ -13,15 +13,16 @@ export const HistoryCard = ({
   historyEntry: MaintenanceHistoryWithType;
   onClick?: () => void;
 }) => {
+  const styles = useStyles();
   const { t } = useTranslation();
 
   const dateDone = useCallback(() => {
     return formatDateToHumanString(historyEntry.date);
   }, [historyEntry.date]);
 
-  const formatBikeKm = useCallback(() => {
-    return `${t("Bike km")} : ${historyEntry.kmAtMaintenance} km`;
-  }, [historyEntry.kmAtMaintenance, t]);
+  // const formatBikeKm = useCallback(() => {
+  //   return `${t("Bike km")} : ${historyEntry.kmAtMaintenance} km`;
+  // }, [historyEntry.kmAtMaintenance, t]);
 
   return (
     <View style={styles.container}>
@@ -63,7 +64,7 @@ export const HistoryCard = ({
   );
 };
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     flexDirection: "row",
   },
@@ -144,4 +145,4 @@ const styles = StyleSheet.create({
   bikeKmValue: {
     color: theme.colors.text.primary,
   },
-});
+}));

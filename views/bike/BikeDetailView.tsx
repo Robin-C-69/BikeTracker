@@ -3,18 +3,16 @@ import {
   Dimensions,
   Image,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { theme } from "@/constants/theme";
 import { PieceCard } from "@/components/piece/PieceCard";
 import { NativeStackScreenProps } from "expo-router/native-stack";
 import { BikesStackParamList } from "@/navigators/BikesNavigator";
 import { usePiecesByBike } from "@/hooks/usePiecesByBike";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Bike } from "@/database/models/BikeModel";
 import { useTranslation } from "react-i18next";
 import { useBikeContext } from "@/context/BikeContext";
@@ -37,6 +35,7 @@ import {
   AccordionTrigger,
 } from "@/components/common/Accordion";
 import { DeleteModal } from "@/components/common/DeleteModal";
+import { makeStyles } from "@/hooks/useThemedStyles";
 
 const PlaceholderImage = require("@/assets/images/bike.png");
 
@@ -52,7 +51,23 @@ type PiecesByCategory = Record<
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
+const sortedByType = (pieces: PieceWithDetails[]): PiecesByCategory => {
+  const grouped = pieces.reduce<PiecesByCategory>((acc, piece) => {
+    const typeId = piece.category.typeId;
+    if (!acc[typeId]) {
+      acc[typeId] = { category: piece.category, pieces: [] };
+    }
+    acc[typeId].pieces.push(piece);
+    return acc;
+  }, {});
+
+  return Object.fromEntries(
+    Object.entries(grouped).sort(([a], [b]) => Number(a) - Number(b)),
+  );
+};
+
 export default function BikeDetailView({ navigation, route }: Props) {
+  const styles = useStyles();
   const { bikeId } = route.params;
   const { bikes, loading, error, deleteBike } = useBikeContext();
 
@@ -66,22 +81,10 @@ export default function BikeDetailView({ navigation, route }: Props) {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const sortedByType = (pieces: PieceWithDetails[]): PiecesByCategory => {
-    const grouped = pieces.reduce<PiecesByCategory>((acc, piece) => {
-      const typeId = piece.category.typeId;
-      if (!acc[typeId]) {
-        acc[typeId] = { category: piece.category, pieces: [] };
-      }
-      acc[typeId].pieces.push(piece);
-      return acc;
-    }, {});
-
-    return Object.fromEntries(
-      Object.entries(grouped).sort(([a], [b]) => Number(a) - Number(b)),
-    );
-  };
-
-  const sortedPieces = pieces ? sortedByType(pieces) : null;
+  const sortedPieces = useMemo(
+    () => (pieces ? sortedByType(pieces) : null),
+    [pieces],
+  );
 
   const brandAndModel = useCallback((bike: Bike) => {
     if (bike.brand && bike.model) {
@@ -158,7 +161,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
         />
         <View style={styles.bikeInfos}>
           <View style={styles.bikeLabels}>
-            <Text style={styles.bikeName}>{bike?.name}</Text>
+            <Text style={styles.bikeName}>{bike.name}</Text>
             <Text style={styles.bikeModel}>{brandAndModel(bike)}</Text>
           </View>
           <View style={styles.bikeStats}>
@@ -189,17 +192,18 @@ export default function BikeDetailView({ navigation, route }: Props) {
                 <AccordionHeader>
                   <AccordionTrigger>
                     <AccordionTitleText>
-                      {`${String(idx + 1).padStart(2, "0")} // ${t(`categories.${cat.category.name}`)}`}
+                      {`${String(idx + 1).padStart(2, "0")} // ${t(`types.${cat.category.type.name}`)}`}
                     </AccordionTitleText>
                   </AccordionTrigger>
                 </AccordionHeader>
                 <AccordionContent>
                   {cat.pieces.map((piece) => (
                     <TouchableOpacity
+                      accessibilityRole="button"
                       key={piece.id}
                       onPress={() => navigateToPieceDetails(piece.id)}
                     >
-                      <PieceCard key={piece.id} piece={piece} />
+                      <PieceCard piece={piece} />
                     </TouchableOpacity>
                   ))}
                 </AccordionContent>
@@ -208,6 +212,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
           </Accordion>
         )}
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.actionCard, styles.addButton]}
           onPress={onAddPiece}
         >
@@ -219,6 +224,7 @@ export default function BikeDetailView({ navigation, route }: Props) {
           <Text style={styles.addText}>{t("Add piece")}</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.actionCard, styles.deleteButton]}
           onPress={() => {
             setShowDeleteModal(true);
@@ -242,15 +248,16 @@ export default function BikeDetailView({ navigation, route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: theme.colors.background,
-    height: "100%",
+    // height: "100%",
+    flex: 1,
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
   },
   headerContainer: {
-    display: "flex",
+    // display: "flex",
     flexDirection: "row",
     gap: theme.spacing(2),
     justifyContent: "flex-start",
@@ -337,4 +344,4 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     marginTop: theme.spacing(0.5),
   },
-});
+}));
